@@ -1,0 +1,95 @@
+.encabezado {
+  background-image: linear-gradient(to right, #1F8F99 , #1F8F99);
+  padding: 15px 0;
+  border-radius: 0 0 50px 0;
+  -moz-border-radius: 0 0 50px 0;
+  -webkit-border-radius: 0 0 50px 0;
+}
+
+.contenido {
+  padding-top: 15px;
+  margin-bottom: 69px;
+}
+
+.pie {
+  background-color: white;
+}
+
+.boton {
+  background-color: transparent;
+  color: #009694;
+  border: 1px solid #009694;
+  border-radius: 30px;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.boton:hover {
+  color: white;
+  background-color: #009694;
+}
+
+button.boton:disabled {
+  background-color: grey;
+  color: white;
+  border-width: 1px;
+  border-color: grey;
+}
+
+.tituloEncabezado {
+  color: white;
+  margin-bottom: 0;
+}
+
+.grupoRadioButton {
+  border: 1px solid black;
+  border-radius: 25px;
+}
+
+.grupoRadioButton label {
+  cursor: pointer;
+  display: inline;
+}
+
+.labelOpcion {
+  margin: 5px;
+}
+
+.custom-control-input_modifier {
+  position: static; 
+  display: inline;
+}
+
+.radio-div {
+  cursor: pointer;
+}
+.radio-div:hover {
+  background-color: #adfaff;
+}
+.radio-div__selected {
+  background-color: #1ebdfc;
+}
+
+.input-numerador {
+  background-color: #CFE2F3;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  height: 90px;
+  font-size: 80px;
+  text-align: center;
+  width: 70px;
+  margin: 2px;
+}
+
+.input-num-y-den {
+  background-color: #CFE2F3;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 40px;
+  text-align: center;
+  width: 70px;
+  height: 50px;
+  margin: 2px;
+}
