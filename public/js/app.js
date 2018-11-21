@@ -22,29 +22,40 @@ btnRespuesta.setAttribute("onClick", "answer();");
 //botn cerrar modal
 var btnCloseModal = document.getElementById('btnCloseModal');
 
+handleHeader();
+
 $(document).ready(function(){
 	dibujaHtml();
 	print();
 	habilitaBotonResponder();
-	handleHeader();
 	barraDeProgreso(10, 5);
 });
 
 function handleHeader() {
-	setTimeout(function(){
-		$('header.encabezado').css({
-			'top':'-50px'
-		});
-	}, 3000);
-	$('header').hover(function(){
-		$('header').css({
-			'top':'0'
-		});
-	}, function(){
-		$('header').css({
-			'top':'-50px'
-		});
-	});
+	function controlaEncabezado(x) {
+		barraDeProgreso(10,5);
+    if (x.matches) { // If media query matches
+			setTimeout(function(){
+				$('header.encabezado').css({
+					'top':'-50px'
+				});
+			}, 3000);
+			$('header').hover(function(){
+				$('header.encabezado').css({
+					'top':'0'
+				});
+			}, function(){
+				$('header.encabezado').css({
+					'top':'-50px'
+				});
+			});
+    } else {
+			$('header.encabezado').addClass('d-none');
+    }
+	}
+	var x = window.matchMedia("(max-width: 1365px)")
+	controlaEncabezado(x);
+	x.addListener(controlaEncabezado);
 }
 
 function barraDeProgreso(cantidadEjercicios, ejercicioActual) {
