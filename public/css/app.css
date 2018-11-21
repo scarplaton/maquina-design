@@ -14,12 +14,16 @@
   -moz-border-radius: 0 0 15px 0;
   -webkit-border-radius: 0 0 15px 0;
   padding-top: 10px;
+  position: fixed;
+  top: 0;
+  transition: top 0.3s;
+  width: 100%;
+  z-index: 1;
 }
 
-.encabezadoHover {
-  background-color: white;
-  background-image: 'none';
-  box-shadow: 'none';
+.barraprogreso {
+  height: 50px;
+  padding-top: 10px;
 }
 
 .encabezadoBarra {
@@ -47,7 +51,7 @@
 */
 
 .contenido {
-  margin-bottom: 69px;
+  margin-bottom: 100px;
 }
 
 /*

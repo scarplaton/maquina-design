@@ -32,30 +32,18 @@ $(document).ready(function(){
 
 function handleHeader() {
 	setTimeout(function(){
-		$('header').css({
-			'background-color':'white',
-			'background-image':'none',
-			'box-shadow':'none'
+		$('header.encabezado').css({
+			'top':'-50px'
 		});
-		$('header').find('span').addClass('d-none');
-		$('header').find('svg').removeClass('d-none');
 	}, 3000);
 	$('header').hover(function(){
 		$('header').css({
-			'background-color':'white',
-			'background-image':'linear-gradient(to right, #1F8F99 , #00b3a6)',
-			'box-shadow':'0 2px 2px rgba(0,0,0,0.23)'
+			'top':'0'
 		});
-		$('header').find('svg').addClass('d-none');
-		$('header').find('span').removeClass('d-none');
 	}, function(){
 		$('header').css({
-			'background-color':'white',
-			'background-image':'none',
-			'box-shadow':'none'
+			'top':'-50px'
 		});
-		$('header').find('span').addClass('d-none');
-		$('header').find('svg').removeClass('d-none');
 	});
 }
 
