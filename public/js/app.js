@@ -26,17 +26,53 @@ $(document).ready(function(){
 	dibujaHtml();
 	print();
 	habilitaBotonResponder();
+	handleHeader();
+	barraDeProgreso(10, 5);
 });
+
+function handleHeader() {
+	setTimeout(function(){
+		$('header').css({
+			'background-color':'white',
+			'background-image':'none',
+			'box-shadow':'none'
+		});
+		$('header').find('span').addClass('d-none');
+		$('header').find('svg').removeClass('d-none');
+	}, 3000);
+	$('header').hover(function(){
+		$('header').css({
+			'background-color':'white',
+			'background-image':'linear-gradient(to right, #1F8F99 , #00b3a6)',
+			'box-shadow':'0 2px 2px rgba(0,0,0,0.23)'
+		});
+		$('header').find('svg').addClass('d-none');
+		$('header').find('span').removeClass('d-none');
+	}, function(){
+		$('header').css({
+			'background-color':'white',
+			'background-image':'none',
+			'box-shadow':'none'
+		});
+		$('header').find('span').addClass('d-none');
+		$('header').find('svg').removeClass('d-none');
+	});
+}
+
+function barraDeProgreso(cantidadEjercicios, ejercicioActual) {
+	var porcentajeAvance = ejercicioActual * 100 / cantidadEjercicios;
+	var progress = document.getElementById('progress');
+	progress.setAttribute('width', porcentajeAvance+'%');
+	var svg = document.getElementById("progressbar").getBoundingClientRect();
+	var circulo = document.getElementById('progressfinal');
+	circulo.setAttribute('cx', svg.width - 5);
+	if(cantidadEjercicios===ejercicioActual) {
+		circulo.setAttribute('fill', '#2ab04a');
+	}
+}
 
 function habilitaBotonResponder() {
 	var disabled = true, tipo = $('input:not([type=hidden],[disabled])').first().attr('type');
-	/*if(tipo === 'radio') {
-		$('input[type=radio]').on('change',function(){
-			if(document.querySelector('input[type=radio]:checked')) {
-				disabled = false;
-			}
-		});
-	}*/
 	if(tipo === 'text') {
 		function checkTexts() {
 			var todasRespondidas = true;
