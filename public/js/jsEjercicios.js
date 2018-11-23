@@ -51,42 +51,29 @@ function enviar(){
 		$(hiddenParent).val(envioIntento).trigger('change');
 		$(hiddenParent).val(envioIntento).trigger('click');
 	/*--------------------------------------------*/
-	numeroIntento++;	
-	$('input[type=text]:not([disabled])').val('');
-	$('input:checked').prop('checked', false);
-	$('.radio-div__selected').removeClass('radio-div__selected');
+	numeroIntento++;
 }
-	function validaNumero(elEvento){ 
-		var evento = window.event || elEvento;
-		var teclaPresionada = String.fromCharCode(evento.charCode);
-		var soloFlechas = evento.charCode;
-		if(soloFlechas == 37 || soloFlechas == 38 || soloFlechas == 39 || soloFlechas == 40){
-			return false;
-		}
-		var soloNumero = new RegExp(/[0-9]/g);
-		if(!soloNumero.test(teclaPresionada) || $(elEvento).val().length > 8){
-			evento.preventDefault();
-		}		
-	}
-	function cerrarFeed(){
-		$("#divGeneralFeed").hide();
-		$(hiddenCierraFeed).val(true).trigger('change');
-		$(hiddenCierraFeed).val(true).trigger('click');        
-	}
-	function pressConsulta(){
-		$(hiddenPressConsulta).val("1").trigger('change');
-		$(hiddenPressConsulta).val("1").trigger('click');
-	}
+
+function cerrarFeed(){
+	$("#divGeneralFeed").hide();
+	$(hiddenCierraFeed).val(true).trigger('change');
+	$(hiddenCierraFeed).val(true).trigger('click');        
+}
+
+function pressConsulta(){
+	$(hiddenPressConsulta).val("1").trigger('change');
+	$(hiddenPressConsulta).val("1").trigger('click');
+}
 	
-	function cerrarFeedGlosa(){
-		$(hiddenSegundoError).val(true).trigger('change');
-		$(hiddenSegundoError).val(true).trigger('click');
-	}
+function cerrarFeedGlosa(){
+	$(hiddenSegundoError).val(true).trigger('change');
+	$(hiddenSegundoError).val(true).trigger('click');
+}
 	
-	function sgteGlosa(){
-		$("#imagenBotonRespuesta").css("visibility","hidden");	
-		$(hiddenTutorial).val(true).trigger('change');
-	}
+function sgteGlosa(){
+	$("#imagenBotonRespuesta").css("visibility","hidden");	
+	$(hiddenTutorial).val(true).trigger('change');
+}
 
 /*---------VALIDACIÓN INGRESO A EJERCICIO--------*/
 
@@ -190,5 +177,18 @@ function enviar(){
 			$(elemento).val(res);
 			return false;
 		}		
-	}	
+	}
+
+	function validaNumero(elEvento){ 
+	var evento = window.event || elEvento;
+	var teclaPresionada = String.fromCharCode(evento.charCode);
+	var soloFlechas = evento.charCode;
+	if(soloFlechas == 37 || soloFlechas == 38 || soloFlechas == 39 || soloFlechas == 40){
+		return false;
+	}
+	var soloNumero = new RegExp(/[0-9]/g);
+	if(!soloNumero.test(teclaPresionada) || $(elEvento).val().length > 8){
+		evento.preventDefault();
+	}		
+}
 		*/

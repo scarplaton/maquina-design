@@ -1,171 +1,11 @@
-var respGeneral = 0, 
-rspMalas = 0, 
-rspSinFeedBack = 0, 
-RespNeg = 0, 
-fechaEntrada = (new Date()).toLocaleTimeString(),
-idEjercicio = document.body.id, 
-nivelF = idEjercicio.substring(0, 2), 
-ejeF = idEjercicio.substring(2, 4),
-errFre = '', 
-feed = '', 
-check = false;
-
 //datos ejercicio
 var contenidoBody = JSON.parse(document.body.getAttribute('data-content').replace(/\'/g, '\"'));
 var versionBody = JSON.parse(document.body.getAttribute('data-version').replace(/\'/g, '\"'));
-//muestra feedback
-var botonConsulta = document.getElementById('btnConsulta');
-botonConsulta.setAttribute("onClick", "pressConsulta();");
-//boton responder
-var btnRespuesta =  document.getElementById('btnResponder');
-btnRespuesta.setAttribute("onClick", "answer();");
-//botn cerrar modal
-var btnCloseModal = document.getElementById('btnCloseModal');
-
-handleHeader();
 
 $(document).ready(function(){
 	dibujaHtml();
 	print();
-	habilitaBotonResponder();
-	barraDeProgreso(10, 5);
 });
-
-function handleHeader() {
-	function controlaEncabezado(x) {
-		barraDeProgreso(10,5);
-    if (x.matches) { // If media query matches
-			setTimeout(function(){
-				$('header.encabezado').css({
-					'top':'-50px'
-				});
-			}, 3000);
-			$('header').hover(function(){
-				$('header.encabezado').css({
-					'top':'0'
-				});
-			}, function(){
-				$('header.encabezado').css({
-					'top':'-50px'
-				});
-			});
-    } else {
-			$('header.encabezado').addClass('d-none');
-    }
-	}
-	var x = window.matchMedia("(max-width: 1365px)")
-	controlaEncabezado(x);
-	x.addListener(controlaEncabezado);
-}
-
-function barraDeProgreso(cantidadEjercicios, ejercicioActual) {
-	var porcentajeAvance = ejercicioActual * 100 / cantidadEjercicios;
-	var progress = document.getElementById('progress');
-	progress.setAttribute('width', porcentajeAvance+'%');
-	var svg = document.getElementById("progressbar").getBoundingClientRect();
-	var circulo = document.getElementById('progressfinal');
-	circulo.setAttribute('cx', svg.width - 5);
-	if(cantidadEjercicios===ejercicioActual) {
-		circulo.setAttribute('fill', '#2ab04a');
-	}
-}
-
-function habilitaBotonResponder() {
-	var disabled = true, tipo = $('input:not([type=hidden],[disabled])').first().attr('type');
-	if(tipo === 'text') {
-		function checkTexts() {
-			var todasRespondidas = true;
-			$('input[type=text]:not([disabled])').each(function(){
-				if($(this).val() == ''){
-					todasRespondidas = false;
-					return false;
-				}
-			});
-			btnRespuesta.disabled = !todasRespondidas;
-		}
-		$('input[type=text]:not([disabled])').keyup(checkTexts).focusout(checkTexts);
-	}
-	btnRespuesta.disabled = disabled;
-}
-
-function openModalFeedback(content) {
-	$('#modalFeedback').find('.modal-body').html(content);
-	$('#modalFeedback').modal({
-		backdrop: 'static',
-    keyboard: false
-	});
-	$('#modalFeedback').modal('show');
-}
-
-function closeModalFeedback() {
-	$('#modalFeedback').modal('hide');
-}
-
-function openModalGlosa() {
-	$('#modalGlosa').modal({
-		backdrop: 'static',
-    	keyboard: false
-	});
-	$('#modalGlosa').modal('show');
-}
-
-function closeModalGlosa() {
-	$('#modalGlosa').modal('hide');
-}
-
-function answer() { //Validar respuesta y mostrar feedback
-	let respuesta, respuestaObj;
-	if(document.querySelector('input[name="answer"]:checked')) {
-		respuesta = document.querySelector('input[name="answer"]:checked');
-		respuestaObj = JSON.parse(respuesta.getAttribute('data-content'));
-		console.log(respuestaObj);
-		feed = respuestaObj ? respuestaObj.feedback : "<p>Debes seleccionar una respuesta</p>";
-		errFre = respuestaObj ? respuestaObj.errFrec : true;
-	} else if ($('input[type=text]:not([disabled])')) {
-		errFre = false;
-		$('input[type=text]:not([disabled])').each(function(){
-			var opc = JSON.parse(this.getAttribute('data-content').replace(/\'/g, '\"'));
-			if(this.value !== opc.esCorrecta) {
-				todasCorrectas = false;
-				feed = opc.feedbackBad;
-				errFre = true;
-				return false;
-			} else {
-				feed = opc.feedbackGood;
-			}
-		});
-	}
-	if (respGeneral < 2 && !check) {
-		if (!errFre) { //la respuesta correcta no tiene error frecuente
-			var arrCorrecta = ["PatoFeedBack_00007.png","PataFeedBack_00007.png"];//Imagen feedback si es correcto
-			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			var html = `<div class="container"><div class="row">`;
-			html += `<div class="col-4"><img class="img-fluid" src="https://desarrolloadaptatin.blob.core.windows.net/feedbacksimg/${arrCorrecta[rando]}"/></div>`;
-			html += `<div class="col-8">${replace(feed, versionBody.vars)}</div>`;
-			html += '</div></div>';
-			openModalFeedback(html);
-			btnCloseModal.setAttribute("onClick", "cerrarFeed()");
-			check = true
-		} else {
-			if (!respGeneral) { 
-				var arrGlosa = ["PatoFeedBack_00001.png","PataFeedBack_00001.png"];//Imagen Glosa
-				var rando = Math.floor((Math.random() *  arrGlosa.length));
-				var html = `<div class="container"><div class="row">`;
-				html += `<div class="col-4"><img class="img-fluid" src="https://desarrolloadaptatin.blob.core.windows.net/feedbacksimg/${arrGlosa[rando]}"/></div>`;
-				html += `<div class="col-8">${replace(feed, versionBody.vars)}</div>`;
-				html += '</div></div>';
-				openModalFeedback(html);
-				btnCloseModal.setAttribute("onClick", "closeModalFeedback();");
-			} else {
-				openModalGlosa(document.getElementById('glosa').innerHTML);
-				btnCloseModal.setAttribute("onClick", "cerrarFeedGlosa();");
-			}
-		}
-		btnRespuesta.disabled = true;
-		respGeneral++
-		enviar();
-	}
-}
 
 function replace(texto, variables) { 
 	var result = texto.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
@@ -185,7 +25,12 @@ function regex(theInput, theVariables, isTutorial) {
     return result;
 }
 
-function shuffle(arr, t = 10) { for (let i = 0; i < t; i++) { arr = arr.sort(() => (.5 - Math.random())) }; return arr }
+function shuffle(arr, t = 10) { 
+	for (let i = 0; i < t; i++) { 
+		arr = arr.sort(() => (.5 - Math.random()));
+	}; 
+	return arr 
+}
 
 const FUNCIONES = [	
 	{ name:'General', tag:'general', fns:[ 
@@ -238,16 +83,6 @@ function dibujaHtml() {
 			respuestaHtml += `<h5 class="h5 text-center">Opcion ${index+1}</h5>`
 			respuestaHtml += `<input name="answer" value="Opcion ${index+1}" class="d-none" type="radio" data-content='${JSON.stringify(dataContent)}' />`
 			respuestaHtml += '</div>'
-		});
-		$(document).on('click', '.radio-div', function(){
-			var divSeleccionada = document.querySelector('div.radio-div.radio-div__selected');
-			if(divSeleccionada) {
-				divSeleccionada.classList.remove('radio-div__selected');
-				$(divSeleccionada).find(':radio').removeAttr("checked");
-			}
-			$(this).addClass('radio-div__selected');
-			$(this).find(':radio').attr("checked","checked");
-			btnRespuesta.disabled = false;
 		});
 	} else {
 		contenidoBody['r'].forEach(function(item, index){
