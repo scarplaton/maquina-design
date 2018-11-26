@@ -18,11 +18,40 @@ function replace(texto, variables) {
 }
 
 function regex(theInput, theVariables, isTutorial) {
-    var result = theInput.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
-        var variable = theVariables.find(item => item.var == coincidencia[1]);
-        return isTutorial ? variable.vt : variable.val;
-    });
-    return result;
+	var result = theInput.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
+			var variable = theVariables.find(item => item.var == coincidencia[1]);
+			return isTutorial ? variable.vt : variable.val;
+	});
+	return result;
+}
+
+function regexFunctions(text, doubleQuotes) {
+	var result = text.replace(/(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}'
+			var final = coincidencia.length - 2;
+			var funcion = coincidencia.substr(1,final);
+			return eval(funcion);
+	});
+	return result;
+}
+//funciones para poner texto en texto
+function fraccion(entero, numerador, denominador) {
+	return `<table style="margin:0 4px;display: inline-block;vertical-align: middle;">
+	<tbody>
+		<tr>
+			${entero > 0 ? `<td rowspan="2">
+				<span style="font-size:25px;color:black;">${entero}</span>
+			</td>` : ''}
+			<td style="border-bottom: 2px solid black;">
+				<span style="font-size:18px;color:black;">&nbsp;${numerador}&nbsp;</span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span style="font-size:18px;color:black;">&nbsp;${denominador}&nbsp;</span>
+			</td>
+		</tr>
+	</tbody>
+</table>`;
 }
 
 function shuffle(arr, t = 10) { 
@@ -114,8 +143,10 @@ function dibujaHtml() {
 function insertarTexto(config) {
 	const { container, params, variables, versions, vt } = config
 	if (container) {
-		let vars = vt ? variables : versions
-  		container.innerHTML = replace(params.content, vars)
+		let vars = vt ? variables : versions;
+		var texto = regex(params.content, vars, vt);
+		texto = regexFunctions(texto, true);
+  	container.innerHTML = texto;
 	}
 }
 function insertarInput(config) {

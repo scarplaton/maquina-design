@@ -39,14 +39,6 @@ $(document).ready(function(){
 	$( window ).resize(function() {
 		barraDeProgreso(tmpTotal, tmpProgreso.length+1);
 	});
-	$('#contenidoGlosa').slimScroll({
-		width: $('section.contenido .container').css('width'),
-    height: '500px',
-    size: '15px',
-    position: 'right',
-		color: '#1caff6',
-		railVisible: true
-	});
 });
 
 function answer() { //Validar respuesta y mostrar feedback
@@ -70,13 +62,15 @@ function answer() { //Validar respuesta y mostrar feedback
 			}
 		});
 	}
+	var feedHtml = regex(feed, versionBody.vars, false);
+	feedHtml = regexFunctions(feedHtml);
 	if (respGeneral < 2 && !check) {
 		if (!errFre) { //la respuesta correcta no tiene error frecuente
 			check = true;
-			muestraFeedback(!errFre, replace(feed, versionBody.vars));
+			muestraFeedback(!errFre, feedHtml);
 		} else {
 			if (!respGeneral) {
-				muestraFeedback(!errFre, replace(feed, versionBody.vars));
+				muestraFeedback(!errFre, feedHtml);
 			} else {
 				openModalGlosa(document.getElementById('glosa').innerHTML);
 				btnCloseModal.setAttribute("onClick", "cerrarFeedGlosa();");
@@ -194,7 +188,6 @@ function muestraFeedback(esCorrecta, feedback) {
 function feedbackCorrecta(src) {
 	$('footer.pie').addClass('pieCorrecta');
 	$('#btnResponder').addClass('respCorrecta');
-	$('footer.pie').find('span').parent().css('color', '#4d8b4b');
 	$('#imgfeedback').attr('src', src);
 	var mensaje = rachaCorrectas();
 	if(mensaje) {
@@ -220,7 +213,6 @@ function rachaCorrectas() {
 function feedbackIncorrecta(src) {
 	$('footer.pie').addClass('pieIncorrecta');
 	$('#btnResponder').addClass('respIncorrecta');
-	$('footer.pie').find('span').css('color', '#d33131');
 	$('#imgfeedback').attr('src', src);
 	btnRespuesta.setAttribute("onClick", "continuarEjercicio();");
 }

@@ -5,8 +5,7 @@ var hiddenSegundoError = window.parent.parent.varSegundoError; //Comunicacón co
 var hiddenCierraFeed = window.parent.parent.cerrarFeedbackHijo; //Comunicacón con frame Segundo error
 var hiddenPressConsulta = window.parent.parent.pressConsulta; //Comunicacón con frame Segundo error
 	
-function enviar(){	
-
+function enviar(){
 	var fechaTerminoIntento = new Date();
 	var vercionEjercicio = window.location.href.substring(window.location.href.search(idEjercicio)+(String(idEjercicio).length+1),window.location.href.search(".html"));
 	
@@ -40,10 +39,16 @@ function enviar(){
 		"idtareaiematricula" :0 , 
 		"tiempoInicio" : ""+date.yyyymmdd()+" "+fechaEntrada+"", 
 		"tiempoRespuesta" : ""+date.yyyymmdd()+" "+fechaTerminoIntento.toLocaleTimeString()+"", 
-		"feedback": check ? 'Respuesta Correcta' : $('.modal-body').text() , 
+		"feedback": check ? 'Respuesta Correcta' : 
+												numeroIntento < 2 ? feed.replace(/(\\n)|(\\t)/g, '').trim() :
+																						null, 
 		"codigoErrorComun" : errFre ? errFre : 0, 
 		"respuesta": ""+values+"",
-		"glosa": numeroIntento === 2 ? $('.modal-body').text() : null
+		"glosa": numeroIntento === 2 ? 
+				$('#glosa').text()
+				.replace(/(\s\s)/g, '')
+				.replace(/(\\n)|(\\t)/g, '')
+				.trim() : null
 	});
 	console.log(envioIntento);
 

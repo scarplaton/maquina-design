@@ -1,3 +1,7 @@
+p {
+  display: inline;
+}
+
 @font-face {
   font-family: 'varela';
   src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
@@ -93,10 +97,12 @@
 
 .pieCorrecta {
   background-color: #BFF199;
+  color: #4d8b4b;
 }
 
 .pieIncorrecta {
-  background-color: #ff9999; /*modificar*/
+  background-color: #F6B3B1;
+  color: #d33131;
 }
 
 #btnConsulta {
