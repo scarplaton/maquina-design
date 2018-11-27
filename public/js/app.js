@@ -106,7 +106,12 @@ function dibujaHtml() {
 		canvasSeleccionables = shuffle(canvasSeleccionables, 5);
 		canvasSeleccionables.forEach(function(item, index){
 			var esCorrecta = item.params.esCorrecta ? true : false
-			var dataContent = { feedback: item.params.feedback, esCorrecta, opcion: `Opcion ${index+1}`, errFrec: item.params.errFrec };
+			var dataContent = { 
+				feedback: item.params.feedback, 
+				esCorrecta, 
+				opcion: `Opcion ${index+1}`, 
+				errFrec: item.params.errFrec 
+			};
 			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} radio-div text-center">`
 			respuestaHtml += `<canvas class="img-fluid" id="container-${'r'}${item.position}" style="background:${item.params.background}"></canvas>`
 			respuestaHtml += `<h5 class="h5 text-center">Opcion ${index+1}</h5>`
@@ -150,38 +155,72 @@ function insertarTexto(config) {
 	}
 }
 function insertarInput(config) {
-	const { container, params, variables, versions, vt } = config, vars = vt ? variables : versions, 
-		{ inputType, value1, value2, value3, value4, error2, error3, error4, feed0, feed1, feed2, feed3, feed4 } = params
-	let ans = [value1, value2, value3, value4], err = [null, error2, error3, error4], fee = [feed1, feed2, feed3, feed4], 
-		r = [], n = '', e = '', f = '', c = ''
-	
+	const { container, params, variables, versions, vt } = config, 
+	{ inputSize, answer, error2, error3, error4,
+		feed0, feed1, feed2, feed3, feed4, 
+		value1, value2, value3, value4, inputType } = params
+	var vars = vt ? variables : versions;
+	var values = inputSize === 3 ? [value1, value2, value3] : [value1, value2, value3, value4];
+	var feedback = inputSize === 3 ? [feed1,feed2, feed3] : [value1, value2, value3, value4];
+	var errFrec = inputSize === 3 ? [undefined, error2, error3] : [undefined, error2, error3, error4];
+	let r = '', n = '', valoresReemplazados = '';
+
 	if (container) {
 		switch(inputType) {
-			case 'input': { c = '<input type="text" placeholder="Respuesta"></input>'; break }
-			case 'radio': {
-				ans.forEach((m, i) => { 
-					n = eval(replace(m, vars, vt)); e = err[i]; f = fee[i] != '' ? fee[i] : feed0
-					r.push(`<li key="${i}"><input name="ans" value="${n}" type="radio" error="${e}" feed="${f}"/><label>&nbsp;&nbsp;${n}</label></li>`)	
-				}); c = shuffle(r).join('')
-				break
-			}
-			case 'checkbox': {
-				ans.forEach((m, i) => { 
-					n = eval(replace(m, vars, vt)); e = err[i]; f = fee[i] != '' ? fee[i] : feed0
-					r.push(`<li key="${i}"><input name="ans" value="${n}" type="checkbox" error="${e}" feed="${f}"/><label>&nbsp;&nbsp;${n}</label></li>`)
-				}); c = shuffle(r).join('')
-				break
-			}
-			case 'select': {
-				ans.slice(0, 3).forEach((m, i) => { 
-					n = eval(replace(m, vars, vt)); e = err[i]; f = fee[i] != '' ? fee[i] : feed0
-					r.push(`<option key="${i}" value="${n}" error="${e}" feed="${f}">${n}</option>`)
-				}); c = `<select><option selected disabled value="null">Seleccionar respuesta</option>${shuffle(r).join('')}</select>`
-				break
-			}
-			case 'textarea': { c = '<textarea placeholder="Respuesta"></textarea>'; break }
-		}
-		container.innerHTML = `<form id="answer" feed="${feed0}" type="${inputType}">${c}</form>`
+			case 'input': 
+				container.innerHTML = '<input type="text" placeholder="Respuesta"></input>'; 
+				break;
+			case 'radio 3':
+				var elements = [];
+				values.forEach((m, i) => {
+					var val = regex(m, vars, vt);
+					var dataContent = {
+						feedback: feedback[i],
+						esCorrecta: i === 0? true : false, 
+						errFrec: errFrec[i]
+					}
+					var lmnt = document.createElement('div');
+					lmnt.className = "col-3";
+					lmnt.innerHTML = `<div class="custom-control custom-radio">
+	<span></span>
+	<input type="radio" id="radio-${i}" name="answer" value="${val}" class="custom-control-input" data-content='${JSON.stringify(dataContent)}'>
+	<label class="custom-control-label" for="radio-${i}">${val}</label>
+</div>`;
+					elements.push(lmnt);
+				});
+				container.innerHTML = '';
+				elements = shuffle(elements);
+				elements.forEach((item, i) => {
+					container.appendChild(item);
+				});
+				break;
+			case 'radio 4':
+				arr.forEach((m, i) => {
+					valoresReemplazados = replace(m, vars, vt);
+					try {
+						n = eval(valoresReemplazados);
+						r += `<li key="${i}"><input name="answer" value="${n}" type="radio"/><label>${n}</label></li>`
+					} catch(e) {
+						r += `<li key="${i}"><input name="answer" value="${valoresReemplazados}" type="radio"/><label>${valoresReemplazados}</label></li>`
+					}
+				}); 
+				container.innerHTML = r
+				break;
+			case 'checkbox':
+				arr.forEach((m, i) => { 
+					valoresReemplazados = replace(m, vars, vt);
+					try {
+						n = eval(valoresReemplazados)
+						r += `<li key="${i}"><input name="answer" value="${n}" type="checkbox"/><label>${n}</label></li>`
+					} catch(e) {
+						r += `<li key="${i}"><input name="answer" value="${valoresReemplazados}" type="checkbox"/><label>${valoresReemplazados}</label></li>`
+					}
+				}); 
+				container.innerHTML = r
+				break;
+			case 'textarea': container.innerHTML = '<textarea placeholder="Respuesta"></textarea>';
+				break;
+		}	
 	}
 }
 function insertarInputFraccion(config) {

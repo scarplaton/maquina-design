@@ -83,6 +83,7 @@ function answer() { //Validar respuesta y mostrar feedback
 
 function habilitaBotonResponder() {
 	var tipo = $('input:not([type=hidden],[disabled])').first().attr('type');
+	console.log(tipo);
 	if(tipo === 'text') {
 		function checkTexts() {
 			var todasRespondidas = true;
@@ -99,18 +100,24 @@ function habilitaBotonResponder() {
 		$('input[type=text]:not([disabled])').keyup(checkTexts).focusout(checkTexts);
 	}
 	if(tipo === 'radio') {
-		$(document).on('click', '.radio-div', function(){
-			var divSeleccionada = document.querySelector('div.radio-div.radio-div__selected');
-			if(divSeleccionada) {
-				divSeleccionada.classList.remove('radio-div__selected');
-				$(divSeleccionada).find(':radio').removeAttr("checked");
-			}
-			$(this).addClass('radio-div__selected');
-			$(this).find(':radio').attr("checked","checked");
-			if(!check || respGeneral >= 2) {
+		if($('.radio-div').length > 0) {
+			$(document).on('click', '.radio-div', function(){
+				var divSeleccionada = document.querySelector('div.radio-div.radio-div__selected');
+				if(divSeleccionada) {
+					divSeleccionada.classList.remove('radio-div__selected');
+					$(divSeleccionada).find(':radio').removeAttr("checked");
+				}
+				$(this).addClass('radio-div__selected');
+				$(this).find(':radio').attr("checked","checked");
+				if(!check || respGeneral >= 2) {
+					btnRespuesta.disabled = false;
+				}
+			});
+		} else {
+			$('input[type=radio][name=answer]').change(function(){
 				btnRespuesta.disabled = false;
-			}
-		});
+			});
+		}
 	}
 }
 
