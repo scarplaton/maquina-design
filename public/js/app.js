@@ -161,7 +161,7 @@ function insertarInput(config) {
 		value1, value2, value3, value4, inputType } = params
 	var vars = vt ? variables : versions;
 	var values = inputSize === 3 ? [value1, value2, value3] : [value1, value2, value3, value4];
-	var feedback = inputSize === 3 ? [feed1,feed2, feed3] : [value1, value2, value3, value4];
+	var feedback = inputSize === 3 ? [feed1,feed2, feed3] : [feed1, feed2, feed3, feed4];
 	var errFrec = inputSize === 3 ? [undefined, error2, error3] : [undefined, error2, error3, error4];
 	let r = '', n = '', valoresReemplazados = '';
 
@@ -175,7 +175,7 @@ function insertarInput(config) {
 				values.forEach((m, i) => {
 					var val = regex(m, vars, vt);
 					var dataContent = {
-						feedback: feedback[i],
+						feedback: feedback[i] != "" ? feedback[i] : feed0,
 						esCorrecta: i === 0? true : false, 
 						errFrec: errFrec[i]
 					}
@@ -189,22 +189,36 @@ function insertarInput(config) {
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
+				container.className = 'row';
 				elements = shuffle(elements);
 				elements.forEach((item, i) => {
 					container.appendChild(item);
 				});
 				break;
 			case 'radio 4':
-				arr.forEach((m, i) => {
-					valoresReemplazados = replace(m, vars, vt);
-					try {
-						n = eval(valoresReemplazados);
-						r += `<li key="${i}"><input name="answer" value="${n}" type="radio"/><label>${n}</label></li>`
-					} catch(e) {
-						r += `<li key="${i}"><input name="answer" value="${valoresReemplazados}" type="radio"/><label>${valoresReemplazados}</label></li>`
+				var elements = [];
+				values.forEach((m, i) => {
+					var val = regex(m, vars, vt);
+					var dataContent = {
+						feedback: feedback[i] != "" ? feedback[i] : feed0,
+						esCorrecta: i === 0? true : false, 
+						errFrec: errFrec[i]
 					}
-				}); 
-				container.innerHTML = r
+					var lmnt = document.createElement('div');
+					lmnt.className = "col-3";
+					lmnt.innerHTML = `<div class="custom-control custom-radio">
+	<span></span>
+	<input type="radio" id="radio-${i}" name="answer" value="${val}" class="custom-control-input" data-content='${JSON.stringify(dataContent)}'>
+	<label class="custom-control-label" for="radio-${i}">${val}</label>
+</div>`;
+					elements.push(lmnt);
+				});
+				container.innerHTML = '';
+				container.className = 'row';
+				elements = shuffle(elements);
+				elements.forEach((item, i) => {
+					container.appendChild(item);
+				});
 				break;
 			case 'checkbox':
 				arr.forEach((m, i) => { 
