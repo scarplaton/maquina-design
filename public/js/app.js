@@ -194,6 +194,9 @@ function insertarInput(config) {
 				elements.forEach((item, i) => {
 					container.appendChild(item);
 				});
+				['a','b','c'].forEach(function(opcion, index){
+					container.children[index].querySelector('span').innerHTML = opcion;
+				});
 				break;
 			case 'radio 4':
 				var elements = [];
@@ -218,6 +221,9 @@ function insertarInput(config) {
 				elements = shuffle(elements);
 				elements.forEach((item, i) => {
 					container.appendChild(item);
+				});
+				['a','b','c','d'].forEach(function(opcion, index){
+					container.children[index].querySelector('span').innerHTML = opcion;
 				});
 				break;
 			case 'checkbox':
