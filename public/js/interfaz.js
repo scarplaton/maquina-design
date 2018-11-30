@@ -38,6 +38,7 @@ $(document).ready(function(){
 	$( window ).resize(function() {
 		barraDeProgreso(tmpTotal, tmpProgreso.length+1);
 	});
+	validaInputTexto();
 });
 
 function validaRespuesta() { //Validar respuesta
@@ -95,6 +96,61 @@ function answer() {
 		}
 		respGeneral++;
 		enviar();
+	}
+}
+
+function validaInputTexto() {
+	var inputsDeTexto = $('.contenido :input[type=text]');
+	if(inputsDeTexto.length > 0) {
+		inputsDeTexto.each(function(index){
+			console.log('un input de texto ', index);
+			var content = $(this).attr('data-content');
+			if(content) {
+				content = JSON.parse(content);
+				if(content.type) {
+					switch(content.type){
+						case 'numero':
+							this.addEventListener("keypress", function(evt){
+								var theEvent = evt || window.event;
+								// Handle paste
+								if (theEvent.type === 'paste') {
+										key = event.clipboardData.getData('text/plain');
+								} else {
+								// Handle key press
+										var key = theEvent.keyCode || theEvent.which;
+										key = String.fromCharCode(key);
+								}
+								var regex = /[0-9]|\./;
+								if( !regex.test(key) ) {
+									theEvent.returnValue = false;
+									if(theEvent.preventDefault) theEvent.preventDefault();
+								}
+							});
+							break;
+						case 'texto':
+							this.addEventListener("keypress", function(evt){
+								var theEvent = evt || window.event;
+								// Handle paste
+								if (theEvent.type === 'paste') {
+										key = event.clipboardData.getData('text/plain');
+								} else {
+								// Handle key press
+										var key = theEvent.keyCode || theEvent.which;
+										key = String.fromCharCode(key);
+								}
+								var regex = /[a-zA-Z]|\./;
+								if( !regex.test(key) ) {
+									theEvent.returnValue = false;
+									if(theEvent.preventDefault) theEvent.preventDefault();
+								}
+							});
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		});
 	}
 }
 
