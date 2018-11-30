@@ -59,8 +59,7 @@ function enviar(){
 	numeroIntento++;
 }
 
-function cerrarFeed(){
-	$("#divGeneralFeed").hide();
+function cerrarFeed(){//siguiente ejerccio respuesta correctas
 	$(hiddenCierraFeed).val(true).trigger('change');
 	$(hiddenCierraFeed).val(true).trigger('click');        
 }
@@ -70,7 +69,7 @@ function pressConsulta(){
 	$(hiddenPressConsulta).val("1").trigger('click');
 }
 	
-function cerrarFeedGlosa(){
+function cerrarFeedGlosa(){//siguiente ejercicio respuesta incorrecta por segunda vez
 	$(hiddenSegundoError).val(true).trigger('change');
 	$(hiddenSegundoError).val(true).trigger('click');
 }

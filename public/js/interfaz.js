@@ -16,9 +16,11 @@ handleHeader();
 //boton responder
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
+//boton cerrar modal de feedback
+var btnCerrarFeedBack = document.getElementById('btnCloseModal');
 
 var tmpTitulo = localStorage.getItem('tmpTitulo') ? 
-	JSON.parse(localStorage.getItem('tmpProgreso')) : 'Título por defecto';
+	localStorage.getItem('tmpTitulo') : 'Título por defecto';
 var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
 var tmpTotal = localStorage.getItem('tmpTotal') ?
@@ -183,10 +185,11 @@ function muestraFeedback(esCorrecta, feedback) {
 			var rando = Math.floor((Math.random() *  arrCorrecta.length));
 			openModalFeedback(feedback, arrCorrecta[rando]);
 			$('section.contenido').find('input').prop('disabled', true);
+			btnCerrarFeedBack.setAttribute('onclick', 'cerrarFeed()');
 		} else {
 			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
 			openModalFeedback(feedback, arrIncorrecta[rando]);
-			btnCloseModal.setAttribute("onClick", "closeModalFeedback();");
+			btnCerrarFeedBack.setAttribute('onclick', 'closeModalFeedback()');
 		}
 	} else { //mostrar feedback en footer
 		$('#btnResponder').html('Continuar');
