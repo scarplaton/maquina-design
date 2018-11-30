@@ -217,3 +217,31 @@ p {
   height: 50px;
   margin: 2px;
 }
+
+.opcionradio {
+  align-items: center;
+  display: flex;
+  background-color: #b9e8ff;
+  border: 2px solid #1caff6;
+  border-radius: 15px;
+  color: #1caff6;
+  font-family: 'opensans';
+  font-size: 20px;
+  padding: 8px 12px;
+}
+
+.opcionradio span {
+
+}
+
+.opcionradio input {
+
+}
+
+.opcionradio label {
+  margin: 0;
+}
+
+.opcionradio:hover {
+  background-color: transparent;
+}

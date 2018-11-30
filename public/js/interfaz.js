@@ -13,19 +13,16 @@ check = false;
 
 handleHeader();
 
-//muestra feedback
-var botonConsulta = document.getElementById('btnConsulta');
-botonConsulta.setAttribute("onClick", "pressConsulta();");
 //boton responder
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
-//botn cerrar modal
-var btnCloseModal = document.getElementById('btnCloseModal');
 
-var tmpTitulo = localStorage.getItem('tmpTitulo');
+var tmpTitulo = localStorage.getItem('tmpTitulo') ? 
+	JSON.parse(localStorage.getItem('tmpProgreso')) : 'Título por defecto';
 var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
-var tmpTotal = Number(localStorage.getItem('tmpTotal'));
+var tmpTotal = localStorage.getItem('tmpTotal') ?
+	Number(localStorage.getItem('tmpTotal')) : 5;
 
 $('#modalGlosa').find('.modal-dialog.modal-lg').css({ //cambia el tamaño del modal
 	'max-width': $('section.contenido .container').css('width')
@@ -41,7 +38,7 @@ $(document).ready(function(){
 	});
 });
 
-function answer() { //Validar respuesta y mostrar feedback
+function validaRespuesta() { //Validar respuesta
 	let respuesta, respuestaObj;
 	if(document.querySelector('input[name="answer"]:checked')) {
 		respuesta = document.querySelector('input[name="answer"]:checked');
@@ -49,19 +46,38 @@ function answer() { //Validar respuesta y mostrar feedback
 		feed = respuestaObj ? respuestaObj.feedback : "<p>Debes seleccionar una respuesta</p>";
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
 	} else if ($('input[type=text]:not([disabled])')) {
-		errFre = false;
-		$('input[type=text]:not([disabled])').each(function(){
-			var opc = JSON.parse(this.getAttribute('data-content').replace(/\'/g, '\"'));
-			if(this.value !== opc.esCorrecta) {
-				todasCorrectas = false;
-				feed = opc.feedbackBad;
-				errFre = true;
-				return false;
-			} else {
-				feed = opc.feedbackGood;
+		if($('input[type=text]:not([disabled])').length === 1) {
+			var input = document.querySelector('.contenido input');
+			var opc = JSON.parse(input.getAttribute('data-content'));
+			for(var item of opc.feeds){
+				var resp = regex(item.respuesta, versionBody.vars, false);
+				if(resp !== "") {
+					if(input.value === resp || resp === 'default') {
+						feed = item.feedback;
+						errFre = item.errFrec;
+						break;
+					}
+				}
 			}
-		});
+		} else {
+			errFre = false;
+			$('input[type=text]:not([disabled])').each(function(){
+				var opc = JSON.parse(this.getAttribute('data-content').replace(/\'/g, '\"'));
+				if(this.value !== opc.esCorrecta) {
+					todasCorrectas = false;
+					feed = opc.feedbackBad;
+					errFre = true;
+					return false;
+				} else {
+					feed = opc.feedbackGood;
+				}
+			});
+		}
 	}
+}
+
+function answer() { 
+	validaRespuesta();
 	var feedHtml = regex(feed, versionBody.vars, false);
 	feedHtml = regexFunctions(feedHtml);
 	if (respGeneral < 2 && !check) {
@@ -73,7 +89,6 @@ function answer() { //Validar respuesta y mostrar feedback
 				muestraFeedback(!errFre, feedHtml);
 			} else {
 				openModalGlosa(document.getElementById('glosa').innerHTML);
-				btnCloseModal.setAttribute("onClick", "cerrarFeedGlosa();");
 			}
 		}
 		respGeneral++;
@@ -83,7 +98,6 @@ function answer() { //Validar respuesta y mostrar feedback
 
 function habilitaBotonResponder() {
 	var tipo = $('input:not([type=hidden],[disabled])').first().attr('type');
-	console.log(tipo);
 	if(tipo === 'text') {
 		function checkTexts() {
 			var todasRespondidas = true;

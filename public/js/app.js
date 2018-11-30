@@ -155,8 +155,8 @@ function insertarTexto(config) {
 	}
 }
 function insertarInput(config) {
-	const { container, params, variables, versions, vt } = config, 
-	{ inputSize, answer, error2, error3, error4,
+	const { container, params, variables, versions, vt } = config,
+	{ tipoInput, maxLength, inputSize, answer, answer2, answer3, answer4, error0, error2, error3, error4,
 		feed0, feed1, feed2, feed3, feed4, 
 		value1, value2, value3, value4, inputType } = params
 	var vars = vt ? variables : versions;
@@ -164,11 +164,36 @@ function insertarInput(config) {
 	var feedback = inputSize === 3 ? [feed1,feed2, feed3] : [feed1, feed2, feed3, feed4];
 	var errFrec = inputSize === 3 ? [undefined, error2, error3] : [undefined, error2, error3, error4];
 	let r = '', n = '', valoresReemplazados = '';
-
+	
 	if (container) {
 		switch(inputType) {
-			case 'input': 
-				container.innerHTML = '<input type="text" placeholder="Respuesta"></input>'; 
+			case 'input':
+				var dataContent = {
+					type: tipoInput,
+					feeds: [{
+						respuesta: answer,
+						feedback: feed1,
+						errFrec: null
+					},{
+						respuesta: answer2,
+						feedback: feed2,
+						errFrec: error2
+					},{
+						respuesta: answer3,
+						feedback: feed3,
+						errFrec: error3
+					},{
+						respuesta: answer4,
+						feedback: feed4,
+						errFrec: error4
+					}, {
+						respuesta: 'default',
+						feedback: feed0,
+						errFrec: error0
+					}]
+				};
+				container.innerHTML = '';
+				container.innerHTML = `<input type="text" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' />`;
 				break;
 			case 'radio 3':
 				var elements = [];
@@ -178,18 +203,18 @@ function insertarInput(config) {
 						feedback: feedback[i] != "" ? feedback[i] : feed0,
 						esCorrecta: i === 0? true : false, 
 						errFrec: errFrec[i]
-					}
+					};
 					var lmnt = document.createElement('div');
-					lmnt.className = "col-3";
-					lmnt.innerHTML = `<div class="custom-control custom-radio">
+					lmnt.className = "col-12 col-sm-6 col-md-3";
+					lmnt.innerHTML = `<div class="opcionradio">
 	<span></span>
-	<input type="radio" id="radio-${i}" name="answer" value="${val}" class="custom-control-input" data-content='${JSON.stringify(dataContent)}'>
-	<label class="custom-control-label" for="radio-${i}">${val}</label>
+	<input type="radio" id="radio-${i}" name="answer" value="${val}" data-content='${JSON.stringify(dataContent)}'>
+	<label for="radio-${i}">${val}</label>
 </div>`;
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
-				container.className = 'row';
+				container.className = 'row align-items-center justify-content-center';
 				elements = shuffle(elements);
 				elements.forEach((item, i) => {
 					container.appendChild(item);
@@ -208,16 +233,16 @@ function insertarInput(config) {
 						errFrec: errFrec[i]
 					}
 					var lmnt = document.createElement('div');
-					lmnt.className = "col-3";
-					lmnt.innerHTML = `<div class="custom-control custom-radio">
+					lmnt.className = "col-12 col-sm-6 col-md-3";
+					lmnt.innerHTML = `<div class="opcionradio">
 	<span></span>
-	<input type="radio" id="radio-${i}" name="answer" value="${val}" class="custom-control-input" data-content='${JSON.stringify(dataContent)}'>
-	<label class="custom-control-label" for="radio-${i}">${val}</label>
+	<input type="radio" id="radio-${i}" name="answer" value="${val}" data-content='${JSON.stringify(dataContent)}'>
+	<label for="radio-${i}">${val}</label>
 </div>`;
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
-				container.className = 'row';
+				container.className = 'row align-items-center justify-content-center';
 				elements = shuffle(elements);
 				elements.forEach((item, i) => {
 					container.appendChild(item);
