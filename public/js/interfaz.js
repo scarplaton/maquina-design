@@ -103,7 +103,6 @@ function validaInputTexto() {
 	var inputsDeTexto = $('.contenido :input[type=text]');
 	if(inputsDeTexto.length > 0) {
 		inputsDeTexto.each(function(index){
-			console.log('un input de texto ', index);
 			var content = $(this).attr('data-content');
 			if(content) {
 				content = JSON.parse(content);
@@ -180,6 +179,20 @@ function habilitaBotonResponder() {
 					$(divSeleccionada).find(':radio').removeAttr("checked");
 				}
 				$(this).addClass('radio-div__selected');
+				$(this).find(':radio').attr("checked","checked");
+				if(!check || respGeneral >= 2) {
+					btnRespuesta.disabled = false;
+				}
+			});
+		} else if ($('.opcionradio').length > 0) {
+			$(document).on('click', '.opcionradio', function(){
+				console.log('me llamaron')
+				var divSeleccionada = document.querySelector('.opcionradio.opcionradio_selected');
+				if(divSeleccionada) {
+					divSeleccionada.classList.remove('opcionradio_selected');
+					$(divSeleccionada).find(':radio').removeAttr("checked");
+				}
+				$(this).addClass('opcionradio_selected');
 				$(this).find(':radio').attr("checked","checked");
 				if(!check || respGeneral >= 2) {
 					btnRespuesta.disabled = false;

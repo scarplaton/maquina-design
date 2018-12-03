@@ -219,13 +219,19 @@ p {
 
 .opcionradio {
   display: flex;
-  background-color: #b9e8ff;
-  border: 2px solid #1caff6;
+  background-color: transparent;
+  border: 2px solid #bfbfbf;
   border-radius: 15px;
-  color: #1caff6;
+  color: #3c3c3c;
   font-family: 'opensans';
   font-size: 20px;
   padding: 8px 12px;
+  cursor: pointer;
+}
+
+.opcionradio:hover {
+  border-color: #1caff6;
+  color: #1caff6;
 }
 
 .opcionradio input {
@@ -245,6 +251,7 @@ p {
   transition: 0.3s;
   background-color: #fff;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .opcionradio input[type=radio]:checked + label:before {
@@ -258,8 +265,15 @@ p {
 
 .opcionradio label {
   margin: 0;
+  cursor: pointer;
 }
 
 .opcionradio:hover {
   background-color: transparent;
+}
+
+.opcionradio_selected {
+  border-color: #1caff6;
+  background-color: #b9e8ff;
+  color: #1caff6;
 }

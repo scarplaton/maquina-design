@@ -211,12 +211,13 @@ function insertarInput(config) {
 	<input type="radio" id="radio-${i}" name="answer" value="${val}" data-content='${JSON.stringify(dataContent)}'>
 	<label for="radio-${i}">${val}</label>
 </div>`;
+					lmnt.style.marginBottom = '5px';
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
 				container.className = 'row align-items-center justify-content-center';
 				elements = shuffle(elements);
-				elements.forEach((item, i) => {
+				elements.forEach((item) => {
 					container.appendChild(item);
 				});
 				['a','b','c'].forEach(function(opcion, index){
