@@ -155,7 +155,6 @@ p {
   max-height: 593px;
   font-family: 'opensans';
   font-size: '20px';
-  overflow-y: scroll;
 }
 
 /* 
@@ -219,7 +218,6 @@ p {
 }
 
 .opcionradio {
-  align-items: center;
   display: flex;
   background-color: #b9e8ff;
   border: 2px solid #1caff6;
@@ -230,12 +228,32 @@ p {
   padding: 8px 12px;
 }
 
-.opcionradio span {
-
+.opcionradio input {
+  visibility: hidden;
+  position: absolute;
 }
 
-.opcionradio input {
+.opcionradio input[type=radio] + label:before {
+  height: 15px;
+  width: 15px;
+  border: 2px solid #bfbfbf;
+  border-radius: 50%;
+  margin-right: 4px;
+  margin-top: 3px;
+  content: " ";
+  display: inline-block;
+  transition: 0.3s;
+  background-color: #fff;
+  transition: 0.3s;
+}
 
+.opcionradio input[type=radio]:checked + label:before {
+  background-color: #1caff6;
+  border-color: #1caff6;
+}
+
+.opcionradio span {
+  margin-right: 5px;
 }
 
 .opcionradio label {
