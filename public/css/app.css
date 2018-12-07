@@ -2,6 +2,26 @@ p {
   display: inline;
 }
 
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  color: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: red; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
+
 @font-face {
   font-family: 'varela';
   src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
@@ -146,15 +166,29 @@ p {
   background-color: #d33131;
 }
 
+.dimensionGlosa {
+  min-width: calc(100% - 24px) !important;
+  height: calc(100% - 24px) !important;
+  margin-top: 12px !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
 .glosaEjercicio {
-  background-color: #b9e8ff;
-  border: 1px solid #1caff6;
-  border-radius: 15px;
-  color: #1caff6;
-  padding: 8px 12px;
-  max-height: 593px;
+  background-color: #fff;
+  border-radius: 26px;
   font-family: 'opensans';
-  font-size: '20px';
+  height: 100%;
+}
+
+#btnCloseGlosa {
+  width: 100%;
+  height: 53px;
+  border-radius: 26px;
+  background-color: #48779f;
+  font-family: 'varela';
+  color: #fff;
+  font-size: 16px;
 }
 
 /* 

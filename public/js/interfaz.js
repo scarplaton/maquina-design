@@ -26,10 +26,6 @@ var tmpProgreso = localStorage.getItem('tmpProgreso') ?
 var tmpTotal = localStorage.getItem('tmpTotal') ?
 	Number(localStorage.getItem('tmpTotal')) : 5;
 
-$('#modalGlosa').find('.modal-dialog.modal-lg').css({ //cambia el tamaño del modal
-	'max-width': $('section.contenido .container').css('width')
-});
-
 $('.tituloEncabezado').text(tmpTitulo); //pone titulo e mision
 
 $(document).ready(function(){
@@ -39,6 +35,12 @@ $(document).ready(function(){
 		barraDeProgreso(tmpTotal, tmpProgreso.length+1);
 	});
 	validaInputTexto();
+	window.addEventListener("keyup", function(event){
+		event.preventDefault();
+		if(event.keyCode === 13) {
+			!btnRespuesta.disabled && btnRespuesta.click();
+		}
+	});
 });
 
 function validaRespuesta() { //Validar respuesta
