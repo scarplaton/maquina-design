@@ -7,6 +7,13 @@ $(document).ready(function(){
 	print();
 });
 
+function shuffle(arr, t = 10) { 
+	for (let i = 0; i < t; i++) { 
+		arr = arr.sort(() => (.5 - Math.random()));
+	}; 
+	return arr 
+}
+
 function replace(texto, variables) { 
 	var result = texto.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
 		var variable = variables.find(function(item) {
@@ -25,7 +32,7 @@ function regex(theInput, theVariables, isTutorial) {
 	return result;
 }
 
-function regexFunctions(text, doubleQuotes) {
+function regexFunctions(text) {
 	var result = text.replace(/(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}'
 			var final = coincidencia.length - 2;
 			var funcion = coincidencia.substr(1,final);
@@ -33,6 +40,32 @@ function regexFunctions(text, doubleQuotes) {
 	});
 	return result;
 }
+
+function cargaImagen(src) {
+	return new Promise(function(resolve, reject){
+			var img = new Image();
+			img.src = src;
+			img.onload = function() {
+					resolve(img);
+			}
+			img.onerror = function() {
+					reject('no pasa nada');
+			}
+	});
+}
+
+function cargaFuente(nombre, src) {
+	return new Promise(function(resolve, reject){
+			var font = new FontFace(nombre, `url('${src}')`, {});
+			font.load().then(function(loadedFont) {
+					document.fonts.add(loadedFont);
+					resolve(nombre);
+			}).catch(function(error){
+					reject(error);
+			});
+	});
+}
+
 //funciones para poner texto en texto
 function fraccion(entero, numerador, denominador) {
 	return `<table style="margin:0 4px;display: inline-block;vertical-align: middle;">
@@ -54,20 +87,17 @@ function fraccion(entero, numerador, denominador) {
 </table>`;
 }
 
-function shuffle(arr, t = 10) { 
-	for (let i = 0; i < t; i++) { 
-		arr = arr.sort(() => (.5 - Math.random()));
-	}; 
-	return arr 
-}
-
 const FUNCIONES = [	
 	{ name:'General', tag:'general', fns:[ 
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Input Fraccion', action:insertarInputFraccion } ] },
-	{ name:'Datos', tag:'datos', fns:[ { id:'Grafico Datos', action:graficoDatos } ] },
-	{ name:'Numeracion', tag:'numeracion', fns:[{ id:'Recta 2', action:recta }] },  
+	{ name:'Datos', tag:'datos', fns:[ ] },
+	{ name:'Numeracion', tag:'numeracion', fns:[
+		{ id:'Recta 2', action:recta },
+		{ id:'Tabla Posicional', action:tablaPosicional },
+		{ id:'Valor Posicional', action:valorPosicional}
+	]},  
   	{ name:'Medicion', tag:'medicion', fns:[{ id:'Perimetro', action:igualPerimetro } ] }
 ]
 
@@ -710,352 +740,6 @@ function recta(config) {
 		}
 	  }
 }
-function graficoDatos(config) 
-{
-    const { container, params, variables, versions, vt } = config
-    const { axisColor, axisWidth, borderColor, borderRadius, borderWidth, background, fontColor, extra, lineColor, lineWidth, chartBorder,
-        chartPosition, chartColor, chartValues, chartTags, titleValue, titleSize, titleColor, axisTitleX, axisTitleY, margin, titleTop, fontSize,
-        scaleMax, scaleMin, scaleInterval, scaleColor, scaleWidth, dataTag, withAxis, limitVal, highlightBar } = params
-
-    if (!container) return
-    let maxWidth = container.parentElement.offsetWidth, responsive = params.width < maxWidth,
-        width = responsive ? params.width : maxWidth - 15, height = responsive ? params.height : width
-
-    container.width = width
-    container.height = height
-
-    let vars = vt ? variables : versions
-    let values = replace(chartValues, vars, vt).split(',')
-    let state = {
-        axis: { color: axisColor, scale: 'auto', title_x: axisTitleX, title_y: axisTitleY, width: axisWidth },
-        border: { color: borderColor, radius: borderRadius, width: borderWidth, margin:margin },
-        canvas: { color: background, ctx: container.getContext('2d'), height: height, width: width },
-        chart: { border: { color: chartBorder, width: 2 }, color: chartColor.split(','), length: values.length, 
-                margin: { x:margin == 'si' ? 70 : 50, y:margin == 'si' ? 90 : 60 }, padding: { x:10, y:10 }, position: chartPosition, 
-                values: values, tags: replace(chartTags, vars, vt).split(','), dataTag: dataTag, withAxis: withAxis == 'si' ? true : false },
-        extra: { limit: extra == 'limite', projection: extra == 'proyeccion', highlightBar: highlightBar ? highlightBar.split(',') : '' },
-        font: { align: 'center', color: fontColor, family: 'arial', size: fontSize },
-        line: { color: lineColor, value: 10, width: lineWidth, limitVal:replace(limitVal, vars, vt).split(',') },
-        scale: { max:Number(scaleMax), min:Number(scaleMin), interval:Number(scaleInterval), color:scaleColor, width:scaleWidth }, 
-        title: { color: titleColor, size: titleSize, value: titleValue, top:titleTop }
-    }
-
-    const { chart } = state
-    const { x, y } = chart.margin
-
-    let data = {
-        ctx: container.getContext('2d'), height: height - 2*y, len: chart.length, 
-        max: Math.max(...chart.values), width: width - 2*(x + 10), x0: x, y0: height - y,
-        dx: Math.min(Math.floor((width - 2*(x + 10))/(3/2*chart.length)), 100),
-        dy: Math.min(Math.floor((height - 2*(y - 5))/(4/3*chart.length)), 60)
-    }
-
-    data.cx = data.x0 + 2*chart.padding.x + data.width/data.len/2 - data.dx/2
-    data.cy = data.y0 - chart.padding.y - data.height/data.len/2 - data.dy/2    
-
-    data.ctx.translate(0, margin == 'si' ? 0 : 10)
-    data.ctx.save()
-
-    generarColumnas(data, state)
-    generarEjes(container, state)
-    if (state.extra.projection) 
-        proyectarColumnas(data, state)
-    if (state.extra.limit) 
-        limitarColumnas(data, state)
-    insertarTextos(data, state)
-    insertarValores(data, state)
-
-	function generarEjes(canvas, state) {
-
-	    let ctx = canvas.getContext('2d')
-
-	    const { axis, chart, font, title } = state
-	    const { height, width } = state.canvas
-	    const { x, y } = chart.margin 
-	    const { padding } = chart
-
-	    ctx.beginPath()
-	    ctx.moveTo(x, y - 2*padding.y)
-	    ctx.lineTo(x, height - y) //EJE VERTICAL
-	    ctx.lineTo(width - x + 2*padding.x, height - y) //EJE HORIZONTAL
-	    
-	    if (chart.withAxis) {
-	        //EJE VERTICAL
-	        ctx.moveTo(x + width/110, y - 2*padding.y + width/110)
-	        ctx.lineTo(x, y - 2*padding.y)
-	        ctx.lineTo(x - width/110, y - 2*padding.y + width/110)
-	        //EJE HORIZONTAL
-	        ctx.moveTo(width - x + 2*padding.x - width/110, height - y - width/110) 
-	        ctx.lineTo(width - x + 2*padding.x, height - y)
-	        ctx.lineTo(width - x + 2*padding.x - width/110, height - y + width/110)
-	    }
-
-	    ctx.lineWidth = axis.width
-	    ctx.strokeStyle = axis.color
-	    ctx.stroke()
-
-	    ctx.textAlign = font.align
-	    ctx.font = font.size + 'px ' + font.family
-	    ctx.fillText(axis.title_x, width/2, height - x/2 + Number(font.size) - 12) //INSERTAR TITULO X
-
-	    ctx.rotate(3*Math.PI/2)
-	    ctx.fillText(axis.title_y, - height/2, y/2 - Number(font.size)/3) //INSERTAR TITULO Y
-
-	    ctx.rotate(Math.PI/2)
-	    ctx.fillStyle = title.color
-	    ctx.font = title.size + 'px ' + font.family
-	    ctx.fillText(title.value, width/2, title.top) //INSERTAR TITULO
-
-	    ctx.closePath()
-	}
-	function generarColumnas(data, state) {
-
-	    const { canvas, chart, scale, font, extra } = state
-	    const { dx, dy, height, len, max, width, x0, y0 } = data
-	    const { ctx } = canvas
-	    const limit = Math.max(scale.max, max)
-
-	    ctx.beginPath()
-	    ctx.clearRect(0, 0, canvas.width, canvas.height)
-	    ctx.strokeStyle = scale.color == '' ? 'transparent' : scale.color
-	    ctx.lineWidth = scale.width
-
-	    extra.highlightBar && resaltarBarras(data, state)
-
-	    if (chart.position == 'vertical') 
-	    {
-	        if (scale.interval > 0) {
-	            ctx.textAlign = 'right'
-	            ctx.font = 14 + 'px ' + font.family
-
-	            if (scale.width > 0)
-	            for (let i = scale.min; i <= limit; i += scale.interval) { 
-	                let dy = height/limit * i, y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.moveTo(chart.margin.x, y)
-	                ctx.lineTo(canvas.width - chart.margin.x + 2*chart.padding.x, y)
-	            }
-	            ctx.stroke()
-	            ctx.closePath()
-
-	            ctx.beginPath()
-	            ctx.fillStyle = font.color
-	            for (let i = scale.min; i <= limit; i += scale.interval) {
-	                let dy = height/limit * i, y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.fillText(i, x0 - 7, y + 5) //INSERTAR TEXTO
-	            }
-	            ctx.closePath()
-	        }
-
-	        ctx.beginPath()
-	        ctx.fillStyle = chart.color[0]
-	        for (let i = 0, x = data.cx; i < len; i++, x += width/len) {
-	            let dy = height/limit * chart.values[i], y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	            ctx.fillRect(x, y, dx, dy) //DIBUJAR COLUMNA      
-	            ctx.moveTo(x, y0) 
-	            ctx.lineTo(x, y)
-	            ctx.lineTo(x + dx, y)
-	            ctx.lineTo(x + dx, y0) //BORDES COLUMNA
-	        }
-	    } 
-	    else 
-	    {
-	        if (scale.interval > 0) {
-	            ctx.textAlign = 'right'
-	            ctx.font = 14 + 'px ' + font.family
-
-	            if (scale.width > 0)
-	            for (let i = scale.min; i <= limit; i += scale.interval) { 
-	                let dx = width/limit * i, x = x0 + dx //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.moveTo(x, chart.margin.y - 2*chart.padding.y)
-	                ctx.lineTo(x, y0)
-	            }
-	            ctx.stroke()
-	            ctx.closePath()
-
-	            ctx.beginPath()
-	            ctx.fillStyle = font.color
-	            ctx.textAlign = font.align
-	            for (let i = scale.min; i <= limit; i += scale.interval) {
-	                let dx = width/limit * i, x = x0 + dx //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.fillText(i, x, y0 + 24) //INSERTAR TEXTO
-	            }
-	            ctx.closePath()
-	        }
-
-	        ctx.fillStyle = chart.color[0]
-	        for (let i = 0, y = data.cy; i < len; i++, y -= height/len) {
-	            let dx = width/limit * chart.values[i], x = x0 //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	            ctx.fillRect(x, y, dx, dy) //DIBUJAR COLUMNA
-	            ctx.moveTo(x, y) 
-	            ctx.lineTo(x + dx, y)
-	            ctx.lineTo(x + dx, y + dy)
-	            ctx.lineTo(x, y + dy) //BORDES COLUMNA
-	        }
-	    }
-
-	    ctx.strokeStyle = chart.border.color
-	    ctx.lineWidth = chart.border.width
-	    ctx.stroke()
-	    ctx.closePath()
-	}
-	function proyectarColumnas(data, state) {
-
-	    const { chart, line, scale } = state
-	    const { ctx, height, len, max, width, x0, y0 } = data
-	    const limit = Math.max(scale.max, max)
-	   
-	    ctx.beginPath()
-	    if (chart.position == 'vertical') 
-	    {
-	        for (let i = 0, x = data.cx; i < len; i++, x += width/len) {
-	            let dy = height/limit * chart.values[i], y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	            ctx.moveTo(x0, y) 
-	            ctx.lineTo(x, y) //PROYECCION COLUMNA
-	        }
-	    }
-	    else
-	    {
-	        for (let i = 0, y = data.cy; i < len; i++, y -= height/len) {
-	            let dx = width/limit * chart.values[i], x = x0 //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	            ctx.moveTo(x + dx, y0) 
-	            ctx.lineTo(x + dx, y) //PROYECCION COLUMNA
-	        }
-	    }
-
-	    ctx.strokeStyle = line.color
-	    ctx.setLineDash([5, 1])
-	    ctx.lineWidth = line.width
-	    ctx.stroke()
-	    ctx.closePath()
-	}
-	function limitarColumnas(data, state) {
-	    const { chart, line, scale, canvas } = state
-	    const { ctx, height, len, max, width, x0, y0 } = data
-	    const limit = Math.max(scale.max, max)
-
-	    let values = line.limitVal
-	    if (values.length) 
-	    {
-	        ctx.beginPath()
-	        if (chart.position == 'vertical') 
-	        {
-	            for (let i = 0, x = data.cx; i < max; i++, x += width/len) {
-	                let dy = height/limit * values[i], y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.moveTo(x0, y) 
-	                ctx.lineTo(canvas.width - chart.margin.x + 2*chart.padding.x, y) //PROYECCION COLUMNA
-	            }
-	        }
-	        else
-	        {
-	            for (let i = 0, y = data.cy; i < max; i++, y -= height/len) {
-	                let dx = width/limit * values[i], x = x0 //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.moveTo(x + dx, y0) 
-	                ctx.lineTo(x + dx,  chart.margin.y - 2*chart.padding.y + canvas.height/110) //PROYECCION COLUMNA
-	            }
-	        }
-	        ctx.strokeStyle = line.color
-	        ctx.setLineDash([5, 1])
-	        ctx.lineWidth = line.width
-	        ctx.stroke()
-	        ctx.closePath()
-	    }
-	}
-	function insertarTextos(data, state) {
-
-	    const { chart, font } = state
-	    const { ctx, dx, dy, height, len, width, x0, y0 } = data
-	    
-	    ctx.beginPath()
-	    ctx.font = 14 + 'px ' + font.family
-	    ctx.fillStyle = font.color
-
-	    if (chart.position == 'vertical') 
-	    {
-	        ctx.textAlign = font.align    
-	        for (let i = 0, x = data.cx + dx/2; i < len; i++, x += width/len) {
-	            ctx.fillText(chart.tags.length > i ? chart.tags[i] : '', x, y0 + 19) //INSERTAR TEXTO
-	        }
-	    }
-	    else 
-	    {
-	        ctx.textAlign = 'right'
-	        for (let i = 0, y = data.cy; i < len; i++, y-= height/len) {
-	            ctx.fillText(chart.tags.length > i ? chart.tags[i] : '', x0 - 5, y + dy/2 + 5) //INSERTAR TEXTO 
-	        }
-	    }
-
-	    ctx.closePath()
-	}
-	function insertarValores(data, state) {
-	    const { chart, font, scale } = state
-	    const { ctx, dx, dy, height, len, max, width, x0, y0 } = data
-	    
-	    if (chart.dataTag != '' && chart.dataTag) {
-	        ctx.save()
-	        ctx.fillStyle = font.color
-	        
-	        let dataTags = chart.dataTag.split(',')
-	    
-	        ctx.beginPath()
-	        let fontSize = 14
-	        ctx.font = fontSize + 'px ' + font.family
-	        const limit = Math.max(scale.max, max)
-	        ctx.textAlign = font.align
-
-	        if (chart.position == 'vertical') {
-	            for (let i = 0, x = data.cx + dx/2; i < len; i++, x += width/len) {
-	                if (dataTags[i] == '0') {
-	                    let dy = height/limit * chart.values[i], y = y0 - dy//TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                    ctx.fillText(chart.values[i], x, y - 10) //INSERTAR TEXTO
-	                }
-	            }
-	        } else {
-	            for (let i = 0, y = data.cy + dy/2 + fontSize/2; i < len; i++, y -= height/len) {
-	                if (dataTags[i] == '0') {
-	                    let dx = width/limit * chart.values[i], x = x0 + dx//TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                    ctx.fillText(chart.values[i], x + 15, y) //INSERTAR TEXTO
-	                }
-	            }
-	        }
-	        
-	    } else {
-	        ctx.fillStyle = 'transparent'
-	    }
-	    
-	    ctx.closePath()
-	    ctx.restore()
-	    ctx.save()
-	}
-	function resaltarBarras(data, state) {
-
-	    const { canvas, chart, scale, extra } = state
-	    const { dx, dy, height, len, max, width, x0, y0 } = data
-	    const { ctx } = canvas
-	    const limit = Math.max(scale.max, max)
-
-	    let hightBar = extra.highlightBar
-
-	    if (chart.position == 'vertical') {
-	        ctx.beginPath()
-	        ctx.fillStyle = 'rgba(212,230,192, 0.6)'
-	        for (let i = 0, x = data.cx/1.1; i < len; i++, x += width/len) {
-	            if (!isNaN(hightBar[i]) && hightBar[i].length === 1 && eval(hightBar[i]) === 0) {
-	                let dy = height/limit * chart.values[i], y = y0 - dy //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.fillRect(x, y - height/limit, dx*1.2, dy + height/limit*1.4) //DIBUJAR COLUMNA
-	            }
-	        }
-	    } else {
-	        ctx.beginPath()
-	        ctx.fillStyle = 'rgba(212,230,192, 0.6)'
-	        for (let i = 0, y = data.cy; i < len; i++, y -= height/len) {
-	            if (!isNaN(hightBar[i]) && hightBar[i].length === 1 && eval(hightBar[i]) === 0) {
-	                let dx = width/limit * chart.values[i], x = x0 //TAMAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“O DE LA COLUMNA
-	                ctx.fillRect(x - x*0.4, y - height/len*0.1, dx + x*0.8, dy + height/len*0.2) //DIBUJAR COLUMNA
-	            }
-	        }
-	    }
-	}
-}
 
 function igualPerimetro(config) {
 	const { container, params, variables, versions, vt } = config;
@@ -1123,4 +807,251 @@ function igualPerimetro(config) {
 	  ctx.lineWidth=4;
 	  ctx.stroke();
 	}
+}
+
+function tablaPosicional(config) {
+  const { container, params, variables, versions, vt } = config;
+  var imgSrcTablaCentena = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_CDU.svg';
+  var imgSrcTablaUMil = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_UMCDU.svg';
+  var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
+  var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
+  var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+  var { _soloTabla,_umil,_centena,_decena,_unidad,_miles,_centenas,_decenas,_numero,_textoUnidades,_textoNumeroPalabras,_margenElementos } = params;
+ 
+  var vars = vt ? variables : versions;
+  try {
+    if(_umil !== 'Seleccione') {
+      _umil = regex(`$${_umil}`, vars, vt);
+      _miles = regex(`$${_miles}`, vars, vt);
+    } else {
+      _umil = '0';
+      _miles = '0000';
+    }
+    _centena = regex(`$${_centena}`, vars, vt);
+    _decena = regex(`$${_decena}`, vars, vt);
+    _unidad = regex(`$${_unidad}`, vars, vt);
+    _centenas = regex(`$${_centenas}`, vars, vt);
+    _decenas = regex(`$${_decenas}`, vars, vt);
+    _numero = regex(`$${_numero}`, vars, vt);
+  } catch(error) {
+    console.log(error);
   }
+
+  _textoUnidades = Number(_textoUnidades);
+  _textoNumeroPalabras = Number(_textoNumeroPalabras);
+  _margenElementos = Number(_margenElementos);
+  Promise.all([
+    cargaImagen(imgSrcTablaCentena), 
+    cargaImagen(imgSrcTablaUMil), 
+    cargaImagen(imgSrcFlechaAbajo),
+    cargaImagen(imgSrcSignoMas),
+    cargaFuente('LarkeNeueThinFuente', srcFuente)
+  ]).then(function(result){
+    var imgTablaCentena = result[0], 
+    imgTablaUMil = result[1], 
+    imgFlechaAbajo = result[2], 
+    imgSignoMas = result[3];
+    
+    var ctx = container.getContext('2d');
+    var tabla = _umil !== '0' ? imgTablaUMil : imgTablaCentena;
+    container.height = _soloTabla == 'no' ? 
+      tabla.height+_textoUnidades+_textoNumeroPalabras+(imgFlechaAbajo.height*2)+(_margenElementos*5) :
+      tabla.height;
+    container.width = tabla.width;
+    ctx.drawImage(tabla, 0, 0);
+
+    var diviciones = _umil !== '0' ? 4 : 3;
+    var anchoSeparaciones = container.width / diviciones;
+    var numeros = _umil !== '0' ? [_umil, _centena, _decena, _unidad] : [_centena, _decena, _unidad];
+    var numerosSuma = _umil !== '0' ? [_miles, _centenas, _decenas, _unidad] : [_centenas, _decenas, _unidad];
+    for(var i = 1; i < diviciones+1; i++){
+      var centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones/2);
+      var centroSeparacion = anchoSeparaciones * i;
+      dibujaNumeros(numeros[i-1], centroSeccion);
+      _soloTabla == 'no' && insertaFlecha(centroSeccion);
+      _soloTabla == 'no' && dibujaNumerosSuma(numerosSuma[i-1], centroSeccion);
+      i+1 !== diviciones+1 && _soloTabla == 'no' && insertaSignosMas(centroSeparacion);
+    }
+
+    dibujaFlechaCentro(centroSeccion);
+    dibujaNumeroFinal();
+
+    function dibujaNumeros(numero, centroSeccion) {
+      var altoBox = (tabla.height/1.8);
+      var altoTexto = altoBox*0.65;
+      var yTexto = tabla.height-(altoBox/2)+(altoTexto/2);
+      ctx.font = `${altoTexto}pt LarkeNeueThinFuente`;
+      var anchoTexto = ctx.measureText(numero).width;
+      var xTexto = centroSeccion-(anchoTexto/2);
+      ctx.fillStyle = '#F58220';
+      ctx.fillText(numero, xTexto, yTexto);
+    }
+
+    function insertaFlecha(centroSeccion) {
+      var x = centroSeccion - (imgFlechaAbajo.width / 2)
+      var y = tabla.height + _margenElementos;
+      ctx.drawImage(imgFlechaAbajo, x, y);
+    }
+
+    function dibujaNumerosSuma(numero, centroSeccion) {
+      ctx.font = `${_textoUnidades}pt LarkeNeueThinFuente`;
+      var anchoTexto = ctx.measureText(numero).width;
+      var xTexto = centroSeccion-(anchoTexto/2);
+      var yTexto = tabla.height+imgFlechaAbajo.height+(_margenElementos*2)+_textoUnidades;
+      ctx.fillStyle = '#F58220';
+      ctx.fillText(numero, xTexto, yTexto);
+    }
+    
+    function insertaSignosMas(centroSeparacion) {
+      var x = centroSeparacion - (imgSignoMas.width/2);
+      var y = tabla.height+(_margenElementos*2)+imgFlechaAbajo.height+(_textoUnidades/2)-(imgSignoMas.height/2);
+      ctx.drawImage(imgSignoMas, x, y);
+    }
+
+    function dibujaFlechaCentro() {
+      var x = (container.width/2) - (imgFlechaAbajo.width / 2);
+      var y = tabla.height+(_margenElementos*3)+imgFlechaAbajo.height+_textoUnidades;
+      ctx.drawImage(imgFlechaAbajo, x, y);
+    }
+
+    function dibujaNumeroFinal() {
+      ctx.font = `${_textoNumeroPalabras}pt LarkeNeueThinFuente`;
+      ctx.textAlign="center"; 
+      var x = container.width / 2;
+      var y = tabla.height+_textoUnidades+_textoNumeroPalabras+(imgFlechaAbajo.height*2)+(_margenElementos*4);
+      ctx.fillStyle = '#F58220';
+      ctx.fillText(_numero, x, y);
+    }
+  }).catch(function(error){
+    console.log(error);
+  });
+}
+
+function valorPosicional(config) {
+  const { container, params, variables, versions, vt } = config;
+  var { _tipo,_texto,_numeroPalabras,_marca,_separacionNumeros,_miles,_centenas,_decenas,_unidades,_altoTexo,_margenTopBottom } = params;
+  var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
+  var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
+  var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+
+  var vars = vt ? variables : versions;
+
+  try {
+    _miles = regex(`$${_miles}`, vars, vt);
+    _centenas = regex(`$${_centenas}`, vars, vt);
+    _decenas = regex(`$${_decenas}`, vars, vt);
+    _unidades = regex(`$${_unidades}`, vars, vt);
+    if(_tipo === 'Numero Escrito') {
+      _numeroPalabras = regex(`$${_numeroPalabras}`, vars, vt);
+    } else if(_tipo === 'Texto') {
+      _texto = regex(_texto, vars, vt);
+    }
+  } catch(error) {
+    console.log(error);
+  }
+  
+
+  var ctx = container.getContext('2d');
+  Promise.all([
+    cargaImagen(imgSrcFlechaAbajo),
+    cargaImagen(imgSrcSignoMas),
+    cargaFuente('LarkeNeueThinFuente', srcFuente)
+  ]).then(function(result) {
+    var imgFlecha = result[0],
+    imgSignoMas = result[1];
+    _altoTexo = Number(_altoTexo);
+    _margenTopBottom = Number(_margenTopBottom);
+    container.height = (_margenTopBottom * 4) + (_altoTexo * 2) + imgFlecha.height;
+    container.width = 850;
+    ctx.font = `${_altoTexo}pt LarkeNeueThinFuente`;
+    ctx.textAlign="center";
+    ctx.fillStyle = '#F58220';
+    var xTexto = container.width / 2;
+    var yTexto = _altoTexo + _margenTopBottom;
+
+    if(_tipo === 'Numero Escrito') {
+      ctx.fillText(_numeroPalabras, xTexto, yTexto);
+    } else if(_tipo === 'Texto'){
+      ctx.fillText(_texto, xTexto, yTexto);
+    }
+
+    if(_tipo === 'Numero Escrito') {
+      var xFlecha = (container.width / 2) - (imgFlecha.width / 2);
+      var yFlecha = _altoTexo + (_margenTopBottom*2);
+      ctx.drawImage(imgFlecha, xFlecha, yFlecha);
+
+      var separaciones = _miles !== '$Seleccione' ? 4 : 3;
+      var anchoSeparacion = (container.width - 60) / separaciones;
+      var numeros = _miles !== '$Seleccione' ? [_miles, _centenas, _decenas, _unidades] : [_centenas, _decenas, _unidades];
+      for(var i = 1; i < separaciones + 1; i++) {
+        var centro = (anchoSeparacion * i) + 30 - (anchoSeparacion/2);
+        var separacion = (anchoSeparacion * i) + 30;
+        escribeNumero(centro, numeros[i-1]);
+        i+1 !== separaciones+1 && dibujaSignoMas(separacion);
+      }
+    } else if(_tipo === 'Texto'){
+      var xFlecha = (container.width / 2) - (imgFlecha.width / 2);
+      var yFlecha = _altoTexo + (_margenTopBottom*2);
+      ctx.drawImage(imgFlecha, xFlecha, yFlecha);
+
+      escribeNumeroCentro();
+    } else {
+      var underline = _marca === 'U de Mil' ? 1 : 2;
+      var anchoTextoNumero = _altoTexo*4 + 3*Number(_separacionNumeros);
+      var margen = (container.width - anchoTextoNumero) / 4;
+      var numeros = [_miles, _centenas, _decenas, _unidades]; 
+      for(var i = 1; i < 5; i++) {
+        var centro = margen+_separacionNumeros*(i-1)+(_altoTexo*i)-(_altoTexo/2);
+        var y = _margenTopBottom + _altoTexo;
+        ctx.fillText(numeros[i-1], centro, y);
+        if(i === underline) {
+          var xStart = centro-(_altoTexo/2)-5;
+          var xEnd = centro+(_altoTexo/2)+5;
+          var yUnderline = y + 5;
+          dibujaUnderlineNumero(xStart, xEnd, yUnderline);
+          var xFlecha = centro - (imgFlecha.width/2);
+          var yFlecha = y + 5 + _margenTopBottom;
+          ctx.drawImage(imgFlecha, xFlecha, yFlecha);
+          ctx.textAlign="left";
+          var xTexto = centro - (_altoTexo * 0.35);
+          var yTexto = y + 5 + _margenTopBottom*2 + imgFlecha.height + _altoTexo;
+          if(underline === 2) {
+            ctx.fillText(`${_centenas} centenas = ${_centenas}00`, xTexto, yTexto);
+          } else {
+            ctx.fillText(`${_miles} unidades de mil = ${_miles}000`, xTexto, yTexto);
+          }
+        }
+      }
+    }
+
+    function dibujaUnderlineNumero(xStart, xEnd, yUnderline) {
+      ctx.strokeStyle="#FF0000";
+      ctx.beginPath();
+      ctx.moveTo(xStart, yUnderline);
+      ctx.lineTo(xEnd, yUnderline);
+      ctx.stroke();
+      ctx.closePath();
+    }
+
+    function escribeNumeroCentro() {
+      var numero = `${_miles} ${_centenas}${_decenas}${_unidades}`;
+      var x = container.width/2;
+      var y = (_altoTexo*2) + (_margenTopBottom*3) + imgFlecha.height;
+      ctx.fillText(numero, x, y);
+    }
+
+    function escribeNumero(centro, numero) {
+      var y = (_altoTexo*2) + (_margenTopBottom*3) + imgFlecha.height;
+      ctx.fillText(numero, centro, y);
+    }
+
+    function dibujaSignoMas(separacion) {
+      var x = separacion - (imgSignoMas.width / 2);
+      var y = (_altoTexo*2) + (_margenTopBottom*3) + imgFlecha.height - (_altoTexo/2) - (imgSignoMas.height/2);
+      ctx.drawImage(imgSignoMas, x, y);
+    }
+
+  }).catch(function(error) {
+    console.log(error)
+  });
+}

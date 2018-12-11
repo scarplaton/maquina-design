@@ -5,9 +5,9 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 			<link rel="stylesheet" href="css/bootstrap.min.css">
 			<link rel="stylesheet" href="css/app.css">
-			<title>PRUEBA</title>
+			<title>${name}</title>
 		</head>
-		<body id="040101010200008" data-content="{'e':[{'id':'-LSUUIKje0k3RKilC8Em','date':'29/11/2018 10:34:59','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;El número <strong>$q</strong> se escribe:</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LSUWCbacUh3-OpKiW9K','date':'29/11/2018 17:03:15','name':'Insertar Input','params':{'active':2,'answer':'$p','answer2':'$t','answer3':'$s','answer4':'','error0':'2','error2':'2','error3':'2','error4':'0','feed0':'Lee atentamente el número, identifica sus cifras y las posiciones correspondientes.','feed1':'¡Muy bien!','feed2':'Cuidado, el número $q tiene  4  cifras.','feed3':'Cuidado, el número $q tiene  4  cifras.','feed4':'','inputSize':1,'inputType':'input','maxLength':'4','tipoInput':'numero','value1':'1','value2':'2','value3':'3','value4':'4'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LSUuLVKF6P3gTqraxzB','date':'29/11/2018 12:33:10','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si lees con atención, notarás que este número tiene 4 cifras. Debes determinar la posición de cada una de las cifras, escribir el valor posicional, sumar cada uno de estos valores y así obtendrás $w $x$y$z, que es el número correspondiente.&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':'vt','vars':[{'var':'w','val':'3'},{'var':'x','val':'6'},{'var':'y','val':'2'},{'var':'z','val':'9'},{'var':'p','val':'3629'},{'var':'q','val':'tres mil seiscientos veintinueve'},{'var':'t','val':'362'},{'var':'s','val':'629'},{'var':'a','val':'3000'},{'var':'b','val':'300'},{'var':'c','val':'20'}]}">
+		<body id="${code}" data-content="{'e':${e}, 'r':${r}, 'g':${g}}" data-version="${stringify(m)}">
 			<header class="encabezado">
 					<div class="container-fluid">
 						<div class="row">
@@ -92,7 +92,6 @@
 													<img  />
 												</div>
 												<div class="col-10" id="glosa">
-
 												</div>
 											</div>
 										</div>
