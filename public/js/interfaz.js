@@ -326,6 +326,7 @@ function continuarEjercicio() {
 	$('section.contenido').find('input').prop('disabled', false).val('');
 	$('input:checked').prop('checked', false);
 	$('.radio-div__selected').removeClass('radio-div__selected');
+	$('.opcionradio_selected').removeClass('opcionradio_selected');
 }
 //handle modals
 function openModalFeedback(feedback, img) {

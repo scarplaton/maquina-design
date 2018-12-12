@@ -245,7 +245,7 @@ function insertarInput(config) {
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
-				container.className = 'row align-items-center justify-content-center';
+				container.className = 'row justify-content-center';
 				elements = shuffle(elements);
 				elements.forEach((item) => {
 					container.appendChild(item);
@@ -273,7 +273,7 @@ function insertarInput(config) {
 					elements.push(lmnt);
 				});
 				container.innerHTML = '';
-				container.className = 'row align-items-center justify-content-center';
+				container.className = 'row justify-content-center';
 				elements = shuffle(elements);
 				elements.forEach((item, i) => {
 					container.appendChild(item);

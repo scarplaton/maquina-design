@@ -283,6 +283,7 @@ p {
   font-size: 20px;
   padding: 8px 12px;
   cursor: pointer;
+  height: 100%;
 }
 
 .opcionradio:hover {
