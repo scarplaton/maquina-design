@@ -107,7 +107,7 @@ function validaInputTexto() {
 		inputsDeTexto.each(function(index){
 			var content = $(this).attr('data-content');
 			if(content) {
-				content = JSON.parse(content);
+				content = JSON.parse(content.replace(/\'/g, '\"'));
 				if(content.type) {
 					switch(content.type){
 						case 'numero':
@@ -278,6 +278,7 @@ function muestraFeedback(esCorrecta, feedback) {
 			feedbackIncorrecta(src);
 		}
 	}
+	MathJax.Hub.Queue(["Typeset",MathJax.Hub]);//dibuja las ecuaciones que fueron inyectadas despues de que cargo la pagina
 }
 
 function feedbackCorrecta(src) {

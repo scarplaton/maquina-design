@@ -68,23 +68,19 @@ function cargaFuente(nombre, src) {
 
 //funciones para poner texto en texto
 function fraccion(entero, numerador, denominador) {
-	return `<table style="margin:0 4px;display: inline-block;vertical-align: middle;">
-	<tbody>
-		<tr>
-			${entero > 0 ? `<td rowspan="2">
-				<span style="font-size:25px;color:black;">${entero}</span>
-			</td>` : ''}
-			<td style="border-bottom: 2px solid black;">
-				<span style="font-size:18px;color:black;">&nbsp;${numerador}&nbsp;</span>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<span style="font-size:18px;color:black;">&nbsp;${denominador}&nbsp;</span>
-			</td>
-		</tr>
-	</tbody>
-</table>`;
+	return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" mathcolor="teal" mathbackground="yellow" mathsize="big">
+	${entero > 0 ? `<mn>${Number(entero)}</mn>` : ''}
+	<mrow>
+		<mfrac>
+				<mrow>
+					 <mn>${Number(numerador)}</mn>
+				</mrow>
+				<mrow> 
+					 <mn>${Number(denominador)}</mn> 
+				</mrow>
+		 </mfrac>
+	</mrow>
+</math>`;
 }
 
 const FUNCIONES = [	
