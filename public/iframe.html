@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Iframe</title>
+  <style>
+  .contenedor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ejercicio {
+    border: none;
+  }
+
+  @media only screen and (min-width: 1367px) {
+    .ejercicio {
+      width: 1280px;
+      height: 630px;
+    }
+  }
+
+  @media only screen and (min-width: 1280px) and (max-width: 1366px) {
+    .ejercicio {
+      width: 1200px;
+      height: 95vh;
+    }
+  }
+
+  @media only screen and (max-width: 1279px) {
+    .ejercicio {
+      width: 95vw;
+      height: 95vh;
+    }
+  }
+
+  </style>
+</head>
+<body>
+<div class="contenedor">
+  <iframe id="iframe" class="ejercicio"></iframe>
+</div>
+<div>
+  <select id="selectEjercicios" onchange="cambiaEjercicio()">
+    <option>Seleccione</option>
+  </select>
+</div>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+  localStorage.setItem('tmpProgreso', JSON.stringify(
+    [{
+      "idasigejermat":313532,
+      "correcto":false,
+      "NUMEROINTENTOS":1
+    },{
+      "idasigejermat":313533,
+      "correcto":true,
+      "NUMEROINTENTOS":2
+    },{
+      "idasigejermat":313533,
+      "correcto":true,
+      "NUMEROINTENTOS":2
+    }]
+  ));
+  localStorage.setItem('tmpTitulo', 'Expresan números en palabras y cifras.');
+  localStorage.setItem('tmpTotal', '10');
+  var select = document.getElementById('selectEjercicios');
+  axios.get('/archivos').then(function (response) {
+    response.data.filter(function(x){
+      return x.length > 15;
+    }).forEach(element => {
+      var option = document.createElement('option');
+      option.value = element;
+      option.innerHTML = element;
+      select.appendChild(option);
+    });
+  }).catch(function (error) {
+    // handle error
+    console.log(error);
+  });
+  function cambiaEjercicio() {
+    document.querySelector('iframe').src = select.value;
+  }
+</script>
+</body>
+</html>

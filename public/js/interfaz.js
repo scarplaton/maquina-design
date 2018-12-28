@@ -10,6 +10,7 @@ ejeF = idEjercicio.substring(2, 4),
 errFre = '', 
 feed = '', 
 check = false;
+var _TIPO_INPUT_ = '';
 
 handleHeader();
 
@@ -29,12 +30,10 @@ var tmpTotal = localStorage.getItem('tmpTotal') ?
 $('.tituloEncabezado').text(tmpTitulo); //pone titulo e mision
 
 $(document).ready(function(){
-  habilitaBotonResponder();
 	barraDeProgreso(tmpTotal, tmpProgreso.length+1);
 	$( window ).resize(function() {
 		barraDeProgreso(tmpTotal, tmpProgreso.length+1);
 	});
-	validaInputTexto();
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -45,12 +44,12 @@ $(document).ready(function(){
 
 function validaRespuesta() { //Validar respuesta
 	let respuesta, respuestaObj;
-	if(document.querySelector('input[name="answer"]:checked')) {
+	if(_TIPO_INPUT_ === 'radio') {
 		respuesta = document.querySelector('input[name="answer"]:checked');
 		respuestaObj = JSON.parse(respuesta.getAttribute('data-content'));
 		feed = respuestaObj ? respuestaObj.feedback : "<p>Debes seleccionar una respuesta</p>";
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
-	} else if ($('input[type=text]:not([disabled])')) {
+	} else if (_TIPO_INPUT_ === 'texto') {
 		if($('input[type=text]:not([disabled])').length === 1) {
 			var input = document.querySelector('.contenido input');
 			var opc = JSON.parse(input.getAttribute('data-content'));
@@ -98,113 +97,6 @@ function answer() {
 		}
 		respGeneral++;
 		enviar();
-	}
-}
-
-function validaInputTexto() {
-	var inputsDeTexto = $('.contenido :input[type=text]');
-	if(inputsDeTexto.length > 0) {
-		inputsDeTexto.each(function(index){
-			var content = $(this).attr('data-content');
-			if(content) {
-				content = JSON.parse(content.replace(/\'/g, '\"'));
-				if(content.type) {
-					switch(content.type){
-						case 'numero':
-							this.addEventListener("keypress", function(evt){
-								var theEvent = evt || window.event;
-								// Handle paste
-								if (theEvent.type === 'paste') {
-										key = event.clipboardData.getData('text/plain');
-								} else {
-								// Handle key press
-										var key = theEvent.keyCode || theEvent.which;
-										key = String.fromCharCode(key);
-								}
-								var regex = /[0-9]|\./;
-								if( !regex.test(key) ) {
-									theEvent.returnValue = false;
-									if(theEvent.preventDefault) theEvent.preventDefault();
-								}
-							});
-							break;
-						case 'texto':
-							this.addEventListener("keypress", function(evt){
-								var theEvent = evt || window.event;
-								// Handle paste
-								if (theEvent.type === 'paste') {
-										key = event.clipboardData.getData('text/plain');
-								} else {
-								// Handle key press
-										var key = theEvent.keyCode || theEvent.which;
-										key = String.fromCharCode(key);
-								}
-								var regex = /[a-zA-Z]|\./;
-								if( !regex.test(key) ) {
-									theEvent.returnValue = false;
-									if(theEvent.preventDefault) theEvent.preventDefault();
-								}
-							});
-							break;
-						default:
-							break;
-					}
-				}
-			}
-		});
-	}
-}
-
-function habilitaBotonResponder() {
-	var tipo = $('input:not([type=hidden],[disabled])').first().attr('type');
-	if(tipo === 'text') {
-		function checkTexts() {
-			var todasRespondidas = true;
-			$('input[type=text]:not([disabled])').each(function(){
-				if($(this).val() == ''){
-					todasRespondidas = false;
-					return false;
-				}
-			});
-			if(!check || respGeneral >= 2) {
-				btnRespuesta.disabled = !todasRespondidas;
-			}
-		}
-		$('input[type=text]:not([disabled])').keyup(checkTexts).focusout(checkTexts);
-	}
-	if(tipo === 'radio') {
-		if($('.radio-div').length > 0) {
-			$(document).on('click', '.radio-div', function(){
-				var divSeleccionada = document.querySelector('div.radio-div.radio-div__selected');
-				if(divSeleccionada) {
-					divSeleccionada.classList.remove('radio-div__selected');
-					$(divSeleccionada).find(':radio').removeAttr("checked");
-				}
-				$(this).addClass('radio-div__selected');
-				$(this).find(':radio').attr("checked","checked");
-				if(!check || respGeneral >= 2) {
-					btnRespuesta.disabled = false;
-				}
-			});
-		} else if ($('.opcionradio').length > 0) {
-			$(document).on('click', '.opcionradio', function(){
-				console.log('me llamaron')
-				var divSeleccionada = document.querySelector('.opcionradio.opcionradio_selected');
-				if(divSeleccionada) {
-					divSeleccionada.classList.remove('opcionradio_selected');
-					$(divSeleccionada).find(':radio').removeAttr("checked");
-				}
-				$(this).addClass('opcionradio_selected');
-				$(this).find(':radio').attr("checked","checked");
-				if(!check || respGeneral >= 2) {
-					btnRespuesta.disabled = false;
-				}
-			});
-		} else {
-			$('input[type=radio][name=answer]').change(function(){
-				btnRespuesta.disabled = false;
-			});
-		}
 	}
 }
 
@@ -324,10 +216,10 @@ function continuarEjercicio() {
 	btnRespuesta.setAttribute("onClick", "answer();");
 	btnRespuesta.disabled = true;
 	//limpia inputs
-	$('section.contenido').find('input').prop('disabled', false).val('');
-	$('input:checked').prop('checked', false);
+	$('section.contenido').find('input').prop('disabled', false);
+	$('section.contenido').find('input[type=text]').val('');
+	$('input:checked')[0].checked = false;
 	$('.radio-div__selected').removeClass('radio-div__selected');
-	$('.opcionradio_selected').removeClass('opcionradio_selected');
 }
 //handle modals
 function openModalFeedback(feedback, img) {
@@ -358,4 +250,97 @@ function openModalGlosa() {
 
 function closeModalGlosa() {
 	$('#modalGlosa').modal('hide');
+}
+
+//FUNCIONES DE LOS INPUTS DE RESPUESTA
+function cambiaRadios(e) {
+	console.log(e.target.value);
+	_TIPO_INPUT_ = 'radio';
+	btnRespuesta.disabled = false;
+}
+function cambiaInputTexto(e) {
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regex = /[a-zA-Z]|\.|ñ|\s/;
+	if( !regex.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
+	} else {
+		_TIPO_INPUT_ = 'input';
+		checkTexts();
+	}
+}
+function cambiaInputNumerico(e) {
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regex = /[0-9]|\./;
+	if( !regex.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
+	} else {
+		_TIPO_INPUT_ = 'input';
+		checkTexts();
+	} 
+}
+
+function formatearNumero(e) {
+	var arrayReverse = String(e.target.value).replace(/\s/g,'').split("").reverse();
+	for(var i=0,count=0,valor=''; i < arrayReverse.length; i++) {
+		 count++;
+		 if(count === 3 && arrayReverse[i+1]) {
+				valor=' '+arrayReverse[i]+valor;
+				count=0;
+		 } else {
+				valor=arrayReverse[i]+valor;
+		 }
+	} 
+	e.target.value = valor;
+}
+
+function cambiaInputAlfanumerico(e) {
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regexNumero = /[0-9]|\./;
+	var regexTexto = /[a-zA-Z]|\.|ñ|\s/;
+	if( !regexNumero.test(key) && !regexTexto.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
+	} else {
+		_TIPO_INPUT_ = 'input';
+		checkTexts();
+	}
+}
+
+function checkTexts() {
+	var todasRespondidas = true;
+	$('input[type=text]:not([disabled])').each(function(){
+		if($(this).val() == ''){
+			todasRespondidas = false;
+			return false;
+		}
+	});
+	if(!check || respGeneral >= 2) {
+		btnRespuesta.disabled = !todasRespondidas;
+	}
 }
