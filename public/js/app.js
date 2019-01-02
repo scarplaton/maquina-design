@@ -183,13 +183,10 @@ function insertarTexto(config) {
 }
 function insertarInput(config) {
 	const { container, params, variables, versions, vt } = config,
-	{ tipoInput, maxLength, inputSize, error0, error2, error3, error4,
-		feed0, feed1, feed2, feed3, feed4, 
+	{ tipoInput, maxLength, inputSize, error0, error2, error3, error4, defaultError,
+		feed0, feed1, feed2, feed3, feed4, defaultFeed,
 		value1, value2, value3, value4, inputType,colmd,colsm,col } = params
 	var vars = vt ? variables : versions;
-	var values = inputSize === 3 ? [value1, value2, value3] : [value1, value2, value3, value4];
-	var feedback = inputSize === 3 ? [feed1,feed2, feed3] : [feed1, feed2, feed3, feed4];
-	var errFrec = inputSize === 3 ? [undefined, error2, error3] : [undefined, error2, error3, error4];
 	let r = '', n = '', valoresReemplazados = '';
 	var feedGenerico = regex(feed0, vars, vt);
 	var answers = [{
@@ -220,18 +217,20 @@ function insertarInput(config) {
 			case 'input':
 				var dataContent = {
 					tipoInput,
-					answers
+					answers,
+					feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+					errFrecDefecto: error0 === '' ? defaultError : error0
 				};
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 						break;
 				}
 				break;
@@ -244,7 +243,7 @@ function insertarInput(config) {
 					lmnt.className = `col-${col} col-sm-${colsm} col-md-${colmd}`;
 					lmnt.innerHTML = `<div class="opcionradio">
 	<span></span>
-	<input type="radio" id="radio-${i}" name="answer" onchange="cambiaRadios(event)" value="${m.respuesta}" data-content='${JSON.stringify(m)}'>
+	<input type="radio" id="radio-${i}" name="answer" value="${m.respuesta}" onchange="cambiaRadios(event)" data-content='${JSON.stringify(m)}'>
 	<label for="radio-${i}">${m.respuesta}</label>
 </div>`;
 					lmnt.style.marginBottom = '5px';

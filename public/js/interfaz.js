@@ -1,4 +1,3 @@
-//regex para funciones dentro de un texto (?=\{).*?(\})
 var respGeneral = 0, 
 rspMalas = 0, 
 rspSinFeedBack = 0, 
@@ -11,8 +10,6 @@ errFre = '',
 feed = '', 
 check = false;
 var _TIPO_INPUT_ = '';
-
-handleHeader();
 
 //boton responder
 var btnRespuesta =  document.getElementById('btnResponder');
@@ -49,33 +46,30 @@ function validaRespuesta() { //Validar respuesta
 		respuestaObj = JSON.parse(respuesta.getAttribute('data-content'));
 		feed = respuestaObj ? respuestaObj.feedback : "<p>Debes seleccionar una respuesta</p>";
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
-	} else if (_TIPO_INPUT_ === 'texto') {
-		if($('input[type=text]:not([disabled])').length === 1) {
-			var input = document.querySelector('.contenido input');
-			var opc = JSON.parse(input.getAttribute('data-content'));
-			for(var item of opc.feeds){
-				var resp = regex(item.respuesta, versionBody.vars, false);
-				if(resp !== "") {
-					if(input.value === resp || resp === 'default') {
-						feed = item.feedback;
-						errFre = item.errFrec;
-						break;
+	} else if (_TIPO_INPUT_ === 'input') {
+		var inputs = document.querySelectorAll(".contenido input[name='answer']");
+		if(inputs.length === 1) {
+			var content = JSON.parse(inputs[0].getAttribute('data-content'));
+			var match = false;
+			switch(content.tipoInput){
+				case 'numero':
+					var resp = inputs[0].value.replace(/\s/g, '');
+					for(var answer of content.answers) {
+						if(resp === answer.respuesta) {
+							feed = answer.feedback;
+							errFre = answer.errFrec;
+							match = true;
+							break;
+						}
 					}
-				}
+					break;
+			}
+			if(!match) {
+				feed = content.feedbackDefecto;
+				errFre = content.errFrecDefecto;
 			}
 		} else {
-			errFre = false;
-			$('input[type=text]:not([disabled])').each(function(){
-				var opc = JSON.parse(this.getAttribute('data-content').replace(/\'/g, '\"'));
-				if(this.value !== opc.esCorrecta) {
-					todasCorrectas = false;
-					feed = opc.feedbackBad;
-					errFre = true;
-					return false;
-				} else {
-					feed = opc.feedbackGood;
-				}
-			});
+
 		}
 	}
 }
@@ -110,32 +104,6 @@ function barraDeProgreso(cantidadEjercicios, ejercicioActual) {
 	if(cantidadEjercicios===ejercicioActual) {
 		circulo.setAttribute('fill', '#2ab04a');
 	}
-}
-
-function handleHeader() {
-	function controlaEncabezado(x) {
-    if (x.matches) {
-			setTimeout(function(){
-				$('header.encabezado').css({
-					'top':'-50px'
-				});
-			}, 3000);
-			$('header').hover(function(){
-				$('header.encabezado').css({
-					'top':'0'
-				});
-			}, function(){
-				$('header.encabezado').css({
-					'top':'-50px'
-				});
-			});
-    } else {
-			$('header.encabezado').addClass('d-none');
-    }
-	}
-	var x = window.matchMedia("(max-width: 1365px)");
-	controlaEncabezado(x);
-	x.addListener(controlaEncabezado);
 }
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {

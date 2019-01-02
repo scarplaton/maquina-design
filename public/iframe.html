@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Iframe</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <style>
   .contenedor {
     display: flex;
@@ -41,10 +43,15 @@
 <div class="contenedor">
   <iframe id="iframe" class="ejercicio"></iframe>
 </div>
-<div>
-  <select id="selectEjercicios" onchange="cambiaEjercicio()">
-    <option>Seleccione</option>
-  </select>
+<div class="container">
+  <div class="row">
+      <div class="input-group col-12">
+        <select id="selectEjercicios" onchange="cambiaEjercicio()" class="custom-select">
+          <option>Seleccione</option>
+        </select>
+      </div>
+  </div>
+  
 </div>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>

@@ -35,21 +35,6 @@ body {
 /*
   inicio header
 */
-.encabezado {
-  background-image: linear-gradient(to right, #1F8F99 , #00b3a6);
-  height: 50px;
-  box-shadow: 0 2px 2px rgba(0,0,0,0.23);
-  border-radius: 0 0 15px 0;
-  -moz-border-radius: 0 0 15px 0;
-  -webkit-border-radius: 0 0 15px 0;
-  padding-top: 10px;
-  position: fixed;
-  top: 0;
-  transition: top 0.3s;
-  width: 100%;
-  z-index: 1;
-}
-
 .barraprogreso {
   height: 50px;
   padding-top: 10px;
@@ -58,38 +43,6 @@ body {
 
 .encabezadoBarra {
   background-color: #FFF;
-}
-
-.tituloEncabezado {
-  font-family: 'varela';
-  color: #FFF;
-  font-size: 23px;
-}
-
-@media only screen and (max-width: 576px) {
-  .tituloEncabezado {
-    font-size: 17px;
-  }
-}
-
-@media only screen and (min-width: 577) and (max-width: 768px) {
-  .tituloEncabezado {
-    font-size: 20px;
-  }
-}
-
-@media only screen and (min-width: 769px) {
-  .tituloEncabezado {
-    font-size: 23px;
-  }
-}
-
-.btnSalirMision {
-  color: #dddddd;
-}
-
-.btnSalirMision:hover {
-  color: #FFF;
 }
 
 /*
