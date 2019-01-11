@@ -1,5 +1,1 @@
 node_modules/
-*.html
-
-!base.html
-!iframe.html

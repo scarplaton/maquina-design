@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/app.css">
+		<title>00013_vt</title>
+	</head>
+	<body id="040101010200013" data-content="{'e':[{'id':'-LSR9P3DcoA3Oc8zrn6T','date':'4/1/2019 10:41:01','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;El número  $w unidades de mil + $x centenas + $y decenas + $z unidades escrito en palabras es:&nbsp;</p>\n','date':'4/1/2019 10:41:01','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LVEwVl-fEWLVQ6qKxnL','date':'4/1/2019 10:41:53','name':'Insertar Input','params':{'active':2,'col':'12','colmd':'4','colsm':'6','defaultError':'','defaultFeed':'','error0':'','error2':'2','error3':'3','error4':'','feed0':'','feed1':'¡Muy bien!','feed2':'Cuidado, este es un número de 4 cifras y $w ocupa la posición de las unidades de mil.','feed3':'Cuidado, invertiste las posiciones. Por ejemplo $z corresponde a la cifra de las unidades.','feed4':'','inputSize':'3','inputType':'radio','maxLength':'','tipoInput':'texto','value1':'$s','value2':'$t','value3':'$u','value4':''},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LSyYZVguxtYN8ZB2EFO','date':'4/1/2019 10:42:33','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;La descomposición del número nos entrega de manera inmediata la posición de cada uno de sus dígitos.&nbsp;&nbsp;</p>\n','date':'4/1/2019 10:42:35','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}},{'id':'-LVO5ygoFEe3X9ZL2OX-','date':'9/1/2019 17:40:45','name':'Valor Posicional','params':{'_altoTexo':'20','_centenas':'Seleccione','_decenas':'Seleccione','_marca':'U de Mil','_margenTopBottom':'20','_miles':'Seleccione','_numeroPalabras':'s','_separacionNumeros':'0','_texto':'$w unidades de mil + $x centenas + $y decenas + $z unidades','_tipo':'Texto a Palabras','_unidades':'s','active':0},'position':1,'tag':'numeracion','width':{'md':12,'sm':12,'xs':12}},{'id':'-LSyYkTupWm4VTCDohDE','date':'4/1/2019 10:42:48','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;Teniendo esta información, puedes escribir el número $s<strong> .</strong>&nbsp;</p>\n','date':'4/1/2019 10:42:48','padding':'10px 10px 0px'},'position':2,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':'vt','vars':[{'var':'w','val':'7'},{'var':'x','val':'0'},{'var':'y','val':'2'},{'var':'z','val':'5'},{'var':'p','val':'7025'},{'var':'s','val':'siete mil veinticinco'},{'var':'q','val':'702'},{'var':'t','val':'setecientos dos'},{'var':'r','val':'5207'},{'var':'u','val':'cinco mil doscientos siete'}]}">
+		<header class="barraprogreso">
+				<div class="container-fluid">
+					<div class="row">
+							<div class="col-12">
+								<svg id="progressbar" style="width:100%;height:20;" xmlns="http://www.w3.org/2000/svg">
+										<defs>
+											<linearGradient id="grad1">
+													<stop offset="0" stop-color="#5cba46" />
+													<stop offset="1" stop-color="#2ab04a" />
+											</linearGradient>
+										</defs>
+										<line id="bar" x1="0" y1="10" x2="100%" y2="10" stroke="#ddd" stroke-width="2" stroke-linecap="round" />
+										<rect id="progress" x="0" y="6" height="8" rx="2" ry="2" fill="url(#grad1)" />
+										<circle id="progressfinal" cx="0" cy="10" r="5" stroke="#ddd" fill="#ddd" />
+								</svg>
+							</div>
+					</div>
+				</div>
+		</header>
+		<section class="contenido">
+				<div class="container-fluid">
+					<div id="enunciado" class="row"></div>
+					<div id="respuesta" class="row justify-content-center"></div>
+				</div>
+		</section>
+		<footer class="fixed-bottom pie">
+				<div class="container-fluid">
+					<div class="row align-items-center">
+							<div class="col-5 col-sm-3">
+								<button type="button" id="btnConsulta" class="btn btn-block" onclick="pressConsulta()">Consulta</button>
+								<img id="imgfeedback" class="img-fluid d-none" alt="IMG" />
+							</div>
+							<div class="col-2 col-sm-6">
+								<span></span>
+							</div>
+							<div class="col-5 col-sm-3">
+								<button type="button" id="btnResponder" class="btn btn-block float-right" disabled>Responder</button> 
+							</div>
+					</div>
+				</div>
+		</footer>
+		<div class="modal fade" id="modalFeedback" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" role="document">
+					<div class="modal-content">
+							<div id="feedback" class="modal-body">
+								<div class="container-fluid">
+										<div class="row no-gutters align-items-center">
+											<div class="col-4">
+													<img class="img-fluid" src="" alt="IMG" />
+											</div>
+											<div class="col-8">
+													<span></span>
+											</div>
+										</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button id="btnCloseModal" type="button" class="btn btn-primary">Aceptar</button>
+							</div>
+					</div>
+				</div>
+		</div>
+		<div class="modal fade" id="modalGlosa" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered dimensionGlosa" role="document">
+					<div id="contenidoGlosa" class="modal-content glosaEjercicio">
+							<div class="modal-body modalBody">
+									<div class="container-fluid">
+										<div class="row no-gutters">
+											<div class="offset-2 col-10 tituloGlosa">
+												<span>Solución</span>
+											</div>
+											<div class="col-2">
+												<img  alt=""/>
+											</div>
+											<div class="col-10" id="glosa">
+											</div>
+										</div>
+									</div>
+							</div>
+							<div class="modal-footer">
+								<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="offset-10 col-2">
+											<button id="btnCloseGlosa" type="button" class="btn btn-primary" onclick="cerrarFeedGlosa()">Aceptar</button>
+										</div>
+									</div>
+								</div>
+							</div>
+					</div>
+				</div>
+		</div>
+		<input id="hiddenIntento" type="hidden" value="hiddenIntento"/>
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+		<script src="js/app.js"></script>
+		<script src="js/interfaz.js"></script>
+		<script src="js/jsEjercicios.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=MML_HTMLorMML-full" async></script>
+	</body>
+</html>

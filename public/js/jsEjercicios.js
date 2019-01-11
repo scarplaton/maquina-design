@@ -22,15 +22,15 @@ function enviar(){
 	var date = new Date();
 	
 	/*---captura valores de los elementos-----*/
-		var values = "";		
-		$('input:not([type=hidden],[disabled])').each(function() {
-			if($(this).attr("type") == "radio"){
-				values = "Valor radio= "+ $("input[name=answer]:checked").val();
-				return;
-			}else{
-				values += " IDInput= "+this.id +" valor= "+$(this).val();		
+		var values = "";
+		if(_TIPO_INPUT_ === 'radio') {
+			values = "Valor radio= "+ $("input[name=answer]:checked").val();
+		} else {
+			var inputs = document.querySelectorAll(".contenido input[name='answer']");
+			for(var input of inputs) {
+				values += 'Valor input= '+input.value+' ';		
 			}
-		});	
+		}
 	/*---------------------------------------*/
 	var envioIntento = JSON.stringify({ 
 		"idejercicioversion":vercionEjercicio,
@@ -43,7 +43,7 @@ function enviar(){
 												numeroIntento < 2 ? feed.replace(/(\\n)|(\\t)/g, '').trim() :
 																						null, 
 		"codigoErrorComun" : errFre ? errFre : 0, 
-		"respuesta": ""+values+"",
+		"respuesta": values,
 		"glosa": numeroIntento === 2 ? 
 				$('#glosa').text()
 				.replace(/(\s\s)/g, '')

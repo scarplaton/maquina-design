@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+   </head>
+   <body>
+      <div class="container">
+         <div class="row">
+            <div class="col-12">
+               <canvas id="container"></canvas>
+            </div>
+         </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> 
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> 
+      <script>
+
+         var imgSrcTablaCentena = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_CDU.svg';
+         var imgSrcTablaUMil = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_UMCDU.svg';
+         var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
+         var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
+         var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+         var srcImgBloqueMil = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/umil.svg';
+         var srcImgBloqueCien = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/centena.svg';
+         var srcImgBloqueDiez = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg';
+         var srcImgBloqueUno = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg';
+         
+         var _width='850', 
+         _tipoTabla='miles', //puede ser 'centenas' o 'miles'
+         _pisosTabla='1', //pueden ser 'uno', 'dos', 'tres'
+         _separacionElementos='20',
+
+         _tipoPisoUno='numerico', 
+         _repeticionPictoricaPisoUno='',
+         _umilPisoUno='1',
+         _centenaPisoUno='2',
+         _decenaPisoUno='3',
+         _unidadPisoUno='4',
+
+         _tipoPisoDos='numerico',
+         _repeticionPictoricaPisoDos='',
+         _umilPisoDos='1',
+         _centenaPisoDos='2',
+         _decenaPisoDos='3',
+         _unidadPisoDos='4',
+
+         _umilVP='1',
+         _centenaVP='2',
+         _decenaVP='3',
+         _unidadVP='4',
+         
+         
+         _dibujaValorPosicional='si'
+         _altoTextoValorPosicional='50',
+         _dibujaTextoResultado='si',
+         _altoTextoResultado='45',
+         _resultado='mil doscientos treinta y cuatro';
+
+         let datosEjercicio = {};
+         datosEjercicio.tabla = {};
+         datosEjercicio.tabla.configuracion =  {
+            tipoTabla: _tipoTabla,
+            pisosTabla: Number(_pisosTabla)
+         }
+         
+         datosEjercicio.tabla.numerosPisoUno = {
+            tipo: _tipoPisoUno, //tipo piso uno
+            tipoRepeticion: _repeticionPictoricaPisoUno,
+            umil: Number(_umilPisoUno),
+            centena: Number(_centenaPisoUno),
+            decena: Number(_decenaPisoUno),
+            unidad: Number(_unidadPisoUno)
+         }
+         datosEjercicio.valorPosicional = {};
+         datosEjercicio.valorPosicional.mostrar = _dibujaValorPosicional;
+         datosEjercicio.valorPosicional.altoTexto = Number(_altoTextoValorPosicional) //alto del texto de los valores posicionales
+         datosEjercicio.valorPosicional.numeros = {//numeros que se muestran debajo de la tabla en forma de suma
+            umil: _umilVP,
+            centena: _centenaVP,
+            decena: _decenaVP,
+            unidad: _unidadVP
+         }
+
+         datosEjercicio.resultado = {
+            mostrar: _dibujaTextoResultado,
+            numero: _resultado, //numero del valor final centrado (puede ser texto o  numero)
+            altoTexto: Number(_altoTextoResultado) //alto del texto del resultado
+         }
+
+         _separacionElementos = Number(_separacionElementos);
+
+         var container = document.getElementById('container');
+         let recursos = cargaRecursos();
+         var ctx;
+         Promise.all(recursos).then(function([imgTabla, imgFlechaAbajo, imgSignoMas, imgUnidades, imgDecenas, imgCentenas, imgMiles]){
+            var { altoCanvas, altoImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
+            container.width = Number(_width);
+            container.height = altoCanvas;
+            ctx = container.getContext('2d');
+            ctx.drawImage(imgTabla, 0, 0, _width, altoImagen); //dibuja la tabla de repeticion
+
+            const diviciones = datosEjercicio.tabla.configuracion.tipoTabla === 'centenas' ? 3 : 4;
+            const anchoSeparaciones = _width / diviciones;
+
+            dibujaContenidoTabla(diviciones, anchoSeparaciones, altoImagen);
+            yStart = altoImagen + _separacionElementos;
+
+            if(datosEjercicio.valorPosicional.mostrar === 'si') {
+               yStart = muestraValoresPosicionales(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas);
+            }
+
+            if(datosEjercicio.resultado.mostrar === 'si') {
+               muestraTextoResultado(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo);
+            }
+
+         }).catch(function(error){
+            console.log(error);
+         });
+
+         function dibujaContenidoTabla(diviciones, anchoSeparaciones, altoImagen) {
+            var { umil, centena, decena, unidad } = datosEjercicio.tabla.numerosPisoUno;
+            var numerosPisoUno = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
+            /*
+            for(var i = 0; i < numerosPisoUno.length; i++) {
+               
+            }
+
+            function dibujaPisoNumeros(numero) {
+               var altoBox = (altoImagen/1.8);
+               var altoTexto = altoBox*0.65;
+               var yTexto = altoImagen-(altoBox/2)+(altoTexto/2);
+               ctx.font = `${altoTexto}pt LarkeNeueThinFuente`;
+               ctx.fillStyle = '#F58220';
+               var anchoTexto = ctx.measureText(numero).width;
+               var xTexto = centroSeccion-(anchoTexto/2);
+               ctx.fillText(numero, xTexto, yTexto);
+            }
+            */
+         }
+
+         function muestraValoresPosicionales(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
+            ctx.font = `${datosEjercicio.valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
+            ctx.fillStyle = '#F58220';
+            var { umil, centena, decena, unidad } = datosEjercicio.valorPosicional.numeros;
+            var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
+
+            for(var i = 1, centroSeccion, centroSeparacion, yTexto; i < diviciones+1; i++){
+               centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones/2);
+               centroSeparacion = anchoSeparaciones * i;
+               //flecha
+               var xFlecha = centroSeccion-(imgFlechaAbajo.width/2);
+               ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
+               //texto 
+               var anchoTexto = ctx.measureText(numerosValorPosicional[i-1]).width;
+               var xTexto = centroSeccion-(anchoTexto/2);
+               console.log(yStart,imgFlechaAbajo.height,_separacionElementos,datosEjercicio.valorPosicional.altoTexto)
+               yTexto = yStart+imgFlechaAbajo.height+_separacionElementos+datosEjercicio.valorPosicional.altoTexto;
+               ctx.fillText(numerosValorPosicional[i-1], xTexto, yTexto);
+               //singo mas
+               if(i+1 !== diviciones+1) {
+                  var xMas = centroSeparacion - (imgSignoMas.width /2);
+                  var yMas = yStart+imgFlechaAbajo.height+_separacionElementos+(datosEjercicio.valorPosicional.altoTexto/2)-(imgSignoMas.height/2)
+                  ctx.drawImage(imgSignoMas, xMas, yMas);
+               }
+            }
+            return yTexto + _separacionElementos;
+         }
+
+         function muestraTextoResultado(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo) {
+            ctx.font = `${datosEjercicio.resultado.altoTexto}pt LarkeNeueThinFuente`;
+            ctx.fillStyle = '#F58220';
+            ctx.textAlign = 'center';
+            //imagen flecha
+            var xImage = _width / 2 - imgFlechaAbajo.width /2;
+            ctx.drawImage(imgFlechaAbajo, xImage, yStart);
+
+            var xTexto = _width / 2;
+            var yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + datosEjercicio.resultado.altoTexto;
+
+            ctx.fillText(datosEjercicio.resultado.numero, xTexto, yTexto);
+
+
+         }
+
+         function cargaRecursos() {
+            var srcTabla = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? imgSrcTablaUMil : imgSrcTablaCentena;
+            let recursos = [
+               cargaImagen(srcTabla), 
+               cargaImagen(imgSrcFlechaAbajo),
+               cargaImagen(imgSrcSignoMas)
+            ];
+            if(datosEjercicio.tabla.configuracion.repeticionPictoricaPisoUno === 'bloques') {
+               recursos.concat([
+                  cargaImagen(srcImgBloqueUno),
+                  cargaImagen(srcImgBloqueDiez),
+                  cargaImagen(srcImgBloqueCien)
+               ]);
+               if(_umil > 0) {
+                  recursos.concat([cargaImagen(srcImgBloqueMil)]);
+               }
+            }
+            recursos.concat([cargaFuente('LarkeNeueThinFuente', srcFuente)]);
+            return recursos;
+         }
+
+         function calculaAltoCanvas(anchoTabla, altoTabla, altoFlechas) {
+            let altoImagen = _width * altoTabla / anchoTabla; // calcula el alto de la imagen
+            let separaciones = 0, flechas = 0, texto=0;
+            if(_dibujaValorPosicional == 'si') { //
+               separaciones = separaciones + 3;
+               flechas++;
+               texto = texto + Number(_altoTextoValorPosicional);
+            }
+            if(_dibujaTextoResultado == 'si') {
+               separaciones = _dibujaValorPosicional == 'si' ?  separaciones + 2 : separaciones + 3;
+               flechas++;
+               texto = texto + Number(_altoTextoResultado);
+            }
+            let altoCanvas = altoImagen + // alto de la imagen de la tabla
+               altoFlechas * flechas + //alto de las imagenes de flechas
+               separaciones * _separacionElementos + // alto de las separaciones
+               texto; //alto de la fuente de los textos
+            return { altoCanvas, altoImagen };
+         }
+
+         function cargaImagen(src) {
+            return new Promise(function(resolve, reject){
+               var img = new Image();
+               img.src = src;
+               img.onload = function() {
+                  resolve(img);
+               }
+               img.onerror = function() {
+                  reject('no pasa nada');
+               }
+            });
+         }
+
+         function cargaFuente(nombre, src) {
+            return new Promise(function(resolve, reject){
+               var font = new FontFace(nombre, `url('${src}')`, {});
+               font.load().then(function(loadedFont) {
+                  document.fonts.add(loadedFont);
+                  resolve(nombre);
+               }).catch(function(error){
+                  reject(error);
+               });
+            });
+         }
+      </script>
+   </body>
+</html>

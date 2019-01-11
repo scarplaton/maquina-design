@@ -48,29 +48,35 @@ function validaRespuesta() { //Validar respuesta
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
 	} else if (_TIPO_INPUT_ === 'input') {
 		var inputs = document.querySelectorAll(".contenido input[name='answer']");
-		if(inputs.length === 1) {
-			var content = JSON.parse(inputs[0].getAttribute('data-content'));
-			var match = false;
-			switch(content.tipoInput){
-				case 'numero':
-					var resp = inputs[0].value.replace(/\s/g, '');
-					for(var answer of content.answers) {
-						if(resp === answer.respuesta) {
-							feed = answer.feedback;
-							errFre = answer.errFrec;
-							match = true;
-							break;
-						}
-					}
-					break;
+		if(inputs.length === 1) {//si solo hay un input de texto
+			evaluaInputTexto(inputs[0]);
+		} else {//si hay mas de un input de texto
+			for(var input of inputs) {
+				evaluaInputTexto(input);
 			}
-			if(!match) {
-				feed = content.feedbackDefecto;
-				errFre = content.errFrecDefecto;
-			}
-		} else {
-
 		}
+	}
+}
+
+function evaluaInputTexto(inputElement) {
+	var content = JSON.parse(inputElement.getAttribute('data-content'));
+	var match = false;
+	switch(content.tipoInput){
+		case 'numero':
+			var resp = inputElement.value.replace(/\s/g, '');
+			for(var answer of content.answers) {
+				if(resp === answer.respuesta) {
+					feed = answer.feedback;
+					errFre = answer.errFrec;
+					match = true;
+					break;
+				}
+			}
+			break;
+	}
+	if(!match) {
+		feed = content.feedbackDefecto;
+		errFre = content.errFrecDefecto;
 	}
 }
 
@@ -184,10 +190,13 @@ function continuarEjercicio() {
 	btnRespuesta.setAttribute("onClick", "answer();");
 	btnRespuesta.disabled = true;
 	//limpia inputs
+	if(_TIPO_INPUT_ === 'radio') {
+		$('input:checked')[0].checked = false;
+		$('.radio-div__selected').removeClass('radio-div__selected');
+	} else if(_TIPO_INPUT_ === 'input') {
+		$('section.contenido').find('input[type=text]').val('');
+	}
 	$('section.contenido').find('input').prop('disabled', false);
-	$('section.contenido').find('input[type=text]').val('');
-	$('input:checked')[0].checked = false;
-	$('.radio-div__selected').removeClass('radio-div__selected');
 }
 //handle modals
 function openModalFeedback(feedback, img) {
@@ -259,24 +268,23 @@ function cambiaInputNumerico(e) {
 	if( !regex.test(key) ) {
 		 theEvent.returnValue = false;
 		 if(theEvent.preventDefault) theEvent.preventDefault();
-	} else {
-		_TIPO_INPUT_ = 'input';
-		checkTexts();
-	} 
+	}
 }
 
 function formatearNumero(e) {
 	var arrayReverse = String(e.target.value).replace(/\s/g,'').split("").reverse();
 	for(var i=0,count=0,valor=''; i < arrayReverse.length; i++) {
-		 count++;
-		 if(count === 3 && arrayReverse[i+1]) {
+		count++;
+		if(count === 3 && arrayReverse[i+1]) {
 				valor=' '+arrayReverse[i]+valor;
 				count=0;
-		 } else {
+		} else {
 				valor=arrayReverse[i]+valor;
-		 }
+		}
 	} 
 	e.target.value = valor;
+	_TIPO_INPUT_ = 'input';
+	checkTexts();
 }
 
 function cambiaInputAlfanumerico(e) {

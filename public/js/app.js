@@ -87,13 +87,15 @@ const FUNCIONES = [
 	{ name:'General', tag:'general', fns:[ 
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
+		{ id:'Insertar Tabla', action:insertarTabla },
 		{ id:'Insertar Input Fraccion', action:insertarInputFraccion } ] },
 	{ name:'Datos', tag:'datos', fns:[ ] },
 	{ name:'Numeracion', tag:'numeracion', fns:[
 		{ id:'Recta 2', action:recta },
 		{ id:'Tabla Posicional', action:tablaPosicional },
 		{ id:'Valor Posicional', action:valorPosicional },
-		{ id:'Bloques Multibase', action:bloquesMultibase }
+		{ id:'Repetición Pictóricos', action:repeticionPic 
+		}
 	]},  
   	{ name:'Medicion', tag:'medicion', fns:[{ id:'Perimetro', action:igualPerimetro } ] }
 ]
@@ -224,13 +226,13 @@ function insertarInput(config) {
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 						break;
 				}
 				break;
@@ -265,6 +267,142 @@ function insertarInput(config) {
 			case 'textarea': container.innerHTML = '<textarea placeholder="Respuesta"></textarea>';
 				break;
 		}	
+	}
+}
+function insertarTabla(config) {
+	const { container, params, variables, versions, vt } = config, { table, encabezado } = params, vars = vt ? variables : versions
+	if (container) {
+		let r = '<table class="tabla"><tbody>';
+		for(var row = 0; row < table.length; row++) {
+			r += '<tr>';
+			for(var col = 0; col < table[row].length; col++) {
+				r+= '<td>';
+				switch(table[row][col].type) {
+					case 'text':
+						if(encabezado==='arriba' && row === 0) {
+							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
+						} else if(encabezado==='izquierda' && col === 0) {
+							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
+						} else {
+							r+= `<p>${regex(table[row][col].value.text, vars, vt)}</p>`;
+						}
+						break;
+					case 'image':
+						r+= `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+						break;
+					case 'input':
+						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+							feed0, feed1, feed2, feed3, feed4, defaultFeed,
+							value1, value2, value3, value4 } = table[row][col].value;
+						var feedGenerico = regex(feed0, vars, vt);
+						var answers = [{
+							respuesta: regex(value1, vars, vt),
+							feedback: regex(feed1, vars, vt),
+							errFrec: null
+						}];
+						if(value2 !== '') {
+							answers[1] = {
+								respuesta: regex(value2, vars, vt),
+								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error2 : error0
+							}
+						}
+						if(value3 !== '') {
+							answers[2] = {
+								respuesta: regex(value3, vars, vt),
+								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error3 : error0
+							}
+						}
+						if(value4 !== '') {
+							answers[3] = {
+								respuesta: regex(value4, vars, vt),
+								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error4 : error0
+							}
+						}
+						var dataContent = {
+							tipoInput,
+							answers,
+							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+							errFrecDefecto: error0 === '' ? defaultError : error0
+						};
+						switch(tipoInput) {
+							case 'text':
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								break;
+							case 'numero':
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								break;
+							case 'alfanumerico':
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								break;
+						}
+						break;
+					case 'text-input':
+						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+							feed0, feed1, feed2, feed3, feed4, defaultFeed,
+							value1, value2, value3, value4 } = table[row][col].value;
+						var p = regex(text, vars, vt);
+						var feedGenerico = regex(feed0, vars, vt);
+						var answers = [{
+							respuesta: regex(value1, vars, vt),
+							feedback: regex(feed1, vars, vt),
+							errFrec: null
+						}];
+						if(value2 !== '') {
+							answers[1] = {
+								respuesta: regex(value2, vars, vt),
+								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error2 : error0
+							}
+						}
+						if(value3 !== '') {
+							answers[2] = {
+								respuesta: regex(value3, vars, vt),
+								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error3 : error0
+							}
+						}
+						if(value4 !== '') {
+							answers[3] = {
+								respuesta: regex(value4, vars, vt),
+								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+								errFrec: error0 === '' ? error4 : error0
+							}
+						}
+						var dataContent = {
+							tipoInput,
+							answers,
+							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+							errFrecDefecto: error0 === '' ? defaultError : error0
+						};
+						var input;
+						switch(tipoInput) {
+							case 'text':
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								break;
+							case 'numero':
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								break;
+							case 'alfanumerico':
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								break;
+						}
+						r+= `<p>${p.replace('{input}', input)}</p>`;
+						break;
+					case 'text-image':
+						var p = regex(table[row][col].value.text, vars, vt);
+						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+						r+= `<p>${p.replace('{imagen}', img)}</p>`
+						break;
+				}
+				r+= '</td>';
+			}
+			r += '</tr>'
+		}
+		r += '</tbody></table>';
+		container.innerHTML = r
 	}
 }
 function insertarInputFraccion(config) {
@@ -913,6 +1051,9 @@ function valorPosicional(config) {
       _numeroPalabras = regex(`$${_numeroPalabras}`, vars, vt);
     } else if(_tipo === 'Texto') {
       _texto = regex(_texto, vars, vt);
+    } else if (_tipo === 'Texto a Palabras') {
+      _numeroPalabras = regex(`$${_numeroPalabras}`, vars, vt);
+      _texto = regex(_texto, vars, vt);
     }
   } catch(error) {
     console.log(error);
@@ -939,7 +1080,7 @@ function valorPosicional(config) {
 
     if(_tipo === 'Numero Escrito') {
       ctx.fillText(_numeroPalabras, xTexto, yTexto);
-    } else if(_tipo === 'Texto'){
+    } else if(_tipo === 'Texto' || _tipo === 'Texto a Palabras'){
       ctx.fillText(_texto, xTexto, yTexto);
     }
 
@@ -963,6 +1104,13 @@ function valorPosicional(config) {
       ctx.drawImage(imgFlecha, xFlecha, yFlecha);
 
       escribeNumeroCentro();
+    } else if(_tipo === 'Texto a Palabras') {
+      var xFlecha = (container.width / 2) - (imgFlecha.width / 2);
+      var yFlecha = _altoTexo + (_margenTopBottom*2);
+      ctx.drawImage(imgFlecha, xFlecha, yFlecha);
+      var xPalabras = container.width/2;
+      var yPalabras = _altoTexo*2 + (_margenTopBottom*3) + imgFlecha.height;
+      ctx.fillText(_numeroPalabras, xPalabras, yPalabras);
     } else {
       var underline = _marca === 'U de Mil' ? 1 : 2;
       var anchoTextoNumero = _altoTexo*4 + 3*Number(_separacionNumeros);
@@ -1024,403 +1172,400 @@ function valorPosicional(config) {
   });
 }
 
-function bloquesMultibase(config) {
-  const { container, params, variables, versions, vt } = config;
-  var { 
-    _separacion,
-    _miles,
-    _heightWidthMiles,
-    _centenas,
-    _heightWidthCentenas,
-    _aumentoCentenas,
-    _decenas,
-    _unidades,
-    _heightWidthUnidades,
-    _aumentoUnidades,
-    _distribucion,
-    _canvasWidth,
-    _canvasHeight } = params;
-  var srcBloqueUMil = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/umil.svg';
-  var srcBloqueCentena = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/centena.svg';
-  var srcBloqueDecena = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg';
-  var srcBloqueUnidad = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg';
+function repeticionPic(config) {
+	const { container, params, variables, versions, vt } = config;
 
-  _separacion = Number(_separacion);
-  _heightWidthMiles = Number(_heightWidthMiles);
-  _heightWidthCentenas = Number(_heightWidthCentenas);
-  _heightWidthUnidades = Number(_heightWidthUnidades);
+	var imagenes = [{
+		 name: 'bloque mil',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/umil.svg'
+	},{
+		 name: 'bloque cien',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/centena.svg'
+	}, {
+		 name: 'bloque diez',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg'
+	},{
+		 name: 'bloque uno',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg'
+	},{
+		 name: 'billete mil',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/1000_1.png'
+	},{
+		 name: 'moneda cien',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/100_1.png'
+	},{
+		 name: 'moneda diez',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/10_1.png'
+	},{
+		 name: 'moneda uno',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/1_1.png'
+	},{
+		 name: 'moneda quinientos',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/500_1.png'
+	},{
+		 name: 'moneda cincuenta',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/50_1.png'
+	},{
+		 name: 'moneda cinco',
+		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/5_1.png'
+	}];
 
-  var vars = vt ? variables : versions;
+	let {_pictoricos, _separacion, heightCanvas, widthCanvas, 
+		 _imagen1,_altoImagen1,_formaRepeticion1,_repeticiones1,_separacion1,_separaciony1,
+		 _imagen2,_altoImagen2,_formaRepeticion2,_repeticiones2,_separacion2,_separaciony2,
+		 _imagen3,_altoImagen3,_formaRepeticion3,_repeticiones3,_separacion3,_separaciony3,
+		 _imagen4,_altoImagen4,_formaRepeticion4,_repeticiones4,_separacion4,_separaciony4,
+		 _imagen5,_altoImagen5,_formaRepeticion5,_repeticiones5,_separacion5,_separaciony5,
+		 _imagen6,_altoImagen6,_formaRepeticion6,_repeticiones6,_separacion6,_separaciony6,
+		 _imagen7,_altoImagen7,_formaRepeticion7,_repeticiones7,_separacion7,_separaciony7,
+		 _imagen8,_altoImagen8,_formaRepeticion8,_repeticiones8,_separacion8,_separaciony8} = params;
 
-  try {
-    _miles = regex(`$${_miles}`, vars, vt);
-    _centenas = regex(`$${_centenas}`, vars, vt);
-    _decenas = regex(`$${_decenas}`, vars, vt);
-    _unidades = regex(`$${_unidades}`, vars, vt);
-  } catch(error) {
-    console.log(error);
-  }
-  _separacion = Number(_separacion);
-  _heightWidthMiles = Number(_heightWidthMiles);
-  _heightWidthCentenas = Number(_heightWidthCentenas);
-  _aumentoCentenas = Number(_aumentoCentenas);
-  _heightWidthUnidades = Number(_heightWidthUnidades);
-  _aumentoUnidades = Number(_aumentoUnidades);
-  _canvasWidth = Number(_canvasWidth);
-  _canvasHeight = Number(_canvasHeight);
-  _miles = Number(_miles);
-  _centenas = Number(_centenas);
-  _decenas = Number(_decenas);
-  _unidades = Number(_unidades);
-  var ctx = container.getContext('2d');
-  Promise.all([
-    cargaImagen(srcBloqueUMil),
-    cargaImagen(srcBloqueCentena),
-    cargaImagen(srcBloqueDecena),
-    cargaImagen(srcBloqueUnidad)
-  ]).then(function(result) {
-    var imgBloqueUMil = result[0],
-    imgBloqueCentena = result[1],
-    imgBloqueDecena = result[2],
-    imgBloqueUnidad = result[3];
-    var heightDecenas = _heightWidthCentenas,
-               widthDecenas = _heightWidthCentenas*imgBloqueDecena.width/imgBloqueDecena.height;
-    var bloques = [{ 
-        tipo:'Miles',
-        cantidad:_miles,
-        dimension:_heightWidthMiles,
-        img:imgBloqueUMil
-    },{ 
-        tipo:'Centenas',
-        cantidad:_centenas,
-        dimension:_heightWidthCentenas,
-        aumento:_aumentoCentenas,
-        img:imgBloqueCentena
-    },{
-        tipo:'Decenas',
-        cantidad:_decenas,
-        dimension: {
-          height:heightDecenas,
-          width:widthDecenas
-        },
-        img:imgBloqueDecena
-    },{
-        tipo:'Unidades',
-        cantidad:_unidades,
-        dimension:_heightWidthUnidades,
-        aumento:_aumentoUnidades,
-        img:imgBloqueUnidad
-    }];
-    container.height = _canvasHeight;
-    container.width = _canvasWidth;
-    var xStart = calculaInicioCentro();
-    bloques.forEach(function(item){
-      if(item.cantidad > 0) {
-        if(_distribucion === 'ordenado') {
-          switch(item.tipo) {
-            case 'Miles':
-              xStart = dibujaMiles(xStart, imgBloqueUMil, item.dimension);
-              break;
-            case 'Centenas':
-              xStart = dibujaCientos(xStart);
-              break;
-            case 'Decenas':
-              xStart = dibujaDecenas(xStart);
-              break;
-            case 'Unidades':
-              xStart = dibujaUnidades(xStart, imgBloqueUnidad, item.dimension);
-              break;
-          }
-        } else {
-          if(item.tipo === 'Decenas') {
-            xStart = dibujaBloqueEnLinea(item.img, item.cantidad, xStart, item.dimension.width, item.dimension.height);
-          } else {
-            xStart = dibujaBloqueEnLinea(item.img, item.cantidad, xStart, item.dimension, item.dimension);
-          }
-        }
-      }
-    });
+	var vars = vt ? variables : versions;
+	try {
+		 _repeticiones1 = regex(`$${_repeticiones1}`, vars, vt);
+		 _repeticiones2 = regex(`$${_repeticiones2}`, vars, vt);
+		 _repeticiones3 = regex(`$${_repeticiones3}`, vars, vt);
+		 _repeticiones4 = regex(`$${_repeticiones4}`, vars, vt);
+		 _repeticiones5 = regex(`$${_repeticiones5}`, vars, vt);
+		 _repeticiones6 = regex(`$${_repeticiones6}`, vars, vt);
+		 _repeticiones7 = regex(`$${_repeticiones7}`, vars, vt);
+		 _repeticiones8 = regex(`$${_repeticiones8}`, vars, vt);
+	} catch(error) {
+		 console.log(error);
+	}
 
-  function calculaInicioCentro() {
-    var anchoTotal = 0;
-    if(_distribucion === 'ordenado') {
-      for(let bloque of bloques) {
-        if(bloque.cantidad > 0) {
-          switch(bloque.tipo) {
-            case 'Miles':
-              if(bloque.cantidad === 1) {
-                anchoTotal += _heightWidthMiles+_separacion;
-              } else if(bloque.cantidad === 2 ||  bloque.cantidad === 4 || bloque.cantidad === 6) {
-                anchoTotal += _heightWidthMiles*2+_separacion*2;
-              } else {
-                anchoTotal += _heightWidthMiles*3+_separacion*3;
-              }
-              break;
-            case 'Centenas':
-              anchoTotal += bloque.cantidad > 5 ? 
-                ((bloque.cantidad-2)*_aumentoCentenas)+_heightWidthCentenas*2+_separacion*2:
-                (bloque.cantidad-1)*_aumentoCentenas+_heightWidthCentenas+_separacion;
-              break;
-            case 'Decenas':
-              anchoTotal += bloque.cantidad < 6 ? 
-                bloque.cantidad*bloque.dimension.width+_separacion*bloque.cantidad: 
-                6*bloque.dimension.width+_separacion*6;
-              break;
-            case 'Unidades':
-              if(bloque.cantidad === 1) {
-                anchoTotal += _heightWidthUnidades+_separacion;
-              } else if(bloque.cantidad === 2 ||  bloque.cantidad === 4 || bloque.cantidad === 6) {
-                anchoTotal += _heightWidthUnidades*2+_separacion*2;
-              } else {
-                anchoTotal += _heightWidthUnidades*3+_separacion*3;
-              }
-              break;
-          }
-        }
-      }
-    } else {
-      for(let bloque of bloques) {
-        if(bloque.cantidad > 0 && bloque.tipo === 'Decenas') {
-          anchoTotal += (bloque.dimension.width*bloque.cantidad)+(bloque.cantidad*_separacion)
-        } else if(bloque.cantidad > 0) {
-          anchoTotal += (bloque.dimension*bloque.cantidad)+(bloque.cantidad*_separacion)
-        }
-      }
-    }
-    
-    return container.width/2-(anchoTotal+_separacion)/2;
-  }
-            
-  function dibujaMiles(xStart, imgBloqueUMil, dimension) {
-    switch(_miles) {
-      case 1:
-        var { x } = dibujaBloqueEnPosicionUno(imgBloqueUMil, dimension);
-        break;
-      case 2:
-        dibujaBloqueEnPosicionCuatro(1, imgBloqueUMil, dimension)
-        var { x } = dibujaBloqueEnPosicionCuatro(4, imgBloqueUMil, dimension);
-        break;
-      case 3:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(5, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUMil, dimension);
-        break;
-      case 4:
-        dibujaBloqueEnPosicionCuatro(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionCuatro(2, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionCuatro(3, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionCuatro(4, imgBloqueUMil, dimension);
-        break;
-      case 5:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(3, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(5, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(7, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUMil, dimension);
-        break;
-      case 6:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(2, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(4, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(5, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(7, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(8, imgBloqueUMil, dimension);
-        break;
-      case 7:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(3, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(4, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(5, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(6, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(7, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUMil, dimension);
-        break;
-      case 8:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(2, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(3, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(4, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(6, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(8, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(7, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUMil, dimension);
-        break;
-      case 9:
-        dibujaBloqueEnPosicionNueve(1, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(2, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(3, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(4, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(5, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(6, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(8, imgBloqueUMil, dimension);
-        dibujaBloqueEnPosicionNueve(7, imgBloqueUMil, dimension);
-        var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUMil, dimension);
-        break;
-    }
-    return x+_heightWidthMiles;
-  }
+	var repeticiones = getRepeticiones();
+	
+	_separacion = Number(_separacion);
+	let xStart = _separacion;
+	container.height = Number(heightCanvas);
+	container.width = Number(widthCanvas);
+	var ctx = container.getContext('2d');
+	//carga las imagenes y dibuja las repeticiones
+	Promise.all(repeticiones.map(x => cargaImagen(x.imagen.src))).then(imagenes => {
+		 repeticiones.forEach(function(x, i){
+				repeticiones[i].imagen = imagenes[i]
+		 });
+		 return repeticiones;
+	}).then(function(repeticionesPictoricas) {
+		 for(let repeticion of repeticionesPictoricas) {
+				console.log(repeticion);
+				if(repeticion.repeticiones > 0) {
+					 switch(repeticion.formaRepeticion) {
+							case 'dado':
+								 xStart = dibujaRepeticionDado(repeticion);
+								 break;
+							case 'diagonal/apilado':
+								 xStart = dibujaRepeticionDiagonalApilado(repeticion);
+								 break;
+							case 'diagonal':
+								 xStart = dibujaRepeticionDiagonal(repeticion);
+								 break;
+							case 'horizontal/vertical':
+								 xStart = dibujaRepeticionHorizontalVertical(repeticion);
+								 break;
+							case 'horizontal':
+								 xStart = dibujaRepeticionHorizontal(repeticion);
+								 break;
+							case 'vertical':
+								 xStart = dibujaRepeticionVertical(repeticion);
+								 break;
+							default:
+								 console.log(repeticion);
+								 break;
+					 }
+				}
+		 }
+	}).catch(function(error){
+		 console.log(error);
+	});
 
-  function dibujaBloqueEnPosicionNueve(posicion, imagen, dimensiones) { //posicion 1-9
-    var x, y;
-    if(posicion==1 || posicion==4 || posicion==7) {
-      x = _separacion+xStart;
-    } else if(posicion==2 || posicion==5 || posicion==8) {
-      x = _separacion*2+dimensiones+xStart;
-    } else {
-      x = _separacion*3+dimensiones*2+xStart;
-    }
-    if(posicion==1 || posicion==2 || posicion==3) {
-      y = container.height/2 - dimensiones/2 - _separacion - dimensiones;
-    } else if(posicion==4 || posicion==5 || posicion==6) {
-      y = container.height/2 - dimensiones/2;
-    } else {
-      y = container.height/2 + dimensiones/2 + _separacion;
-    }
-    ctx.drawImage(imagen, x, y, dimensiones, dimensiones);
-    return {x,y};
-  }
 
-  function dibujaBloqueEnPosicionCuatro(posicion, imagen, dimensiones) {
-    if(posicion==1 || posicion==3) {
-      x = _separacion+xStart;
-    } else {
-      x = _separacion*2+dimensiones+xStart;
-    }
-    if(posicion==1 || posicion==2) {
-      y = container.height/2 - _separacion/2 - dimensiones;
-    } else {
-      y = container.height/2 + _separacion/2;
-    }
-    ctx.drawImage(imagen, x, y, dimensiones, dimensiones);
-    console.log('estas malditas variables no sirven de nada', x, y);
-    return {x,y};
-  }
+	function getRepeticiones() {
+		 let repeticiones = [{
+				imagen: _imagen1 !== '' ? imagenes.find(x => x.name === _imagen1) : { src:'' },
+				altoImagen: Number(_altoImagen1),
+				formaRepeticion: _formaRepeticion1,
+				repeticiones: Number(_repeticiones1),
+				separacion: Number(_separacion1),
+				separaciony: Number(_separaciony1)
+		 }];
 
-  function dibujaBloqueEnPosicionUno(imagen, dimensiones) {
-    var x = _separacion+xStart;
-    var y = container.height/2-dimensiones/2;
-    ctx.drawImage(imagen, x, y, dimensiones, dimensiones);
-    return {x,y};
-  }
+		 if(_pictoricos > 1) {
+				repeticiones[1] = {
+				imagen: _imagen2 !== '' ? imagenes.find(x => x.name === _imagen2) : { src:'' },
+				altoImagen: Number(_altoImagen2),
+				formaRepeticion: _formaRepeticion2,
+				repeticiones: Number(_repeticiones2),
+				separacion: Number(_separacion2),
+				separaciony: Number(_separaciony2)
+				}
+		 }
+		 
+		 if(_pictoricos > 2) {
+				repeticiones[2] = {
+				imagen: _imagen3 !== '' ? imagenes.find(x => x.name === _imagen3) : { src:'' },
+				altoImagen: Number(_altoImagen3),
+				formaRepeticion: _formaRepeticion3,
+				repeticiones: Number(_repeticiones3),
+				separacion: Number(_separacion3),
+				separaciony: Number(_separaciony3)
+				}
+		 }
 
-  function dibujaCientos(xInicial) {
-    var heightTotal1 = _centenas > 5 ? 
-      (_aumentoCentenas*4)+_heightWidthCentenas:
-      (_aumentoCentenas*_centenas-1)+_heightWidthCentenas;
-    var yInicial1 = container.height/2 - heightTotal1/2;
-    for(var i=0,x,y; i<_centenas; i++) {
-      if(i >= 5) {
-          x = _separacion*2 + xInicial + (_aumentoCentenas * 3) + _heightWidthCentenas + (_aumentoCentenas * (i-4));     
-          y = yInicial1 +  _separacion + (_aumentoCentenas * (i-5));
-      } else {
-          x = _separacion + xInicial + (_aumentoCentenas * i);
-          y = yInicial1 +_separacion + (_aumentoCentenas * i);
-      }
-      ctx.drawImage(imgBloqueCentena, x, y, _heightWidthCentenas, _heightWidthCentenas);
-    }
-    return x+_heightWidthCentenas;
-  }
+		 if(_pictoricos > 3) {
+				repeticiones[3] = {
+				imagen: _imagen4 !== '' ? imagenes.find(x => x.name === _imagen4) : { src:'' },
+				altoImagen: Number(_altoImagen4),
+				formaRepeticion: _formaRepeticion4,
+				repeticiones: Number(_repeticiones4),
+				separacion: Number(_separacion4),
+				separaciony: Number(_separaciony4)
+				}
+		 }
 
-  function dibujaDecenas(xInicial) {
-    var yPrimera = _decenas < 6 ?
-      container.height/2-heightDecenas/2 :
-      container.height/2-(heightDecenas+widthDecenas*(_decenas-5)+_separacion*(_decenas-6))/2
-    for(var i=0,x,x2,y2; i<_decenas; i++){
-      if(i>=6) {
-          x2 = _separacion + xInicial;
-          y2 = yPrimera + _separacion*(i-5) + widthDecenas*(i-5) + heightDecenas;
-          ctx.save();
-          ctx.translate(x2,y2);
-          ctx.rotate(-Math.PI/2);
-          ctx.drawImage(imgBloqueDecena, 0, 0, widthDecenas, heightDecenas);
-          ctx.restore();
-      } else {
-          x = (widthDecenas * i) + _separacion + (_separacion * i) + xInicial;
-          ctx.drawImage(imgBloqueDecena, x, yPrimera, widthDecenas, heightDecenas);
-      }
-      
-    }
-    return x+widthDecenas;
-  }
+		 if(_pictoricos > 4) {
+				repeticiones[4] = {
+				imagen: _imagen5 !== '' ? imagenes.find(x => x.name === _imagen5) : { src:'' },
+				altoImagen: Number(_altoImagen5),
+				formaRepeticion: _formaRepeticion5,
+				repeticiones: Number(_repeticiones5),
+				separacion: Number(_separacion5),
+				separaciony: Number(_separaciony5)
+				}
+		 }
 
-  function dibujaUnidades(xInicial, imgBloqueUnidad, dimension) {
-    switch(_unidades) {
-      case 1:
-          var { x } = dibujaBloqueEnPosicionUno(imgBloqueUnidad, dimension);
-          break;
-      case 2:
-          dibujaBloqueEnPosicionCuatro(1, imgBloqueUnidad, dimension)
-          var { x } = dibujaBloqueEnPosicionCuatro(4, imgBloqueUnidad, dimension);
-          break;
-      case 3:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(5, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUnidad, dimension);
-          break;
-      case 4:
-          dibujaBloqueEnPosicionCuatro(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionCuatro(2, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionCuatro(3, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionCuatro(4, imgBloqueUnidad, dimension);
-          break;
-      case 5:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(3, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(5, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(7, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUnidad, dimension);
-          break;
-      case 6:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(2, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(4, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(5, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(7, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(8, imgBloqueUnidad, dimension);
-          break;
-      case 7:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(3, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(4, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(5, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(6, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(7, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUnidad, dimension);
-          break;
-      case 8:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(2, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(3, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(4, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(6, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(8, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(7, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUnidad, dimension);
-          break;
-      case 9:
-          dibujaBloqueEnPosicionNueve(1, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(2, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(3, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(4, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(5, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(6, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(8, imgBloqueUnidad, dimension);
-          dibujaBloqueEnPosicionNueve(7, imgBloqueUnidad, dimension);
-          var {x} = dibujaBloqueEnPosicionNueve(9, imgBloqueUnidad, dimension);
-          break;
-    }
-    return x+_heightWidthMiles;
-  }
+		 if(_pictoricos > 5) {
+				repeticiones[5] = {
+				imagen: _imagen6 !== '' ? imagenes.find(x => x.name === _imagen6) : { src:'' },
+				altoImagen: Number(_altoImagen6),
+				formaRepeticion: _formaRepeticion6,
+				repeticiones: Number(_repeticiones6),
+				separacion: Number(_separacion6),
+				separaciony: Number(_separaciony6)
+				}
+		 }
 
-  function dibujaBloqueEnLinea(img, cantidad, xInicio, dimensionx, dimensiony) {
-      var y = container.height/2 - dimensiony/2;
-      for(var i = 0, x; i < cantidad; i++) {
-        x = xInicio+(_separacion*i)+(i*dimensionx);
-        ctx.drawImage(img, x, y, dimensionx, dimensiony);
-      }
-      return x + _separacion + dimensionx;
-  }
-  }).catch(function(error) {
-      console.log(error)
-  });
+		 if(_pictoricos > 6) {
+				repeticiones[6] = {
+				imagen: _imagen7 !== '' ? imagenes.find(x => x.name === _imagen7) : { src:'' },
+				altoImagen: Number(_altoImagen7),
+				formaRepeticion: _formaRepeticion7,
+				repeticiones: Number(_repeticiones7),
+				separacion: Number(_separacion7),
+				separaciony: Number(_separaciony7)
+				}
+		 }
+
+		 if(_pictoricos > 7) {
+				repeticiones[7] = {
+				imagen: _imagen8 !== '' ? imagenes.find(x => x.name === _imagen8) : { src:'' },
+				altoImagen: Number(_altoImagen8),
+				formaRepeticion: _formaRepeticion8,
+				repeticiones: Number(_repeticiones8),
+				separacion: Number(_separacion8),
+				separaciony: Number(_separaciony8)
+				}
+		 }
+
+		 return repeticiones;
+	}
+
+	function dibujaRepeticionVertical(repeticion) {
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 var yStart = container.height/2 - (repeticion.repeticiones * repeticion.altoImagen + (repeticion.repeticiones-1) * repeticion.separacion)/2; 
+		 for(var i = 0, x = xStart, y; i < repeticion.repeticiones; i++){
+				y = yStart + (i * repeticion.altoImagen) + (i * repeticion.separacion);
+				ctx.drawImage(repeticion.imagen, x, y, width, repeticion.altoImagen);
+		 }
+		 return x+width+_separacion;
+	}
+
+	function dibujaRepeticionHorizontal(repeticion){
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 for(var i = 0,x,y; i < repeticion.repeticiones; i++) {
+				x = xStart + (i * repeticion.separacion) + (i * width);
+				y = container.height/2 - repeticion.altoImagen/2;
+				ctx.drawImage(repeticion.imagen, x, y, width, repeticion.altoImagen);
+		 }
+		 return x+width+_separacion;
+	}
+
+	function dibujaRepeticionHorizontalVertical(repeticion) {
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 var yPrimera;
+		 if(repeticion.repeticiones < 6) {
+				yPrimera = container.height/2-repeticion.altoImagen/2;
+		 } else {
+				var heightTotal = repeticion.altoImagen + (repeticion.repeticiones-6)*repeticion.separacion + width*(repeticion.repeticiones-5);
+				yPrimera = container.height/2-heightTotal/2;
+		 }
+		 for(var i = 0, x, x2, y2; i < repeticion.repeticiones; i++){
+				if(i >= 6) {
+					 x2 = xStart;
+					 y2 = yPrimera + repeticion.separacion*(i-5) + width*(i-5) + repeticion.altoImagen;
+					 ctx.save();
+					 ctx.translate(x2,y2);
+					 ctx.rotate(-Math.PI/2);
+					 ctx.drawImage(repeticion.imagen, 0, 0, width, repeticion.altoImagen);
+					 ctx.restore();
+				} else {
+					 x = (width * i) + (repeticion.separacion * i) + xStart;
+					 ctx.drawImage(repeticion.imagen, x, yPrimera, width, repeticion.altoImagen);
+				}
+		 }
+		 return x+width+_separacion;
+	}
+
+	function dibujaRepeticionDiagonal(repeticion) {
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 for(var i = 0, x, y, height; i < repeticion.repeticiones; i++) {
+				x = xStart + i * repeticion.separacion;
+				height = repeticion.altoImagen + (repeticion.repeticiones-1) * repeticion.separaciony;
+				y = (container.height/2)-(height/2)+(i*repeticion.separaciony);
+				ctx.drawImage(repeticion.imagen, x, y, width, repeticion.altoImagen);
+		 }
+		 return x+width+_separacion;
+	}
+
+	function dibujaRepeticionDiagonalApilado(repeticion) {
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 for(var i = 0, x, y, height; i < repeticion.repeticiones; i++) {
+				x = i <= 4 ? 
+					 xStart + i * repeticion.separacion : 
+					 xStart + width + (5 * repeticion.separacion) + ((i-5) * repeticion.separacion);
+				if(repeticion.repeticiones <= 5) { // solo hay una pila
+					 height = repeticion.altoImagen + (repeticion.repeticiones-1) * repeticion.separaciony;
+					 y = (container.height/2)-(height/2)+(i*repeticion.separaciony);
+				} else { // hay dos pilas
+					 if(i <= 4) {
+							height = repeticion.altoImagen + 4 * repeticion.separaciony;
+							y = (container.height/2)-(height/2)+(i*repeticion.separaciony);
+					 } else {
+							height = repeticion.altoImagen + (repeticion.repeticiones-5) * repeticion.separaciony;
+							y = (container.height/2)-(height/2)+((i-4)*repeticion.separaciony);
+					 }
+				}
+				ctx.drawImage(repeticion.imagen, x, y, width, repeticion.altoImagen);
+		 }
+		 return x+width+_separacion;
+	}
+
+	function dibujaRepeticionDado(repeticion) {
+		 var width = repeticion.imagen.width * repeticion.altoImagen / repeticion.imagen.height;
+		 var x = 0;
+		 switch(repeticion.repeticiones) {
+				case 1:
+					 x = dibujaBloqueEnPosicionUno(repeticion.imagen, repeticion.altoImagen);
+					 break;
+				case 2:
+					 x = dibujaBloqueEnPosicionCuatro(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionCuatro(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion)
+					 break;
+				case 3:
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(5, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 x = dibujaBloqueEnPosicionNueve(9, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 4:
+					 dibujaBloqueEnPosicionCuatro(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionCuatro(3, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 x = dibujaBloqueEnPosicionCuatro(2, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionCuatro(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 5:
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(3, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(5, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(7, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 x = dibujaBloqueEnPosicionNueve(9, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 6:
+					 x = dibujaBloqueEnPosicionNueve(8, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(5, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(2, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(7, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 7:
+					 x = dibujaBloqueEnPosicionNueve(9, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(6, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(3, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(5, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(7, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 8:
+					 x = dibujaBloqueEnPosicionNueve(9, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(6, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(3, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(8, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(2, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(7, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+				case 9:
+					 x = dibujaBloqueEnPosicionNueve(9, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(6, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(3, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(8, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(5, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(2, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(7, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(4, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
+					 break;
+		 }
+		 console.log(x);
+		 return x+width+_separacion;
+
+		 function dibujaBloqueEnPosicionNueve(posicion, imagen, altoImagen, separacion) { //posicion 1-9
+				var width = imagen.width * altoImagen / imagen.height;
+				var x, y;
+				if(posicion==1 || posicion==4 || posicion==7) {
+					 x = xStart;
+				} else if(posicion==2 || posicion==5 || posicion==8) {
+					 x = separacion+width+xStart;
+				} else {
+					 x = separacion*2+width*2+xStart;
+				}
+				if(posicion==1 || posicion==2 || posicion==3) {
+					 y = container.height/2 - altoImagen/2 - separacion - altoImagen;
+				} else if(posicion==4 || posicion==5 || posicion==6) {
+					 y = container.height/2 - altoImagen/2;
+				} else {
+					 y = container.height/2 + altoImagen/2 + separacion;
+				}
+				ctx.drawImage(imagen, x, y, width, altoImagen);
+				return x;
+		 }
+
+		 function dibujaBloqueEnPosicionCuatro(posicion, imagen, altoImagen, separacion) {
+				var width = imagen.width * altoImagen / imagen.height;
+				var x, y;
+				if(posicion==1 || posicion==3) {
+					 x = xStart;
+				} else {
+					 x = separacion+width+xStart;
+				}
+				if(posicion==1 || posicion==2) {
+					 y = container.height/2 - altoImagen - separacion/2;
+				} else {
+					 y = container.height/2 + separacion/2;
+				}
+				ctx.drawImage(imagen, x, y, width, altoImagen);
+				return x;
+		 }
+
+		 function dibujaBloqueEnPosicionUno(imagen, altoImagen) {
+				var width = imagen.width * altoImagen / imagen.height;
+				var x = xStart;
+				var y = container.height/2-altoImagen/2;
+				ctx.drawImage(imagen, x, y, width, altoImagen);
+				return x;
+		 }
+	}
 }
