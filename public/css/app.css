@@ -1,7 +1,3 @@
-body {
-  overflow: hidden;
-}
-
 ::-webkit-scrollbar {
   width: 20px;
 }
@@ -20,6 +16,10 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.6); 
+}
+
+svg {
+  vertical-align: baseline;
 }
 
 @font-face {
@@ -62,36 +62,159 @@ body {
   }
 }
 
+/*CONSIDERACIONES MOBILE*/
+@media only screen and (max-width: 576px) {
+  .barraprogreso {
+    margin-bottom: 10px;
+  }
+
+  .contenido {
+    position: absolute;
+    max-height: calc(100% - 170px);
+    height: calc(100% - 170px);
+    overflow: auto;
+    overflow-y: scroll;
+    margin-bottom: 0;
+  }
+
+  .contenido::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  .contenido::-webkit-scrollbar-track {
+    color: transparent;
+  }
+  
+  /* Handle */
+  .contenido::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  .contenido::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.6); 
+  }
+
+  /*---- IMAGEN ESTATICA EN BOTONES       ----*/
+
+  .icon-consulta span {
+    display: block;
+    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    margin: 0 auto;
+    height: 85%;
+    width: auto;
+  }
+
+  .icon-responder span {
+    display: block;
+    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    margin: 0 auto;
+    height: 85%;
+    width: auto;
+  }
+
+}
+/*MAS GRANDE QUE MOBILE*/
+@media only screen and (min-width: 576px) {
+  .barraprogreso {
+    margin-bottom: 20px;
+  }
+
+  .contenido {
+    margin-bottom: 20px;
+  }
+  /*---- ANIMACION BOTONES ----*/
+    /* Button 5 */
+  .bton-5 {
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+
+  button:not(:disabled).bton-5 span {
+    display: inline-block;
+    -webkit-transition: all 0.8s;
+    -webkit-backface-visibility: hidden;
+    -moz-transition: all 0.8s;
+    -moz-backface-visibility: hidden;
+    transition: all 1s;
+    backface-visibility: hidden;
+  }
+
+  button:not(:disabled).bton-5:before {
+    position: absolute;
+    height: 100%;
+    line-height: 3;
+    font-size: 180%;
+    -moz-transition: all 0.3s;
+    transition: all 1s;
+  }
+
+  button:not(:disabled).bton-5:active:before {
+    color: #703b87;
+  }
+
+    /* Button 5a */
+  button:not(:disabled).bton-5a:hover span {
+    -webkit-transform: translateY(300%);
+    -moz-transform: translateY(300%);
+    -ms-transform: translateY(300%);
+    transform: translateY(200%);
+  }
+
+  button:not(:disabled).bton-5a:before {
+    top: -115%;
+  }
+
+  button:not(:disabled).bton-5a:hover:before {
+    top: -4px;
+  }
+
+  button:not(:disabled).icon-consulta:before {
+    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    width: 42px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+  }
+
+  button:not(:disabled).icon-responder:before {
+    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    width: 36px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+  }
+
+}
+
 /*
   inicio header
 */
+
 .barraprogreso {
   height: 50px;
-  padding-top: 10px;
-  margin-bottom: 40px;
 }
 
-.encabezadoBarra {
-  background-color: #FFF;
+#progressbar {
+  width: 100%;
+  height: auto;
+}
+
+#botonSalir {
+  cursor: pointer;
+  fill: #e6e6e6;
+}
+
+#botonSalir:hover {
+  fill: #1f8f99;
 }
 
 /*
   termino header
-****
-  inicio contenido
-*/
-
-.contenido {
-  margin-bottom: 20px;
-  height: calc(95% - 100px);
-}
-
-.contenido > div {
-  overflow-y: scroll;
-}
-
-/*
-  termino contenido
 ****
   inicio footer
 */
@@ -165,64 +288,58 @@ body {
   background-color: #d33131;
 }
 
-/*---- ANIMACION BOTONES ----*/
-    /* Button 5 */
-.bton-5 {
-  overflow: hidden;
-  backface-visibility: hidden;
-}
-
-.bton-5 span {
-  display: inline-block;
-  -webkit-transition: all 0.8s;
-  -webkit-backface-visibility: hidden;
-  -moz-transition: all 0.8s;
-  -moz-backface-visibility: hidden;
-  transition: all 1s;
-  backface-visibility: hidden;
-}
-
-.bton-5:before {
-  position: absolute;
-  height: 100%;
-  line-height: 3;
-  font-size: 180%;
-  -moz-transition: all 0.3s;
-  transition: all 1s;
-}
-
-.bton-5:active:before {
-  color: #703b87;
-}
-
-  /* Button 5a */
-.bton-5a:hover span {
-  -webkit-transform: translateY(300%);
-  -moz-transform: translateY(300%);
-  -ms-transform: translateY(300%);
-  transform: translateY(200%);
-}
-
-.bton-5a:before {
-  top: -115%;
-}
-
-.bton-5a:hover:before {
-  top: -4px;
-}
-
-.icon-consulta:before {
-  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
-  width: 42px;
-}
-
-.icon-responder:before {
-  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
-  width: 36px;
-}
-
 /* 
   termino footer
+****
+  inicio de diseño feedback modal
+*/
+
+.modalFeedbackError {
+  background: #ffd0cf;
+  color: #a0130f;
+}
+
+.modalFeedbackOK {
+  background: #BFF199;
+  color: #4d8b4b;
+}
+
+.spanFeedback {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.textoFeedback {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+.btnCerrarFeed {
+  height: 50px;
+  width: 100%;
+  border: none;
+  border-radius: 36px;
+  cursor: pointer;
+}
+
+.btnCerrarFeed div {
+  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+  height: 80%;
+  width: auto;
+  margin: 0 auto;
+}
+
+.btnCerrarFeedGood {
+  background: #4D8B4B;
+}
+
+.btnCerrarFeedBad {
+  background: #d33131;
+}
+
+/*
+  termino diseño de feedback modal
 ****
   inicio de diseño glosa
 */

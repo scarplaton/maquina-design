@@ -57,21 +57,28 @@
 <script>
   localStorage.setItem('tmpProgreso', JSON.stringify(
     [{
-      "idasigejermat":313532,
+      "idasigejermat":00001,
       "correcto":false,
+      "NUMEROINTENTOS":2
+    },{
+      "idasigejermat":00002,
+      "correcto":true,
       "NUMEROINTENTOS":1
     },{
-      "idasigejermat":313533,
+      "idasigejermat":00003,
+      "correcto":false,
+      "NUMEROINTENTOS":2
+    },{
+      "idasigejermat":00004,
       "correcto":true,
       "NUMEROINTENTOS":2
     },{
-      "idasigejermat":313533,
+      "idasigejermat":00005,
       "correcto":true,
-      "NUMEROINTENTOS":2
+      "NUMEROINTENTOS":1
     }]
   ));
-  localStorage.setItem('tmpTitulo', 'Expresan números en palabras y cifras.');
-  localStorage.setItem('tmpTotal', '10');
+  localStorage.setItem('tmpTotal', '12');
   var select = document.getElementById('selectEjercicios');
   axios.get('/archivos').then(function (response) {
     response.data.filter(function(x){

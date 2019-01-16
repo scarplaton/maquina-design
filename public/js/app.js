@@ -88,16 +88,16 @@ const FUNCIONES = [
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Tabla', action:insertarTabla },
-		{ id:'Insertar Input Fraccion', action:insertarInputFraccion } ] },
-	{ name:'Datos', tag:'datos', fns:[ ] },
-	{ name:'Numeracion', tag:'numeracion', fns:[
+		{ id:'Insertar Input Fraccion', action:insertarInputFraccion } 
+	]},{ name:'Datos', tag:'datos', fns:[ 
+	]},{ name:'Numeracion', tag:'numeracion', fns:[
 		{ id:'Recta 2', action:recta },
 		{ id:'Tabla Posicional', action:tablaPosicional },
 		{ id:'Valor Posicional', action:valorPosicional },
-		{ id:'Repetición Pictóricos', action:repeticionPic 
-		}
-	]},  
-  	{ name:'Medicion', tag:'medicion', fns:[{ id:'Perimetro', action:igualPerimetro } ] }
+		{ id:'Repetición Pictóricos', action:repeticionPic }
+	]},{ name:'Medicion', tag:'medicion', fns:[
+		{ id:'Perimetro', action:igualPerimetro } 
+	]}
 ]
 
 function print() { //Dibujar ejercicios
@@ -118,7 +118,7 @@ function dibujaHtml() {
 	contenidoBody['e'].forEach((m, i) => {
 		contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
 		if (m.tag != 'general') {
-			contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid" style="background:${m.params.background}"></canvas>`
+			contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
 		} else {
 			contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
 		}
@@ -165,7 +165,7 @@ function dibujaHtml() {
 	contenidoBody['g'].forEach((m, i) => {
 		glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
 		if (m.tag != 'general') {
-			glosaHtml += `<canvas class="img-fluid" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
+			glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
 		} else {
 			glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
 		}

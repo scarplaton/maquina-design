@@ -11,25 +11,25 @@ feed = '',
 check = false;
 var _TIPO_INPUT_ = '';
 
+const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
+const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
+
 //boton responder
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
 //boton cerrar modal de feedback
 var btnCerrarFeedBack = document.getElementById('btnCloseModal');
 
-var tmpTitulo = localStorage.getItem('tmpTitulo') ? 
-	localStorage.getItem('tmpTitulo') : 'Título por defecto';
 var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
 var tmpTotal = localStorage.getItem('tmpTotal') ?
 	Number(localStorage.getItem('tmpTotal')) : 5;
 
-$('.tituloEncabezado').text(tmpTitulo); //pone titulo e mision
-
 $(document).ready(function(){
-	barraDeProgreso(tmpTotal, tmpProgreso.length+1);
+	$('[data-toggle="tooltip"]').tooltip();
+	barraDeProgreso();
 	$( window ).resize(function() {
-		barraDeProgreso(tmpTotal, tmpProgreso.length+1);
+		barraDeProgreso();
 	});
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
@@ -100,37 +100,58 @@ function answer() {
 	}
 }
 
-function barraDeProgreso(cantidadEjercicios, ejercicioActual) {
-	var porcentajeAvance = ejercicioActual * 100 / cantidadEjercicios;
-	var progress = document.getElementById('progress');
-	progress.setAttribute('width', porcentajeAvance+'%');
-	var svg = document.getElementById("progressbar").getBoundingClientRect();
-	var circulo = document.getElementById('progressfinal');
-	circulo.setAttribute('cx', svg.width - 5);
-	if(cantidadEjercicios===ejercicioActual) {
-		circulo.setAttribute('fill', '#2ab04a');
+function barraDeProgreso() {
+	$("#progressbar").empty();
+	var svg = document.getElementById('progressbar');
+	var separacion = (1000 - (46 * (tmpTotal))) / tmpTotal;
+	for(var i = 0; i < tmpTotal; i++) {
+		var xRect = (i*separacion)+(i*46)+5;//calcula centro x para rectangulo
+		var cxCircle = (i*separacion)+(i*46)+separacion+23;//calcula x de inicio para recta
+		var circle = crearElemento('circle', { 
+			cx: cxCircle, 
+			cy: 25,
+			r: 23,
+			fill: 'black',
+			stroke: 'none'
+		});
+		var rect = crearElemento('rect', {
+			x: xRect,
+			y: 13.5,
+			width: separacion-10,
+			height: 27,
+			fill: 'black',
+			stroke: 'none'
+		});
+		svg.appendChild(circle);
+		svg.appendChild(rect);
+	}
+	function crearElemento(nombre, atributos) {
+		var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
+		for (var p in atributos) {
+			element.setAttributeNS(null, p.replace(/[A-Z]/g, function(m, p, o, s) { return "-" + m.toLowerCase(); }), atributos[p]);
+		}
+		return element;
 	}
 }
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {
 	var x = window.matchMedia("(max-width: 768px)");
-	var arrCorrecta = ["PatoFeedBack_00007.png","PataFeedBack_00007.png"];//Imagen feedback si es correcto
-	var arrIncorrecta = ["PatoFeedBack_00001.png","PataFeedBack_00001.png"];
 	if(x.matches) { //mostrar feedback en modal
-		btnCloseModal.setAttribute("onClick", "cerrarFeed()");
 		if(esCorrecta) {
-			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			openModalFeedback(feedback, arrCorrecta[rando]);
+			openModalFeedback(feedback, true);
 			$('section.contenido').find('input').prop('disabled', true);
 			btnCerrarFeedBack.setAttribute('onclick', 'cerrarFeed()');
+			btnCerrarFeedBack.classList.add('btnCerrarFeedGood');
 		} else {
-			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
-			openModalFeedback(feedback, arrIncorrecta[rando]);
+			openModalFeedback(feedback, false);
 			btnCerrarFeedBack.setAttribute('onclick', 'closeModalFeedback()');
+			btnCerrarFeedBack.classList.add('btnCerrarFeedBad');
 		}
 	} else { //mostrar feedback en footer
-		$('#btnResponder').html('Continuar');
-		$('footer.pie').find('span').html(feedback);
+		var arrCorrecta = ["PatoFeedBack_00007.png","PataFeedBack_00007.png"];//Imagen feedback si es correcto
+		var arrIncorrecta = ["PatoFeedBack_00001.png","PataFeedBack_00001.png"];
+		$('#btnResponder').html('<span>CONTINUAR</span>');
+		$('footer.pie').find('div > span').html(feedback);
 		$('#imgfeedback').removeClass('d-none');
 		$('#btnConsulta').addClass('d-none');
 		$('section.contenido').find('input').prop('disabled', true);
@@ -151,9 +172,13 @@ function feedbackCorrecta(src) {
 	$('footer.pie').addClass('pieCorrecta');
 	$('#btnResponder').addClass('respCorrecta');
 	$('#imgfeedback').attr('src', src);
-	var mensaje = rachaCorrectas();
-	if(mensaje) {
-		$('footer.pie').find('span').parent().append(mensaje);
+	var racha = rachaCorrectas();
+	var textoSpan = feedCorrectas[Math.floor((Math.random() *  feedCorrectas.length))];
+	if(racha) {
+		var textoRacha = `Tienes una racha de <b>${rachaCorrectas()}</b> respuestas correctas.`;
+		$('footer.pie').find('div.col-2.col-sm-4.col-md-6').html(`<span class="spanFeedback">${textoSpan}</span><p class="textoFeedback">${textoRacha}</p>`);
+	} else {
+		$('footer.pie').find('div.col-2.col-sm-4.col-md-6').html(`<span class="spanFeedback">${textoSpan}</span>`);
 	}
 	btnRespuesta.setAttribute("onClick", "cerrarFeed();");
 }
@@ -168,7 +193,7 @@ function rachaCorrectas() {
 		}
 	}
 	return correctos+1 > 1 
-		? `<span>Tienes una racha de <b>${correctos+1}</b> respuestas correctas.</span>` 
+		? correctos+1 
 		: null;
 }
 
@@ -176,15 +201,16 @@ function feedbackIncorrecta(src) {
 	$('footer.pie').addClass('pieIncorrecta');
 	$('#btnResponder').addClass('respIncorrecta');
 	$('#imgfeedback').attr('src', src);
+	var textoSpan = feedIncorrectas[Math.floor((Math.random() *  feedCorrectas.length))];
+	$('footer.pie').find('div.col-2.col-sm-4.col-md-6').html(`<span class="spanFeedback">${textoSpan}</span><p class="textoFeedback">${feed}</p>`);
 	btnRespuesta.setAttribute("onClick", "continuarEjercicio();");
 }
 
-function continuarEjercicio() {
+function continuarEjercicio() {//permite continuar con el segundo intento en DESKTOP O TABLET
 	$('footer.pie').removeClass('pieIncorrecta pieCorrecta');
 	$('#btnResponder').removeClass('respIncorrecta respCorrecta');
-	$('footer.pie').find('span').css('color', '');
-	$('footer.pie').find('span').html("<span></span>");
-	$('#btnResponder').html('Responder');
+	$('footer.pie').find('div.col-2.col-sm-4.col-md-6').html('').css('color', '');
+	$('#btnResponder').html('<span>RESPONDER</span>');
 	$('#btnConsulta').removeClass('d-none');
 	$('#imgfeedback').addClass('d-none');
 	btnRespuesta.setAttribute("onClick", "answer();");
@@ -199,10 +225,20 @@ function continuarEjercicio() {
 	$('section.contenido').find('input').prop('disabled', false);
 }
 //handle modals
-function openModalFeedback(feedback, img) {
-	var src = `https://desarrolloadaptatin.blob.core.windows.net/feedbacksimg/${img}`;
-	$('#modalFeedback').find('img').attr('src',src);
-	$('#modalFeedback').find('span').html(feedback);
+function openModalFeedback(feedback, correcto) {
+	var textoSpan, textoFeedback = "";
+	if(correcto) {
+		textoSpan = feedCorrectas[Math.floor((Math.random() *  feedCorrectas.length))];
+		var racha = rachaCorrectas();
+		if(racha) {
+			textoFeedback = `Tienes una racha de <b>${rachaCorrectas()}</b> respuestas correctas.`
+		}
+	} else {
+		textoSpan = feedIncorrectas[Math.floor((Math.random() *  feedCorrectas.length))];
+		textoFeedback = feedback;
+	}
+	$('#modalFeedback div.col-12').first().html(`<span class="spanFeedback">${textoSpan}</span><p class="textoFeedback">${textoFeedback}</p>`);
+	$('#modalFeedback div.modal-content').addClass(correcto ? 'modalFeedbackOK' : 'modalFeedbackError');
 	$('#modalFeedback').modal({
 		backdrop: 'static',
     keyboard: false
@@ -210,11 +246,16 @@ function openModalFeedback(feedback, img) {
 	$('#modalFeedback').modal('show');
 }
 
-function closeModalFeedback() {
+function closeModalFeedback() {//esta funcion permite continuar con el segundo intento en MOBILE 
 	$('#modalFeedback').modal('hide');
-	$('section.contenido').find('input').prop('disabled', false).val('');
-	$('input:checked').prop('checked', false);
-	$('.radio-div__selected').removeClass('radio-div__selected');
+	if(_TIPO_INPUT_ === 'radio') {
+		$('input:checked')[0].checked = false;
+		$('.radio-div__selected').removeClass('radio-div__selected');
+	} else if(_TIPO_INPUT_ === 'input') {
+		$('section.contenido').find('input[type=text]').val('');
+	}
+	$('section.contenido').find('input').prop('disabled', false);
+	btnRespuesta.disabled = true;
 }
 
 function openModalGlosa() {
@@ -223,10 +264,6 @@ function openModalGlosa() {
     keyboard: false
 	});
 	$('#modalGlosa').modal('show');
-}
-
-function closeModalGlosa() {
-	$('#modalGlosa').modal('hide');
 }
 
 //FUNCIONES DE LOS INPUTS DE RESPUESTA
