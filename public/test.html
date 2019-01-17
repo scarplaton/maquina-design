@@ -18,8 +18,6 @@
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> 
       <script>
 
-         var imgSrcTablaCentena = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_CDU.svg';
-         var imgSrcTablaUMil = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/tabla_UMCDU.svg';
          var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
          var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
          var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
@@ -28,17 +26,17 @@
          var srcImgBloqueDiez = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg';
          var srcImgBloqueUno = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg';
          
-         var _width='850', 
-         _tipoTabla='miles', //puede ser 'centenas' o 'miles'
-         _pisosTabla='1', //pueden ser 'uno', 'dos', 'tres'
+         var _width='850',
+         _tipoTabla='centenas', //puede ser 'centenas' o 'miles'
+         _pisosTabla='3', //pueden ser 'uno', 'dos', 'tres'
          _separacionElementos='20',
 
-         _tipoPisoUno='numerico', 
-         _repeticionPictoricaPisoUno='',
-         _umilPisoUno='1',
-         _centenaPisoUno='2',
-         _decenaPisoUno='3',
-         _unidadPisoUno='4',
+         _tipoPisoUno='imagenes',
+         _repeticionPictoricaPisoUno='pelotas',
+         _umilPisoUno='9',
+         _centenaPisoUno='8',
+         _decenaPisoUno='7',
+         _unidadPisoUno='6',
 
          _tipoPisoDos='numerico',
          _repeticionPictoricaPisoDos='',
@@ -46,6 +44,13 @@
          _centenaPisoDos='2',
          _decenaPisoDos='3',
          _unidadPisoDos='4',
+
+         _tipoPisoTres='numerico',
+         _repeticionPictoricaPisoTres='',
+         _umilPisoTres='1',
+         _centenaPisoTres='2',
+         _decenaPisoTres='3',
+         _unidadPisoTres='4',
 
          _umilVP='1',
          _centenaVP='2',
@@ -65,14 +70,33 @@
             tipoTabla: _tipoTabla,
             pisosTabla: Number(_pisosTabla)
          }
-         
-         datosEjercicio.tabla.numerosPisoUno = {
+         datosEjercicio.tabla.detallePisos = [{
             tipo: _tipoPisoUno, //tipo piso uno
             tipoRepeticion: _repeticionPictoricaPisoUno,
             umil: Number(_umilPisoUno),
             centena: Number(_centenaPisoUno),
             decena: Number(_decenaPisoUno),
             unidad: Number(_unidadPisoUno)
+         }]
+         if(datosEjercicio.tabla.configuracion.pisosTabla > 1) {
+            datosEjercicio.tabla.detallePisos[1] = {
+               tipo: _tipoPisoDos,
+               tipoRepeticion: _repeticionPictoricaPisoDos,
+               umil: _umilPisoDos,
+               centena: _centenaPisoDos,
+               decena: _decenaPisoDos,
+               unidad: _unidadPisoDos
+            }
+         }
+         if(datosEjercicio.tabla.configuracion.pisosTabla > 2) {
+            datosEjercicio.tabla.detallePisos[2] = {
+               tipo: _tipoPisoTres,
+               tipoRepeticion: _repeticionPictoricaPisoTres,
+               umil: _umilPisoTres,
+               centena: _centenaPisoTres,
+               decena: _decenaPisoTres,
+               unidad: _unidadPisoTres
+            }
          }
          datosEjercicio.valorPosicional = {};
          datosEjercicio.valorPosicional.mostrar = _dibujaValorPosicional;
@@ -95,7 +119,7 @@
          var container = document.getElementById('container');
          let recursos = cargaRecursos();
          var ctx;
-         Promise.all(recursos).then(function([imgTabla, imgFlechaAbajo, imgSignoMas, imgUnidades, imgDecenas, imgCentenas, imgMiles]){
+         Promise.all(recursos).then(function([imgTabla, imgFlechaAbajo, imgSignoMas]){
             var { altoCanvas, altoImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
             container.width = Number(_width);
             container.height = altoCanvas;
@@ -105,7 +129,7 @@
             const diviciones = datosEjercicio.tabla.configuracion.tipoTabla === 'centenas' ? 3 : 4;
             const anchoSeparaciones = _width / diviciones;
 
-            dibujaContenidoTabla(diviciones, anchoSeparaciones, altoImagen);
+            dibujaContenidoTabla(anchoSeparaciones, altoImagen);
             yStart = altoImagen + _separacionElementos;
 
             if(datosEjercicio.valorPosicional.mostrar === 'si') {
@@ -120,30 +144,62 @@
             console.log(error);
          });
 
-         function dibujaContenidoTabla(diviciones, anchoSeparaciones, altoImagen) {
-            var { umil, centena, decena, unidad } = datosEjercicio.tabla.numerosPisoUno;
-            var numerosPisoUno = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
-            /*
-            for(var i = 0; i < numerosPisoUno.length; i++) {
-               
+         function dibujaContenidoTabla(anchoSeparaciones, altoImagen) {
+            ctx.fillStyle = '#F58220';
+            ctx.textAlign = 'center';
+
+            const { detallePisos } = datosEjercicio.tabla;
+            const { tipoTabla, pisosTabla } = datosEjercicio.tabla.configuracion;
+            var porcion = altoImagen / ((pisosTabla*2)+1);//cantidad de separaciones que tiene la imagen ya que el alto de un cuadro equivale a dos alto del titulo de la tabla
+            var altoCuadro = porcion * 2;
+            var altoHeader = porcion;
+            var altoTexto = altoCuadro * 0.85;
+            var separaciones = tipoTabla === 'centenas' ? 3:4;
+            var anchoSeparacion = container.width / separaciones;
+            ctx.font = `${altoTexto}pt LarkeNeueThinFuente`;
+
+            for (var fila = 0; fila < detallePisos.length; fila++) {
+               const { tipo, tipoRepeticion, umil, centena, decena, unidad } = detallePisos[fila];
+               var numeros = tipoTabla === 'centenas' ? [centena, decena, unidad] : [umil, centena, decena, unidad];
+               numeros.forEach(function(numero, columna){
+                  switch(tipo){
+                     case 'numerico':
+                        dibujaNumeroEnFila(numero, fila, columna);
+                        break;
+                     case 'imagenes':
+                        dibujaImagen(numero, fila, columna, tipoRepeticion);
+                        break;
+                     default:
+                        console.log('opcion aun no soportada');
+                        break;
+                  }
+               });
             }
 
-            function dibujaPisoNumeros(numero) {
-               var altoBox = (altoImagen/1.8);
-               var altoTexto = altoBox*0.65;
-               var yTexto = altoImagen-(altoBox/2)+(altoTexto/2);
-               ctx.font = `${altoTexto}pt LarkeNeueThinFuente`;
-               ctx.fillStyle = '#F58220';
-               var anchoTexto = ctx.measureText(numero).width;
-               var xTexto = centroSeccion-(anchoTexto/2);
+            function dibujaNumeroEnFila(numero, fila, columna) {
+               var xTexto = (anchoSeparacion*columna)+(anchoSeparacion/2);
+               var yTexto = porcion + (altoCuadro*fila) + altoTexto + ((altoCuadro-altoTexto)/2)-10;
                ctx.fillText(numero, xTexto, yTexto);
             }
-            */
+
+            function dibujaImagen(numero, fila, columna, tipoRepeticion) {
+               if(tipoRepeticion === 'pelotas') {
+                  var src = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+                  cargaImagen(src).then(image => {
+                     var xImg = (anchoSeparacion*columna)+(anchoSeparacion/2) - (altoCuadro*0.85/2);
+                     var yImg = porcion + (altoCuadro*fila) + (altoCuadro/2) - (altoCuadro*0.85/2);
+                     ctx.drawImage(image, xImg, yImg, altoCuadro*0.85, altoCuadro*0.85);
+                  }).catch(error => {
+                     console.log(error)
+                  });
+               }
+            }
          }
 
          function muestraValoresPosicionales(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
             ctx.font = `${datosEjercicio.valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
             ctx.fillStyle = '#F58220';
+            ctx.textAlign = 'center';
             var { umil, centena, decena, unidad } = datosEjercicio.valorPosicional.numeros;
             var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
 
@@ -154,11 +210,9 @@
                var xFlecha = centroSeccion-(imgFlechaAbajo.width/2);
                ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
                //texto 
-               var anchoTexto = ctx.measureText(numerosValorPosicional[i-1]).width;
-               var xTexto = centroSeccion-(anchoTexto/2);
-               console.log(yStart,imgFlechaAbajo.height,_separacionElementos,datosEjercicio.valorPosicional.altoTexto)
+
                yTexto = yStart+imgFlechaAbajo.height+_separacionElementos+datosEjercicio.valorPosicional.altoTexto;
-               ctx.fillText(numerosValorPosicional[i-1], xTexto, yTexto);
+               ctx.fillText(numerosValorPosicional[i-1], centroSeccion, yTexto);
                //singo mas
                if(i+1 !== diviciones+1) {
                   var xMas = centroSeparacion - (imgSignoMas.width /2);
@@ -172,7 +226,6 @@
          function muestraTextoResultado(yStart, diviciones, anchoSeparaciones, imgFlechaAbajo) {
             ctx.font = `${datosEjercicio.resultado.altoTexto}pt LarkeNeueThinFuente`;
             ctx.fillStyle = '#F58220';
-            ctx.textAlign = 'center';
             //imagen flecha
             var xImage = _width / 2 - imgFlechaAbajo.width /2;
             ctx.drawImage(imgFlechaAbajo, xImage, yStart);
@@ -181,28 +234,17 @@
             var yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + datosEjercicio.resultado.altoTexto;
 
             ctx.fillText(datosEjercicio.resultado.numero, xTexto, yTexto);
-
-
          }
 
          function cargaRecursos() {
-            var srcTabla = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? imgSrcTablaUMil : imgSrcTablaCentena;
+            var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
+            var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
+            var srcTabla = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
             let recursos = [
                cargaImagen(srcTabla), 
                cargaImagen(imgSrcFlechaAbajo),
                cargaImagen(imgSrcSignoMas)
             ];
-            if(datosEjercicio.tabla.configuracion.repeticionPictoricaPisoUno === 'bloques') {
-               recursos.concat([
-                  cargaImagen(srcImgBloqueUno),
-                  cargaImagen(srcImgBloqueDiez),
-                  cargaImagen(srcImgBloqueCien)
-               ]);
-               if(_umil > 0) {
-                  recursos.concat([cargaImagen(srcImgBloqueMil)]);
-               }
-            }
-            recursos.concat([cargaFuente('LarkeNeueThinFuente', srcFuente)]);
             return recursos;
          }
 
@@ -243,7 +285,7 @@
             return new Promise(function(resolve, reject){
                var font = new FontFace(nombre, `url('${src}')`, {});
                font.load().then(function(loadedFont) {
-                  document.fonts.add(loadedFont);
+                  document.fonts.add(loadedFont);;
                   resolve(nombre);
                }).catch(function(error){
                   reject(error);

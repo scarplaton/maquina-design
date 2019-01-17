@@ -104,9 +104,23 @@ function print() { //Dibujar ejercicios
 	var h = ['e', 'r', 'g'];
 	h.forEach(n => {
 		contenidoBody[n].forEach((m, i) => {
-			let j = FUNCIONES.findIndex(x => x.tag == m.tag), 
-			k = FUNCIONES[j].fns.findIndex(x => x.id == m.name)
-			FUNCIONES[j].fns[k].action({ container:document.getElementById(`container-${n}${i}`), params:m.params, versions:versionBody.vars, vt:false })
+			for(var oaIndex = 0; oaIndex < FUNCIONES.length; oaIndex++) {
+				if(FUNCIONES[oaIndex].tag === m.tag) {
+					for(var funcionIndex = 0; funcionIndex < FUNCIONES[oaIndex].fns.length; funcionIndex++) {
+						if(FUNCIONES[oaIndex].fns[funcionIndex].id === m.name) {
+							console.log(FUNCIONES[oaIndex].fns[funcionIndex]);
+							FUNCIONES[oaIndex].fns[funcionIndex].action({
+								container:document.getElementById(`container-${n}${i}`), 
+								params:m.params, 
+								versions:versionBody.vars, 
+								vt:false 
+							});
+							break;
+						}
+					}
+					break;
+				}
+			}
 		})
 	})
 }
