@@ -17,8 +17,6 @@ const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
 //boton responder
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
-//boton cerrar modal de feedback
-var btnCerrarFeedBack = document.getElementById('btnCloseModal');
 
 var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
@@ -139,13 +137,8 @@ function muestraFeedback(esCorrecta, feedback) {
 	if(x.matches) { //mostrar feedback en modal
 		if(esCorrecta) {
 			openModalFeedback(feedback, true);
-			$('section.contenido').find('input').prop('disabled', true);
-			btnCerrarFeedBack.setAttribute('onclick', 'cerrarFeed()');
-			btnCerrarFeedBack.classList.add('btnCerrarFeedGood');
 		} else {
 			openModalFeedback(feedback, false);
-			btnCerrarFeedBack.setAttribute('onclick', 'closeModalFeedback()');
-			btnCerrarFeedBack.classList.add('btnCerrarFeedBad');
 		}
 	} else { //mostrar feedback en footer
 		var arrCorrecta = ["PatoFeedBack_00007.png","PataFeedBack_00007.png"];//Imagen feedback si es correcto
@@ -226,7 +219,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 }
 //handle modals
 function openModalFeedback(feedback, correcto) {
-	var textoSpan, textoFeedback = "";
+	var textoSpan, textoFeedback = "", btnClass, btnAction;
 	if(correcto) {
 		textoSpan = feedCorrectas[Math.floor((Math.random() *  feedCorrectas.length))];
 		var racha = rachaCorrectas();
@@ -239,6 +232,13 @@ function openModalFeedback(feedback, correcto) {
 	}
 	$('#modalFeedback div.col-12').first().html(`<span class="spanFeedback">${textoSpan}</span><p class="textoFeedback">${textoFeedback}</p>`);
 	$('#modalFeedback div.modal-content').addClass(correcto ? 'modalFeedbackOK' : 'modalFeedbackError');
+	btnClass = correcto ? 'btnCerrarFeedGood' : 'btnCerrarFeedBad';
+	btnAction = correcto ? 'cerrarFeed()' : 'closeModalFeedback()'
+	$('#btnCloseModal')
+		.attr('onclick', btnAction)
+		.removeClass('btnCerrarFeedBad btnCerrarFeedGood')
+		.addClass(btnClass);
+	$('section.contenido').find('input').prop('disabled', true);
 	$('#modalFeedback').modal({
 		backdrop: 'static',
     keyboard: false

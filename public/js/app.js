@@ -16,18 +16,22 @@ function shuffle(arr, t = 10) {
 
 function replace(texto, variables) { 
 	var result = texto.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
-		var variable = variables.find(function(item) {
-			return item.var === coincidencia[1];
-		});
-		return variable.val;
+		for(var indexVar = 0; indexVar < variables.length; indexVar++) {
+			if(variables[indexVar].var == coincidencia[1]) {
+				return variables[indexVar].var;
+			}
+		}
 	});
 	return result;
 }
 
 function regex(theInput, theVariables, isTutorial) {
 	var result = theInput.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
-			var variable = theVariables.find(item => item.var == coincidencia[1]);
-			return isTutorial ? variable.vt : variable.val;
+		for(var indexVar = 0; indexVar < theVariables.length; indexVar++) {
+			if(theVariables[indexVar].var == coincidencia[1]) {
+				return isTutorial ? theVariables[indexVar].vt : theVariables[indexVar].val;
+			}
+		}
 	});
 	return result;
 }
@@ -863,70 +867,52 @@ function recta(config) {
 
 function igualPerimetro(config) {
 	const { container, params, variables, versions, vt } = config;
+
+  container.width = params.cuadro * 10;
+  container.height = params.cuadro * 5;
+  container.style.border = params.borderWidth+'px solid  #000';
   
-	container.width = params.cuadro * 10;
-	container.height = params.cuadro * 5;
-	container.style.border = params.borderWidth+"px solid  #000";
-	
-	var ctx = container.getContext('2d');
-	
-	for(var i = 1; i < 10; i++) { //lineas verticales
-	  ctx.beginPath();
-	  ctx.moveTo(i * params.cuadro, container.height);
-	  ctx.lineTo(i * params.cuadro, 0);
-	  ctx.strokeStyle = "black";
-	  ctx.lineWidth=2;
-	  ctx.stroke();
-	  ctx.closePath();
-	}
-  
-	for(var i = 1; i < 5; i++) {
-	  ctx.beginPath();
-	  ctx.moveTo(container.width, i * params.cuadro);
-	  ctx.lineTo(0, i * params.cuadro);
-	  ctx.strokeStyle = "black";
-	  ctx.lineWidth=2;
-	  ctx.stroke();
-	  ctx.closePath();
-	}
-  
-	try {
-	  var varAncho, varAlto;
-	  if(vt) {
-		varAlto = variables.find(function(item) {
-		  return item.var === params.alto
-		});
-		varAncho = variables.find(function(item) {
-		  return item.var === params.ancho
-		});
-	  } else {
-		varAlto = versions.find(function(item) {
-		  return item.var === params.alto
-		});
-		varAncho = versions.find(function(item) {
-		  return item.var === params.ancho
-		});
-	  }
-	  
-	  var alto = vt ? varAlto.vt : varAlto.val;
-	  var ancho = vt ? varAncho.vt : varAncho.val;
-	  dibujaRectangulo(ctx, ancho * params.cuadro, alto * params.cuadro, params.cuadro);
-  
-	} catch(error) {
-	  console.log('explota');
-	}
-  
-	function dibujaRectangulo(ctx, largox, largoy, lado) {
-	  ctx.translate(0,0);
-	  var x,y;
-	  y = largoy / lado === 1 ? 2 * lado : lado;
-	  x = (10 * lado)/2 - (Math.trunc((largox / lado) / 2) * lado);
-	  ctx.beginPath();
-	  ctx.rect(x, y, largox, largoy);
-	  ctx.strokeStyle = "red";
-	  ctx.lineWidth=4;
-	  ctx.stroke();
-	}
+  var ctx = container.getContext('2d');
+  var vars = vt ? variables : versions;
+  for(var i = 1; i < 10; i++) { //lineas verticales
+    ctx.beginPath();
+    ctx.moveTo(i * params.cuadro, container.height);
+    ctx.lineTo(i * params.cuadro, 0);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.closePath();
+  }
+
+  for(var i = 1; i < 5; i++) {
+    ctx.beginPath();
+    ctx.moveTo(container.width, i * params.cuadro);
+    ctx.lineTo(0, i * params.cuadro);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.closePath();
+  }
+  var alto, ancho;
+  try {
+    alto = regex(`$${params.alto}`, vars, vt);
+    ancho = regex(`$${params.ancho}`, vars, vt);
+    dibujaRectangulo(ctx, ancho * params.cuadro, alto * params.cuadro, params.cuadro);
+  } catch(error) {
+    console.log(error);
+  }
+
+  function dibujaRectangulo(ctx, largox, largoy, lado) {
+    ctx.translate(0,0);
+    var x,y;
+    y = largoy / lado === 1 ? 2 * lado : lado;
+    x = (10 * lado)/2 - (Math.trunc((largox / lado) / 2) * lado);
+    ctx.beginPath();
+    ctx.rect(x, y, largox, largoy);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth=4;
+    ctx.stroke();
+  }
 }
 
 function tablaPosicional(config) {
@@ -1294,10 +1280,17 @@ function repeticionPic(config) {
 		 console.log(error);
 	});
 
+	function buscarImagen(imagenBuscada) {
+		for(var imagen of imagenes) {
+			if(imagen.name === imagenBuscada) {
+				return imagen;
+			}
+		}
+	}
 
 	function getRepeticiones() {
 		 let repeticiones = [{
-				imagen: _imagen1 !== '' ? imagenes.find(x => x.name === _imagen1) : { src:'' },
+				imagen: _imagen1 !== '' ? buscarImagen(_imagen1) : { src:'' },
 				altoImagen: Number(_altoImagen1),
 				formaRepeticion: _formaRepeticion1,
 				repeticiones: Number(_repeticiones1),
@@ -1307,7 +1300,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 1) {
 				repeticiones[1] = {
-				imagen: _imagen2 !== '' ? imagenes.find(x => x.name === _imagen2) : { src:'' },
+				imagen: _imagen2 !== '' ? buscarImagen(_imagen2) : { src:'' },
 				altoImagen: Number(_altoImagen2),
 				formaRepeticion: _formaRepeticion2,
 				repeticiones: Number(_repeticiones2),
@@ -1318,7 +1311,7 @@ function repeticionPic(config) {
 		 
 		 if(_pictoricos > 2) {
 				repeticiones[2] = {
-				imagen: _imagen3 !== '' ? imagenes.find(x => x.name === _imagen3) : { src:'' },
+				imagen: _imagen3 !== '' ? buscarImagen(_imagen3) : { src:'' },
 				altoImagen: Number(_altoImagen3),
 				formaRepeticion: _formaRepeticion3,
 				repeticiones: Number(_repeticiones3),
@@ -1329,7 +1322,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 3) {
 				repeticiones[3] = {
-				imagen: _imagen4 !== '' ? imagenes.find(x => x.name === _imagen4) : { src:'' },
+				imagen: _imagen4 !== '' ? buscarImagen(_imagen4) : { src:'' },
 				altoImagen: Number(_altoImagen4),
 				formaRepeticion: _formaRepeticion4,
 				repeticiones: Number(_repeticiones4),
@@ -1340,7 +1333,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 4) {
 				repeticiones[4] = {
-				imagen: _imagen5 !== '' ? imagenes.find(x => x.name === _imagen5) : { src:'' },
+				imagen: _imagen5 !== '' ? buscarImagen(_imagen5) : { src:'' },
 				altoImagen: Number(_altoImagen5),
 				formaRepeticion: _formaRepeticion5,
 				repeticiones: Number(_repeticiones5),
@@ -1351,7 +1344,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 5) {
 				repeticiones[5] = {
-				imagen: _imagen6 !== '' ? imagenes.find(x => x.name === _imagen6) : { src:'' },
+				imagen: _imagen6 !== '' ? buscarImagen(_imagen6) : { src:'' },
 				altoImagen: Number(_altoImagen6),
 				formaRepeticion: _formaRepeticion6,
 				repeticiones: Number(_repeticiones6),
@@ -1362,7 +1355,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 6) {
 				repeticiones[6] = {
-				imagen: _imagen7 !== '' ? imagenes.find(x => x.name === _imagen7) : { src:'' },
+				imagen: _imagen7 !== '' ? buscarImagen(_imagen7) : { src:'' },
 				altoImagen: Number(_altoImagen7),
 				formaRepeticion: _formaRepeticion7,
 				repeticiones: Number(_repeticiones7),
@@ -1373,7 +1366,7 @@ function repeticionPic(config) {
 
 		 if(_pictoricos > 7) {
 				repeticiones[7] = {
-				imagen: _imagen8 !== '' ? imagenes.find(x => x.name === _imagen8) : { src:'' },
+				imagen: _imagen8 !== '' ? buscarImagen(_imagen8) : { src:'' },
 				altoImagen: Number(_altoImagen8),
 				formaRepeticion: _formaRepeticion8,
 				repeticiones: Number(_repeticiones8),

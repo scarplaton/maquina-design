@@ -26,8 +26,8 @@
          var srcImgBloqueDiez = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg';
          var srcImgBloqueUno = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg';
          
-         var _width='850',
-         _tipoTabla='centenas', //puede ser 'centenas' o 'miles'
+         var _width='600',
+         _tipoTabla='miles', //puede ser 'centenas' o 'miles'
          _pisosTabla='3', //pueden ser 'uno', 'dos', 'tres'
          _separacionElementos='20',
 
@@ -38,15 +38,15 @@
          _decenaPisoUno='7',
          _unidadPisoUno='6',
 
-         _tipoPisoDos='numerico',
-         _repeticionPictoricaPisoDos='',
-         _umilPisoDos='1',
-         _centenaPisoDos='2',
-         _decenaPisoDos='3',
-         _unidadPisoDos='4',
+         _tipoPisoDos='imagenes',
+         _repeticionPictoricaPisoDos='pelotas',
+         _umilPisoDos='4',
+         _centenaPisoDos='3',
+         _decenaPisoDos='6',
+         _unidadPisoDos='8',
 
-         _tipoPisoTres='numerico',
-         _repeticionPictoricaPisoTres='',
+         _tipoPisoTres='repeticion',
+         _repeticionPictoricaPisoTres='bloques',
          _umilPisoTres='1',
          _centenaPisoTres='2',
          _decenaPisoTres='3',
@@ -82,20 +82,20 @@
             datosEjercicio.tabla.detallePisos[1] = {
                tipo: _tipoPisoDos,
                tipoRepeticion: _repeticionPictoricaPisoDos,
-               umil: _umilPisoDos,
-               centena: _centenaPisoDos,
-               decena: _decenaPisoDos,
-               unidad: _unidadPisoDos
+               umil: Number(_umilPisoDos),
+               centena: Number(_centenaPisoDos),
+               decena: Number(_decenaPisoDos),
+               unidad: Number(_unidadPisoDos)
             }
          }
          if(datosEjercicio.tabla.configuracion.pisosTabla > 2) {
             datosEjercicio.tabla.detallePisos[2] = {
                tipo: _tipoPisoTres,
                tipoRepeticion: _repeticionPictoricaPisoTres,
-               umil: _umilPisoTres,
-               centena: _centenaPisoTres,
-               decena: _decenaPisoTres,
-               unidad: _unidadPisoTres
+               umil: Number(_umilPisoTres),
+               centena: Number(_centenaPisoTres),
+               decena: Number(_decenaPisoTres),
+               unidad: Number(_unidadPisoTres)
             }
          }
          datosEjercicio.valorPosicional = {};
@@ -141,7 +141,7 @@
             }
 
          }).catch(function(error){
-            console.log(error);
+            console.log(error, error.message);
          });
 
          function dibujaContenidoTabla(anchoSeparaciones, altoImagen) {
@@ -169,6 +169,9 @@
                      case 'imagenes':
                         dibujaImagen(numero, fila, columna, tipoRepeticion);
                         break;
+                     case 'repeticion':
+                        dibujaRepeticion(numero, fila, columna, tipoRepeticion);
+                        break;
                      default:
                         console.log('opcion aun no soportada');
                         break;
@@ -177,8 +180,9 @@
             }
 
             function dibujaNumeroEnFila(numero, fila, columna) {
+               fila++;
                var xTexto = (anchoSeparacion*columna)+(anchoSeparacion/2);
-               var yTexto = porcion + (altoCuadro*fila) + altoTexto + ((altoCuadro-altoTexto)/2)-10;
+               var yTexto = porcion + (altoCuadro*fila) - (altoCuadro-altoTexto)/2;
                ctx.fillText(numero, xTexto, yTexto);
             }
 
@@ -192,6 +196,146 @@
                   }).catch(error => {
                      console.log(error)
                   });
+               }
+            }
+
+            function dibujaRepeticion(numero, fila, columna, tipoRepeticion) {
+               var ruta, src;
+               if(tipoRepeticion === 'bloques') {
+                  ruta = tipoTabla === 'centenas' ? 5-columna : 4-columna; // busca que imagen ocupar
+                  src = `https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/imagenes_front/bloques_multibase/${ruta}_Original.png`
+               }
+               cargaImagen(src).then(image => {
+                  var cx = (anchoSeparacion*columna)+(anchoSeparacion/2);
+                  var cy = porcion + (altoCuadro*fila) + (altoCuadro/2);
+                  for(var repeticion = 0; repeticion < numero; repeticion++) {
+                     switch(ruta) {
+                        case 4:
+                           console.log(numero);
+                           dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+                           break;
+                        default:
+                           console.log('aun no se pinta');
+                           break;
+                     }
+                  }
+               }).catch(error => {
+                  console.log(error);
+               });
+               
+               function dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy) {
+                  var altoImg = ((altoCuadro * 0.85)/3) * 0.9;
+                  var anchoImg = image.width * altoImg / image.height;
+                  var separacion = ((altoCuadro * 0.85)/3) * 0.1;
+                  switch(numero) {
+                        case 1:
+                           dibujaBloqueEnPosicionUno(image, altoImg, anchoImg, cx, cy);
+                           break;
+                        case 2:
+                           dibujaBloqueEnPosicionCuatro(4, imagen, altoImg, anchoImg, );
+                           dibujaBloqueEnPosicionCuatro(1, imagen, altoImagen, separacion);
+                           break;
+                        case 3:
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(5, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(9, imagen, altoImagen, separacion);
+                           break;
+                        case 4:
+                           dibujaBloqueEnPosicionCuatro(4, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionCuatro(3, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionCuatro(2, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionCuatro(1, imagen, altoImagen, separacion);
+                           break;
+                        case 5:
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(3, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(5, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(7, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(9, imagen, altoImagen, separacion);
+                           break;
+                        case 6:
+                           dibujaBloqueEnPosicionNueve(8, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(5, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(2, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(7, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(4, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           break;
+                        case 7:
+                           dibujaBloqueEnPosicionNueve(9, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(6, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(3, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(5, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(7, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(4, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           break;
+                        case 8:
+                           dibujaBloqueEnPosicionNueve(9, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(6, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(3, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(8, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(2, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(7, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(4, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           break;
+                        case 9:
+                           dibujaBloqueEnPosicionNueve(9, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(6, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(3, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(8, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(5, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(2, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(7, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(4, imagen, altoImagen, separacion);
+                           dibujaBloqueEnPosicionNueve(1, imagen, altoImagen, separacion);
+                           break;
+                  }
+
+                  function dibujaBloqueEnPosicionNueve(posicion, imagen, altoImagen, separacion) { //posicion 1-9
+                        var width = imagen.width * altoImagen / imagen.height;
+                        var x, y;
+                        if(posicion==1 || posicion==4 || posicion==7) {
+                           x = xStart;
+                        } else if(posicion==2 || posicion==5 || posicion==8) {
+                           x = separacion+width+xStart;
+                        } else {
+                           x = separacion*2+width*2+xStart;
+                        }
+                        if(posicion==1 || posicion==2 || posicion==3) {
+                           y = container.height/2 - altoImagen/2 - separacion - altoImagen;
+                        } else if(posicion==4 || posicion==5 || posicion==6) {
+                           y = container.height/2 - altoImagen/2;
+                        } else {
+                           y = container.height/2 + altoImagen/2 + separacion;
+                        }
+                        ctx.drawImage(imagen, x, y, width, altoImagen);
+                        return x;
+                  }
+
+                  function dibujaBloqueEnPosicionCuatro(posicion, imagen, altoImagen, separacion) {
+                        var width = imagen.width * altoImagen / imagen.height;
+                        var x, y;
+                        if(posicion==1 || posicion==3) {
+                           x = xStart;
+                        } else {
+                           x = separacion+width+xStart;
+                        }
+                        if(posicion==1 || posicion==2) {
+                           y = container.height/2 - altoImagen - separacion/2;
+                        } else {
+                           y = container.height/2 + separacion/2;
+                        }
+                        ctx.drawImage(imagen, x, y, width, altoImagen);
+                        return x;
+                  }
+
+                  function dibujaBloqueEnPosicionUno(imagen, altoImg, anchoImg, cx, cy) {
+                     var x = cx - (anchoImg/2);
+                     var y = cy - (altoImg/2);
+                     ctx.drawImage(imagen, x, y, altoImg, anchoImg);
+                  }
                }
             }
          }
@@ -240,11 +384,14 @@
             var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
             var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
             var srcTabla = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+            console.log(srcFuente);
             let recursos = [
                cargaImagen(srcTabla), 
                cargaImagen(imgSrcFlechaAbajo),
-               cargaImagen(imgSrcSignoMas)
+               cargaImagen(imgSrcSignoMas),
+               cargaFuente("LarkeNeueThinFuente", srcFuente)
             ];
+
             return recursos;
          }
 
@@ -276,7 +423,7 @@
                   resolve(img);
                }
                img.onerror = function() {
-                  reject('no pasa nada');
+                  reject('error al cargar imagen: ', src);
                }
             });
          }
@@ -285,9 +432,10 @@
             return new Promise(function(resolve, reject){
                var font = new FontFace(nombre, `url('${src}')`, {});
                font.load().then(function(loadedFont) {
-                  document.fonts.add(loadedFont);;
+                  document.fonts.add(loadedFont);
                   resolve(nombre);
                }).catch(function(error){
+                  console.log('aqui murio', error.message, ' => ', src);
                   reject(error);
                });
             });
