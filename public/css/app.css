@@ -410,16 +410,6 @@ svg {
   display: inline;
 }
 
-.radio-div {
-  cursor: pointer;
-}
-.radio-div:hover {
-  background-color: #adfaff;
-}
-.radio-div__selected {
-  background-color: #1ebdfc;
-}
-
 .input-numerador {
   background-color: #CFE2F3;
   border: 2px solid black;
@@ -572,4 +562,27 @@ svg {
 
 .inputTexto:focus {
   border-color: #1cb0f6;
+}
+
+.radio-div {
+  cursor: pointer;
+}
+
+.radio-div [type=radio] {
+  visibility: hidden;
+  display: none;
+}
+
+.radio-div label {
+  padding: 8px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.radio-div label h5 {
+  margin-bottom: 0;
+}
+
+.radio-div [type=radio]:checked + label {
+  border: 2px solid #1caff6;
 }

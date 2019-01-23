@@ -99,38 +99,46 @@ function answer() {
 }
 
 function barraDeProgreso() {
-	$("#progressbar").empty();
-	var svg = document.getElementById('progressbar');
-	var separacion = (1000 - (46 * (tmpTotal))) / tmpTotal;
-	for(var i = 0; i < tmpTotal; i++) {
-		var xRect = (i*separacion)+(i*46)+5;//calcula centro x para rectangulo
-		var cxCircle = (i*separacion)+(i*46)+separacion+23;//calcula x de inicio para recta
-		var circle = crearElemento('circle', { 
-			cx: cxCircle, 
-			cy: 25,
-			r: 23,
-			fill: 'black',
-			stroke: 'none'
-		});
-		var rect = crearElemento('rect', {
-			x: xRect,
-			y: 13.5,
-			width: separacion-10,
-			height: 27,
-			fill: 'black',
-			stroke: 'none'
-		});
-		svg.appendChild(circle);
-		svg.appendChild(rect);
-	}
-	function crearElemento(nombre, atributos) {
-		var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
-		for (var p in atributos) {
-			element.setAttributeNS(null, p.replace(/[A-Z]/g, function(m, p, o, s) { return "-" + m.toLowerCase(); }), atributos[p]);
-		}
-		return element;
-	}
-}
+  $("#progressbar").empty();
+  var svg = document.getElementById('progressbar');
+  var separacion = (1000 - 46 * tmpTotal) / tmpTotal;
+
+  for (var i = 0; i < tmpTotal; i++) {
+    var xRect = i * separacion + i * 46 + 5; //calcula centro x para rectangulo
+
+    var cxCircle = i * separacion + i * 46 + separacion + 23; //calcula x de inicio para recta
+
+    var circle = crearElemento('circle', {
+      cx: cxCircle,
+      cy: 25,
+      r: 23,
+      fill: 'black',
+      stroke: 'none'
+    });
+    var rect = crearElemento('rect', {
+      x: xRect,
+      y: 13.5,
+      width: separacion - 10,
+      height: 27,
+      fill: 'black',
+      stroke: 'none'
+    });
+    svg.appendChild(circle);
+    svg.appendChild(rect);
+  }
+
+  function crearElemento(nombre, atributos) {
+    var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
+
+    for (var p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return "-" + m.toLowerCase();
+      }), atributos[p]);
+    }
+
+    return element;
+  }
+} 
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {
 	var x = window.matchMedia("(max-width: 768px)");
