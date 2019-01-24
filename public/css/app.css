@@ -70,8 +70,8 @@ svg {
 
   .contenido {
     position: absolute;
-    max-height: calc(100% - 170px);
-    height: calc(100% - 170px);
+    max-height: calc(100% - 110px); /*header 50px + footer mobile 60 px*/
+    height: calc(100% - 110px); /*header 50px + footer mobile 60 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
@@ -103,7 +103,7 @@ svg {
     display: block;
     content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
     margin: 0 auto;
-    height: 85%;
+    height: 100%;
     width: auto;
   }
 
@@ -115,6 +115,19 @@ svg {
     width: auto;
   }
 
+  .pie {
+    height: 60px;
+  }
+
+  #btnConsulta {
+    border-radius: 19px;
+    height: 40px;
+  }
+
+  #btnResponder {
+    border-radius: 19px;
+    height: 40px;
+  }
 }
 /*MAS GRANDE QUE MOBILE*/
 @media only screen and (min-width: 576px) {
@@ -189,6 +202,19 @@ svg {
     right: 0;
   }
 
+  .pie {
+    height: 100px;
+  }
+
+  #btnConsulta {
+    border-radius: 26px;
+    height: 53px;
+  }
+
+  #btnResponder {
+    border-radius: 26px;
+    height: 53px;
+  }
 }
 
 /*
@@ -220,7 +246,6 @@ svg {
 */
 
 .pie {
-  height: 100px;
   background-color: white;
   display: flex;
   align-items: center;
@@ -240,11 +265,9 @@ svg {
 #btnConsulta {
   background-color: #FFF;
   border: 2px solid #bfbfbf;
-  border-radius: 26px;
   color: #107dac;
   font-family: 'varela';
   font-size: 16px;
-  height: 53px;
   position: relative;
 }
 
@@ -264,10 +287,8 @@ svg {
   background: #1a8dc6;
   color: #FFF;
   border: none;
-  border-radius: 26px;
   font-family: 'varela';
   font-size: 16px;
-  height: 53px;
   position: relative;
 }
 
