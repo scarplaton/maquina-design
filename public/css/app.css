@@ -70,8 +70,8 @@ svg {
 
   .contenido {
     position: absolute;
-    max-height: calc(100% - 110px); /*header 50px + footer mobile 60 px*/
-    height: calc(100% - 110px); /*header 50px + footer mobile 60 px*/
+    max-height: calc(100vh - 110px); /*header 50px + footer mobile 60 px*/
+    height: calc(100vh - 110px); /*header 50px + footer mobile 60 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
