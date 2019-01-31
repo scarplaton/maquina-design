@@ -70,8 +70,8 @@ svg {
 
   .contenido {
     position: absolute;
-    max-height: calc(100vh - 110px); /*header 50px + footer mobile 60 px*/
-    height: calc(100vh - 110px); /*header 50px + footer mobile 60 px*/
+    max-height: calc(100vh - 130px); /*header 50px + footer mobile 60 px*/
+    height: calc(100vh - 130px); /*header 50px + footer mobile 60 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
@@ -127,6 +127,14 @@ svg {
   #btnResponder {
     border-radius: 19px;
     height: 40px;
+  }
+
+  #enunciado {
+    margin-bottom: 10px;
+  }
+
+  canvas {
+    margin-bottom: 10px;
   }
 }
 /*MAS GRANDE QUE MOBILE*/
@@ -214,6 +222,14 @@ svg {
   #btnResponder {
     border-radius: 26px;
     height: 53px;
+  }
+
+  #enunciado {
+    margin-bottom: 20px;
+  }
+
+  canvas {
+    margin-bottom: 20px;
   }
 }
 
@@ -585,8 +601,58 @@ svg {
   border-color: #1cb0f6;
 }
 
-.radio-div {
+/*
+.opcionradio input[type=radio] {
+  display: none;
+}
+
+.opcionradio input[type=radio] + label {
+  padding: 8px 12px;
+  border-radius: 40px;
+  width: 100%;
+}
+
+.opcionradio input[type=radio] + label:before {
+  height: 20px;
+  width: 20px;
+  border: 2px solid #bfbfbf;
+  border-radius: 50%;
+  margin-right: 4px;
+  margin-top: 3px;
+  margin-bottom: -4px;
+  content: " ";
+  display: inline-block;
+  background-color: #fff;
+  transition: 0.3s;
   cursor: pointer;
+}
+
+.opcionradio input[type=radio]:checked + label:before {
+  border: 2px solid #1caff6;
+  background: #1caff6;
+}
+
+.opcionradio input[type=radio]:checked + label {
+  background: #b9e8ff;
+  color: #1caff6;
+  padding: 8px 12px;
+}
+
+.opcionradio label {
+  cursor: pointer;
+}
+*/
+
+.radio-div {
+  background: transparent;
+  border: 2px solid #bfbfbf;
+  border-radius: 15px;
+  padding: 12px;
+}
+
+.radio-div_selected {
+  background: #b9e8ff;
+  border: 2px solid #1caff6;
 }
 
 .radio-div [type=radio] {
@@ -595,15 +661,31 @@ svg {
 }
 
 .radio-div label {
-  padding: 8px;
+  cursor: pointer;
+  color: #3c3c3c;
+  font-size: 16px;
   margin-bottom: 0;
+}
+
+.radio-div input[type=radio] + label:before {
+  height: 15px;
+  width: 15px;
+  border: 2px solid #bfbfbf;
+  border-radius: 50%;
+  content: "";
+  display: inline-flex;
+  margin-right: 6px;
+  background: #fff;
+  transition: 0.3s;
   cursor: pointer;
 }
 
-.radio-div label h5 {
+.radio-div input[type=radio]:checked + label:before {
+  border: 2px solid #1caff6;
+  background: #1caff6;
+}
+
+.radio-div canvas {
   margin-bottom: 0;
 }
 
-.radio-div [type=radio]:checked + label {
-  border: 2px solid #1caff6;
-}

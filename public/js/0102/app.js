@@ -184,11 +184,9 @@ function dibujaHtml() {
 			};
 			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs}">
 	<div class="radio-div">
-		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadios(event)"/>
-		<label for="rbtn${index+1}">
-			<canvas class="img-fluid" id="container-${'r'}${item.position}"></canvas>
-			<h5 class="h5 text-center">Opcion ${index+1}</h5>
-		</label>
+		<canvas class="img-fluid" id="container-r${item.position}"></canvas>
+		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+		<label for="rbtn${index+1}">Opción ${index+1}</label>
 	</div>
 </div>`;
 		});

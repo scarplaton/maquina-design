@@ -276,8 +276,15 @@ function openModalGlosa() {
 
 //FUNCIONES DE LOS INPUTS DE RESPUESTA
 function cambiaRadios(e) {
-	console.log(e.target.value);
 	_TIPO_INPUT_ = 'radio';
+	btnRespuesta.disabled = false;
+}
+function cambiaRadioImagen(e) {
+	var seleccionado = document.querySelector('.radio-div_selected');
+	if(seleccionado) {
+		seleccionado.classList.remove('radio-div_selected');
+	}
+	e.target.parentElement.classList.add("radio-div_selected");
 	btnRespuesta.disabled = false;
 }
 function cambiaInputTexto(e) {
