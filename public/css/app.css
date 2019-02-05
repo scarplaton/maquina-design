@@ -1,5 +1,5 @@
 ::-webkit-scrollbar {
-  width: 20px;
+  width: 10px;
 }
 
 /* Track */
@@ -20,6 +20,24 @@
 
 svg {
   vertical-align: baseline;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+canvas {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+img {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+table img {
+  margin: 0;
 }
 
 @font-face {
@@ -128,14 +146,6 @@ svg {
     border-radius: 19px;
     height: 40px;
   }
-
-  #enunciado {
-    margin-bottom: 10px;
-  }
-
-  canvas {
-    margin-bottom: 10px;
-  }
 }
 /*MAS GRANDE QUE MOBILE*/
 @media only screen and (min-width: 576px) {
@@ -223,14 +233,6 @@ svg {
     border-radius: 26px;
     height: 53px;
   }
-
-  #enunciado {
-    margin-bottom: 20px;
-  }
-
-  canvas {
-    margin-bottom: 20px;
-  }
 }
 
 /*
@@ -253,6 +255,10 @@ svg {
 
 #botonSalir:hover {
   fill: #1f8f99;
+}
+
+#enunciado {
+  margin-bottom: 10px;
 }
 
 /*
@@ -382,7 +388,7 @@ svg {
 */
 
 .dimensionGlosa {
-  min-width: calc(100% - 24px) !important;
+  max-width: calc(100% - 24px) !important;
   height: calc(100% - 24px) !important;
   margin-top: 12px !important;
   margin-right: auto !important;
@@ -601,53 +607,18 @@ svg {
   border-color: #1cb0f6;
 }
 
-/*
-.opcionradio input[type=radio] {
-  display: none;
-}
-
-.opcionradio input[type=radio] + label {
-  padding: 8px 12px;
-  border-radius: 40px;
-  width: 100%;
-}
-
-.opcionradio input[type=radio] + label:before {
-  height: 20px;
-  width: 20px;
-  border: 2px solid #bfbfbf;
-  border-radius: 50%;
-  margin-right: 4px;
-  margin-top: 3px;
-  margin-bottom: -4px;
-  content: " ";
-  display: inline-block;
-  background-color: #fff;
-  transition: 0.3s;
-  cursor: pointer;
-}
-
-.opcionradio input[type=radio]:checked + label:before {
-  border: 2px solid #1caff6;
-  background: #1caff6;
-}
-
-.opcionradio input[type=radio]:checked + label {
-  background: #b9e8ff;
-  color: #1caff6;
-  padding: 8px 12px;
-}
-
-.opcionradio label {
-  cursor: pointer;
-}
-*/
-
 .radio-div {
   background: transparent;
   border: 2px solid #bfbfbf;
   border-radius: 15px;
   padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.radio-div:hover {
+  background: #b9e8ff;
+  border: 2px solid #1caff6;
 }
 
 .radio-div_selected {
@@ -665,6 +636,7 @@ svg {
   color: #3c3c3c;
   font-size: 16px;
   margin-bottom: 0;
+  display: block;
 }
 
 .radio-div input[type=radio] + label:before {
@@ -687,5 +659,6 @@ svg {
 
 .radio-div canvas {
   margin-bottom: 0;
+  margin-top: 0;
 }
 

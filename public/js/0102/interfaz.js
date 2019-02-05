@@ -280,12 +280,17 @@ function cambiaRadios(e) {
 	btnRespuesta.disabled = false;
 }
 function cambiaRadioImagen(e) {
+	_TIPO_INPUT_ = 'radio';
+	console.log('seleccionado');
 	var seleccionado = document.querySelector('.radio-div_selected');
 	if(seleccionado) {
 		seleccionado.classList.remove('radio-div_selected');
 	}
 	e.target.parentElement.classList.add("radio-div_selected");
 	btnRespuesta.disabled = false;
+}
+function seleccionaImagenRadio(e) {
+	e.target.parentElement.getElementsByTagName('label')[0].click();
 }
 function cambiaInputTexto(e) {
 	var theEvent = e || window.event;

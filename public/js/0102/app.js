@@ -182,8 +182,8 @@ function dibujaHtml() {
 				respuesta: `Opción ${index+1}`, 
 				errFrec: item.params.errFrec === '' ? null : item.params.errFrec
 			};
-			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs}">
-	<div class="radio-div">
+			respuestaHtml += `<div class="col-md-5 col-sm-6 col-xs-12">
+	<div class="radio-div" onclick="seleccionaImagenRadio(event)">
 		<canvas class="img-fluid" id="container-r${item.position}"></canvas>
 		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
 		<label for="rbtn${index+1}">Opción ${index+1}</label>
