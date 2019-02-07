@@ -85,11 +85,11 @@ table img {
   .barraprogreso {
     margin-bottom: 10px;
   }
-
+  
   .contenido {
     position: absolute;
-    max-height: calc(100vh - 130px); /*header 50px + footer mobile 60 px*/
-    height: calc(100vh - 130px); /*header 50px + footer mobile 60 px*/
+    max-height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
+    height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
@@ -154,8 +154,34 @@ table img {
   }
 
   .contenido {
-    margin-bottom: 20px;
+    position: absolute;
+    max-height: calc(100vh - 170px); /*header 50px + 20px de margen + footer mobile 100 px*/
+    height: calc(100vh - 170px); /*header 50px + 20px de margen + footer mobile 100 px*/
+    overflow: auto;
+    overflow-y: scroll;
+    margin-bottom: 0;
   }
+
+  .contenido::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  .contenido::-webkit-scrollbar-track {
+    color: transparent;
+  }
+  
+  /* Handle */
+  .contenido::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  .contenido::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.6); 
+  }
+
   /*---- ANIMACION BOTONES ----*/
     /* Button 5 */
   .bton-5 {
