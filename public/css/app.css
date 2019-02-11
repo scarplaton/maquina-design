@@ -40,6 +40,11 @@ table img {
   margin: 0;
 }
 
+table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 @font-face {
   font-family: 'varela';
   src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
@@ -85,9 +90,8 @@ table img {
   .barraprogreso {
     margin-bottom: 10px;
   }
-  
+
   .contenido {
-    position: absolute;
     max-height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
     height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
     overflow: auto;
@@ -154,7 +158,6 @@ table img {
   }
 
   .contenido {
-    position: absolute;
     max-height: calc(100vh - 170px); /*header 50px + 20px de margen + footer mobile 100 px*/
     height: calc(100vh - 170px); /*header 50px + 20px de margen + footer mobile 100 px*/
     overflow: auto;
