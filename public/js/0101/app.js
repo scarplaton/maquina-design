@@ -535,7 +535,7 @@ function recta(config) {
 		  _textoRango,
 		  _fraccion
 		} = params;
-		var conoImgSrc = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/Eje_1/OA_10/Cono.png';
+		var conoImgSrc = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/cono/Cono.png';
 		var xFinal = _anchoCanvas-(_anchoReacta/2);
 		var xInicial = _anchoReacta/2;
 		var inicialFinalY = _altoCanvas/2;
@@ -982,9 +982,9 @@ function igualPerimetro(config) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
-  var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/fonts/LarkeNeueThin.ttf';
   //× => ALT+158
   var {_width,_tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
 _tipoPisoUno,_repeticionPictoricaPisoUno,_umilPisoUno,_centenaPisoUno,_decenaPisoUno,_unidadPisoUno,_altoTextoPisoUno, /*numerico , imagenes, repeticion*/
@@ -1167,7 +1167,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1177,7 +1177,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = 'https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/imagenes_front/tablas_posicionales/' + img;
+        var src = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);

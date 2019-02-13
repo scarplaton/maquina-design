@@ -171,36 +171,48 @@ function dibujaHtml() {
 	// INICIO RESPUESTA
 	var respuestaDiv = document.getElementById('respuesta');
 	var respuestaHtml = '';
-	var canvasSeleccionables = contenidoBody['r'].filter(function(item) {
-		return item.tag != 'general'
+
+	var contenidoRespuestas =  contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+		if(item.tag != 'general') {
+			return true;
+		} else {
+			return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+		}
 	});
-	if(canvasSeleccionables.length === 3 || canvasSeleccionables.length === 4) {
-		canvasSeleccionables = shuffle(canvasSeleccionables, 5);
-		canvasSeleccionables.forEach(function(item, index){
-			var dataContent = { 
-				feedback: regex(item.params.feed, versionBody.vars, false),
-				respuesta: `Opción ${index+1}`, 
-				errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-			};
-			respuestaHtml += `<div class="col-md-5 col-sm-6 col-xs-12">
-	<div class="radio-div" onclick="seleccionaImagenRadio(event)">
-		<canvas class="img-fluid" id="container-r${item.position}"></canvas>
-		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-		<label for="rbtn${index+1}">Opción ${index+1}</label>
-	</div>
-</div>`;
+	if(contenidoRespuestas.length > 0) {
+		contenidoRespuestas = shuffle(contenidoBody['r'], 5);
+		contenidoRespuestas.forEach(function(item, index){
+				console.log(item);
+				var dataContent = { 
+					feedback: regex(item.params.feed, versionBody.vars, false),
+					respuesta: `Opción ${index+1}`, 
+					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+				};
+				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.colsm}">
+					<div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+						${
+							item.tag != 'general' ? 
+							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+							`<div id="container-r${index}" class="general"></div>`
+						}
+						<input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+						<label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
+					</div>
+				</div>`;
 		});
 	} else {
 		contenidoBody['r'].forEach(function(item, index){
+			console.log(item);
 			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
 			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid" id="container-${'r'}${index}" style="background:${item.params.background}"></canvas>`
+				respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
 			} else {
-				respuestaHtml += `<div id="container-${'r'}${index}" class="general"></div>`
+				respuestaHtml += `<div id="container-r${index}" class="general"></div>`
 			}
 			respuestaHtml += '</div>'
 		});
 	}
+
 	respuestaDiv.innerHTML = respuestaHtml;
 	// INICIO GLOSA
 	var glosaDiv = document.getElementById('glosa');
@@ -228,7 +240,7 @@ function insertarTexto(config) {
 }
 function insertarImagen(config){
 	const { container, params, variables, versions, vt } = config;
-	const { src, display, height, width, col, colsm, colmd, offsetsm, offsetmd } = params;
+	const { src, display, height, width, col, colsm, colmd, offsetsm, offsetmd, errFrec, feed } = params;
 	var source;
 	try {
 		var vars = vt ? variables : versions;
@@ -250,8 +262,9 @@ function insertarImagen(config){
 			img.height = height;
 			container.className = "text-center"
 		} else {
-			img.className = "img-responsive";
-			container.className = `col-${col} col-sm-${colsm} offset-sm-${offsetsm} col-md-${colmd} offset-sm-${offsetmd}`;
+			img.className = "img-fluid";
+			//si errfrec y feed estan seteados es una respuesta este grid se ocupa en el col de la pregunta
+			container.className = (errFrec || feed) ? '' : `col-${col} col-sm-${colsm} offset-sm-${offsetsm} col-md-${colmd} offset-sm-${offsetmd}`;
 		}
 		container.innerHTML = "";
 		container.appendChild(img);
@@ -350,21 +363,28 @@ function insertarInput(config) {
 	}
 }
 function insertarTabla(config) {
-	const { container, params, variables, versions, vt } = config, { table, encabezado } = params, vars = vt ? variables : versions
+	const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal } = params, vars = vt ? variables : versions
 	if (container) {
-		let r = '<table class="tabla"><tbody>';
+		let r = `<table class="tabla ${cssclases}"><tbody>`;
 		for(var row = 0; row < table.length; row++) {
-			r += '<tr>';
+			if(lineasHorizontales === '') {
+				r += '<tr>';
+			} else {
+				r += String(lineasHorizontales).split(',').includes(String(row+1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
+			}
 			for(var col = 0; col < table[row].length; col++) {
 				r+= '<td>';
 				switch(table[row][col].type) {
 					case 'text':
+						var tachado = table[row][col].value.tachar === 'si' ? 
+							//`style="background: linear-gradient(to left top, transparent 47.75%, #ff0000, #ff0000, transparent 52.25%);"` : '';
+							`class="strikethrough"` : '';
 						if(encabezado==='arriba' && row === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
+							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
 						} else if(encabezado==='izquierda' && col === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
+							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
 						} else {
-							r+= `<p>${regex(table[row][col].value.text, vars, vt)}</p>`;
+							r+= `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
 						}
 						break;
 					case 'image':
@@ -420,6 +440,7 @@ function insertarTabla(config) {
 						}
 						break;
 					case 'text-input':
+					
 						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
 							feed0, feed1, feed2, feed3, feed4, defaultFeed,
 							value1, value2, value3, value4 } = table[row][col].value;
@@ -474,7 +495,9 @@ function insertarTabla(config) {
 					case 'text-image':
 						var p = regex(table[row][col].value.text, vars, vt);
 						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						r+= `<p>${p.replace('{imagen}', img)}</p>`
+						
+						p = `<p>${p.replace('{imagen}', img)}</p>`
+						r += regexFunctions(p)
 						break;
 				}
 				r+= '</td>';
@@ -482,7 +505,8 @@ function insertarTabla(config) {
 			r += '</tr>'
 		}
 		r += '</tbody></table>';
-		container.innerHTML = r
+		container.classList.add("table-responsive");
+		container.innerHTML = r;
 	}
 }
 function insertarInputFraccion(config) {
@@ -533,7 +557,7 @@ function recta(config) {
 		  _textoRango,
 		  _fraccion
 		} = params;
-		var conoImgSrc = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/Eje_1/OA_10/Cono.png';
+		var conoImgSrc = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/cono/Cono.png';
 		var xFinal = _anchoCanvas-(_anchoReacta/2);
 		var xInicial = _anchoReacta/2;
 		var inicialFinalY = _altoCanvas/2;
@@ -980,9 +1004,9 @@ function igualPerimetro(config) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
-  var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/fonts/LarkeNeueThin.ttf';
   //× => ALT+158
   var {_width,_tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
 _tipoPisoUno,_repeticionPictoricaPisoUno,_umilPisoUno,_centenaPisoUno,_decenaPisoUno,_unidadPisoUno,_altoTextoPisoUno, /*numerico , imagenes, repeticion*/
@@ -1165,7 +1189,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1175,7 +1199,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = 'https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/imagenes_front/tablas_posicionales/' + img;
+        var src = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1190,10 +1214,10 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -1460,7 +1484,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `https://desarrolloadaptatin.blob.core.windows.net/frontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),
@@ -1500,9 +1524,9 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 function valorPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var { _tipo,_texto,_numeroPalabras,_marca,_separacionNumeros,_miles,_centenas,_decenas,_unidades,_altoTexo,_margenTopBottom } = params;
-  var imgSrcFlechaAbajo = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/num_sig_mas.svg';
-  var srcFuente = 'https://desarrolloadaptatin.blob.core.windows.net/fuentes/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/fontejercicios/fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
 
@@ -1641,37 +1665,37 @@ function repeticionPic(config) {
 
 	var imagenes = [{
 		 name: 'bloque mil',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/umil.svg'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/bloques_multibase/bloque-4.svg'
 	},{
 		 name: 'bloque cien',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/centena.svg'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/bloques_multibase/bloque-3.svg'
 	}, {
 		 name: 'bloque diez',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/decena.svg'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/bloques_multibase/bloque-2.svg'
 	},{
 		 name: 'bloque uno',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/imagenesprogramacion/img_Funcionalidades_temp/unidad.svg'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/bloques_multibase/bloque-1.svg'
 	},{
 		 name: 'billete mil',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/1000_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/1000.svg'
 	},{
 		 name: 'moneda cien',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/100_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/100.svg'
 	},{
 		 name: 'moneda diez',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/10_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/10.svg'
 	},{
 		 name: 'moneda uno',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/1_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/1.svg'
 	},{
 		 name: 'moneda quinientos',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/500_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/500.svg'
 	},{
 		 name: 'moneda cincuenta',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/50_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/50.svg'
 	},{
 		 name: 'moneda cinco',
-		 src: 'https://desarrolloadaptatin.blob.core.windows.net/agapito/5_1.png'
+		 src: 'https://contenedoradapt.adaptativamente.cl/fontejercicios/imagenes_front/monedas_billetes/5.svg'
 	}];
 
 	let {_pictoricos, _separacion, heightCanvas, widthCanvas, 
