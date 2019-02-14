@@ -25,10 +25,13 @@ var tmpTotal = localStorage.getItem('tmpTotal') ?
 
 $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip();
+
 	/*barraDeProgreso();
 	$( window ).resize(function() {
 		barraDeProgreso();
 	});*/
+
+
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -97,6 +100,27 @@ function answer() {
 		enviar();
 	}
 }
+
+let step = 'step1';
+
+const step0 = document.getElementById('step0');
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const step3 = document.getElementById('step3');
+const step4 = document.getElementById('step4');
+
+function next() {
+  if (step === 'step1') {
+    step = 'step2';
+    step1.classList.remove("is-active");
+		step1.classList.add("is-complete");
+		step2.classList.add("is-active");
+		step2.classList.add("is-proceso");
+    
+
+  } 
+}
+
 /*
 function barraDeProgreso() {
   $("#progressbar").empty();
