@@ -47,12 +47,12 @@ table {
 
 @font-face {
   font-family: 'varela';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
+  src: url('../../fonts/VarelaRound-Regular-webfont.woff');
 }
 
 @font-face {
   font-family: 'opensans';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/OpenSans-Regular-webfont.woff');
+  src: url('../../fonts/OpenSans-Regular-webfont.woff');
 }
 
 @media only screen and (min-width: 1367px) {
@@ -123,7 +123,7 @@ table {
 
   .icon-consulta span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     margin: 0 auto;
     height: 100%;
     width: auto;
@@ -131,7 +131,7 @@ table {
 
   .icon-responder span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     margin: 0 auto;
     height: 85%;
     width: auto;
@@ -232,7 +232,7 @@ table {
   }
 
   button:not(:disabled).icon-consulta:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     width: 42px;
     margin-left: auto;
     margin-right: auto;
@@ -241,7 +241,7 @@ table {
   }
 
   button:not(:disabled).icon-responder:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     width: 36px;
     margin-left: auto;
     margin-right: auto;
@@ -396,7 +396,7 @@ table {
 }
 
 .btnCerrarFeed div {
-  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+  content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
   height: 80%;
   width: auto;
   margin: 0 auto;

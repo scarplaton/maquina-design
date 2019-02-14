@@ -557,7 +557,7 @@ function recta(config) {
 		  _textoRango,
 		  _fraccion
 		} = params;
-		var conoImgSrc = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/cono/Cono.png';
+		var conoImgSrc = '../../imagenes_front/cono/Cono.png';
 		var xFinal = _anchoCanvas-(_anchoReacta/2);
 		var xInicial = _anchoReacta/2;
 		var inicialFinalY = _altoCanvas/2;
@@ -1004,9 +1004,9 @@ function igualPerimetro(config) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
   //× => ALT+158
   var {_width,_tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
 _tipoPisoUno,_repeticionPictoricaPisoUno,_umilPisoUno,_centenaPisoUno,_decenaPisoUno,_unidadPisoUno,_altoTextoPisoUno, /*numerico , imagenes, repeticion*/
@@ -1189,7 +1189,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1199,7 +1199,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/' + img;
+        var src = '../../imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1214,10 +1214,10 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `../../imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -1484,7 +1484,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),
@@ -1524,9 +1524,9 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 function valorPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var { _tipo,_texto,_numeroPalabras,_marca,_separacionNumeros,_miles,_centenas,_decenas,_unidades,_altoTexo,_margenTopBottom } = params;
-  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
 
@@ -1665,37 +1665,37 @@ function repeticionPic(config) {
 
 	var imagenes = [{
 		 name: 'bloque mil',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-4.svg'
+		 src: '../../imagenes_front/bloques_multibase/bloque-4.svg'
 	},{
 		 name: 'bloque cien',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-3.svg'
+		 src: '../../imagenes_front/bloques_multibase/bloque-3.svg'
 	}, {
 		 name: 'bloque diez',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-2.svg'
+		 src: '../../imagenes_front/bloques_multibase/bloque-2.svg'
 	},{
 		 name: 'bloque uno',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-1.svg'
+		 src: '../../imagenes_front/bloques_multibase/bloque-1.svg'
 	},{
 		 name: 'billete mil',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1000.svg'
+		 src: '../../imagenes_front/monedas_billetes/1000.svg'
 	},{
 		 name: 'moneda cien',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/100.svg'
+		 src: '../../imagenes_front/monedas_billetes/100.svg'
 	},{
 		 name: 'moneda diez',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/10.svg'
+		 src: '../../imagenes_front/monedas_billetes/10.svg'
 	},{
 		 name: 'moneda uno',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1.svg'
+		 src: '../../imagenes_front/monedas_billetes/1.svg'
 	},{
 		 name: 'moneda quinientos',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/500.svg'
+		 src: '../../imagenes_front/monedas_billetes/500.svg'
 	},{
 		 name: 'moneda cincuenta',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/50.svg'
+		 src: '../../imagenes_front/monedas_billetes/50.svg'
 	},{
 		 name: 'moneda cinco',
-		 src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/5.svg'
+		 src: '../../imagenes_front/monedas_billetes/5.svg'
 	}];
 
 	let {_pictoricos, _separacion, heightCanvas, widthCanvas, 

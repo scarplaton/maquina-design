@@ -170,11 +170,11 @@ function muestraFeedback(esCorrecta, feedback) {
 		$('section.contenido').find('input').prop('disabled', true);
 		if(esCorrecta) {
 			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrCorrecta[rando]}`;
+			var src = `../../imagenes_front/patos/${arrCorrecta[rando]}`;
 			feedbackCorrecta(src);
 		} else {
 			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrIncorrecta[rando]}`;
+			var src = `../../imagenes_front/patos/${arrIncorrecta[rando]}`;
 			feedbackIncorrecta(src);
 		}
 	}
