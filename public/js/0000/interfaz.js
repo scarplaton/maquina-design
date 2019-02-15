@@ -115,13 +115,13 @@ function barraDeProgreso() {
   for (var i = 0; i < tmpTotal; i++) {
 		var step = document.createElement('div');
 		step.id = 'step'+(i+1);
-		if(tmpProgreso.length > (i+1)) {
-			if(tmpProgreso[(i+1)].correcto) {
-				step.classList.add('progress-step', 'is-complete', ('correcto'+tmpProgreso[(i+1)].NUMEROINTENTOS));
+		if(tmpProgreso.length > i) {
+			if(tmpProgreso[i].correcto) {
+				step.classList.add('progress-step', 'is-complete', ('correcto'+tmpProgreso[i].NUMEROINTENTOS));
 			} else {
 				step.classList.add('progress-step', 'is-complete', 'incorrecto');
 			}
-		} else if(tmpProgreso.length === (i+1)) {
+		} else if(tmpProgreso.length === i) {
 			step.classList.add('progress-step');
 			var iPosicion = i+1;
 			setTimeout(function(){
