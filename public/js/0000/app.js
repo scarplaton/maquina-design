@@ -243,7 +243,8 @@ function insertarImagen(config){
 	var source;
 	try {
 		var vars = vt ? variables : versions;
-		source = regex(src, vars, vt);
+		var relativePath =  src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+		source = regex(relativePath, vars, vt);
 	} catch(e) {
 		console.log(e);
 	}
@@ -386,8 +387,9 @@ function insertarTabla(config) {
 							r+= `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
 						}
 						break;
-					case 'image':
-						r+= `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+          case 'image':
+            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+						r+= `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 						break;
 					case 'input':
 						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
@@ -439,7 +441,6 @@ function insertarTabla(config) {
 						}
 						break;
 					case 'text-input':
-					
 						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
 							feed0, feed1, feed2, feed3, feed4, defaultFeed,
 							value1, value2, value3, value4 } = table[row][col].value;
@@ -492,8 +493,9 @@ function insertarTabla(config) {
 						r+= `<p>${p.replace('{input}', input)}</p>`;
 						break;
 					case 'text-image':
-						var p = regex(table[row][col].value.text, vars, vt);
-						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+            var p = regex(table[row][col].value.text, vars, vt);
+            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+						var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 						
 						p = `<p>${p.replace('{imagen}', img)}</p>`
 						r += regexFunctions(p)
