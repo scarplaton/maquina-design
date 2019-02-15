@@ -555,6 +555,8 @@ table {
   cursor: pointer;
 }
 
+/* INICIO DISEÑO TABLAS SIMPLES */
+
 .tabla {
   width: 100%;
 }
@@ -624,6 +626,8 @@ table {
 .tabla-bordes tr:last-child td:last-child {
   border-bottom-right-radius: 10px;
 }
+
+/* TERMINO DISEÑO TABLAS SIMPLES */
 
 .inputTexto {
   min-width: 40px;
