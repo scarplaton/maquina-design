@@ -21,7 +21,7 @@ btnRespuesta.setAttribute("onClick", "answer();");
 var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
 var tmpTotal = localStorage.getItem('tmpTotal') ?
-	Number(localStorage.getItem('tmpTotal')) : 5;
+	Number(localStorage.getItem('tmpTotal')) : 0;
 barraDeProgreso();
 $(document).ready(function(){
 	window.addEventListener("keyup", function(event){
