@@ -47,12 +47,12 @@ table {
 
 @font-face {
   font-family: 'varela';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
+  src: url('../../fonts/VarelaRound-Regular-webfont.woff');
 }
 
 @font-face {
   font-family: 'opensans';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/OpenSans-Regular-webfont.woff');
+  src: url('../../fonts/OpenSans-Regular-webfont.woff');
 }
 
 @media only screen and (min-width: 1367px) {
@@ -123,7 +123,7 @@ table {
 
   .icon-consulta span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     margin: 0 auto;
     height: 100%;
     width: auto;
@@ -131,7 +131,7 @@ table {
 
   .icon-responder span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     margin: 0 auto;
     height: 85%;
     width: auto;
@@ -232,7 +232,7 @@ table {
   }
 
   button:not(:disabled).icon-consulta:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     width: 42px;
     margin-left: auto;
     margin-right: auto;
@@ -241,7 +241,7 @@ table {
   }
 
   button:not(:disabled).icon-responder:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     width: 36px;
     margin-left: auto;
     margin-right: auto;
@@ -396,7 +396,7 @@ table {
 }
 
 .btnCerrarFeed div {
-  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+  content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
   height: 80%;
   width: auto;
   margin: 0 auto;
@@ -555,22 +555,53 @@ table {
   cursor: pointer;
 }
 
-/* INICIO DISEÑO TABLAS SIMPLES */
-
 .tabla {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .tabla td {
   font-size: 20px;
+  font-family: 'opensans';
   color: #000000;
   text-align: center; 
   vertical-align: middle;
+  border-right: 2px solid #107dac;
+  border-bottom: 2px solid #107dac;
   padding: 5px;
 }
 
 .tabla p {
   margin-bottom: 0;
+}
+
+.tabla tr td:first-child {
+  border-left: 2px solid #107dac;
+}
+
+.tabla tr:first-child td {
+  border-top: 2px solid #107dac;
+}
+
+/* top-left border-radius */
+.tabla tr:first-child td:first-child {
+  border-top-left-radius: 10px;
+}
+
+/* top-right border-radius */
+.tabla tr:first-child td:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* bottom-left border-radius */
+.tabla tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+/* bottom-right border-radius */
+.tabla tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
 }
 
 .tabla input {
@@ -580,7 +611,7 @@ table {
   border-radius: 8px;
   padding: 5px;
   background: transparent;
-  /*font-family:  '';*/
+  font-family:  'opensans';
   font-size: 20px;
   color: #000000;
 }
@@ -588,46 +619,6 @@ table {
 .tabla input:focus {
   border-color: #1cb0f6;
 }
-
-.tabla-bordes {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.tabla-bordes td {
-  border-right: 2px solid #107dac;
-  border-bottom: 2px solid #107dac;
-}
-
-.tabla-bordes tr td:first-child {
-  border-left: 2px solid #107dac;
-}
-
-.tabla-bordes tr:first-child td {
-  border-top: 2px solid #107dac;
-}
-
-/* top-left border-radius */
-.tabla-bordes tr:first-child td:first-child {
-  border-top-left-radius: 10px;
-}
-
-/* top-right border-radius */
-.tabla-bordes tr:first-child td:last-child {
-  border-top-right-radius: 10px;
-}
-
-/* bottom-left border-radius */
-.tabla-bordes tr:last-child td:first-child {
-  border-bottom-left-radius: 10px;
-}
-
-/* bottom-right border-radius */
-.tabla-bordes tr:last-child td:last-child {
-  border-bottom-right-radius: 10px;
-}
-
-/* TERMINO DISEÑO TABLAS SIMPLES */
 
 .inputTexto {
   min-width: 40px;
@@ -718,5 +709,106 @@ table {
   -ms-transform:rotate(-30deg);
   -o-transform:rotate(-30deg);
   transform:rotate(-30deg);
+}
+
+.barra-progreso {
+  position: relative;
+  display: flex;
+  margin-top: 8px;
+}
+.barra-progreso .progress-track {
+  position: absolute;
+  top: 8px;
+  width: 100%;
+  height: 5px;
+  background-color: #dfe3e4;
+  z-index: -1;
+}
+.barra-progreso .progress-step {
+  position: relative;
+  width: 100%;
+}
+.barra-progreso .progress-step:last-child:after {
+  display: none;
+}
+.barra-progreso .progress-step:before {
+  content: "";
+  display: flex;
+  margin-left: auto;
+  margin-bottom: 10px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border: 4px solid #dfe3e4;
+  border-radius: 100%;
+  color: #fff;
+  box-sizing: content-box;
+}
+.barra-progreso .progress-step:after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 0%;
+  width: 0%;
+  transition: width 1s ease-in;
+  height: 5px;
+  background: #dfe3e4;
+  z-index: -1;
+  box-sizing: content-box;
+}
+
+.barra-progreso .progress-step.is-active:before {
+  border: 4px solid #777;
+  animation: pulse 2s infinite;
+}
+
+.barra-progreso .progress-step.is-active:after {
+  background: #2183dd;
+  animation: nextStep 1s;
+  animation-fill-mode: forwards;
+}
+
+.barra-progreso .progress-step.is-complete:before {
+  color: #fff;
+  border: 4px solid transparent;
+}
+
+.barra-progreso .progress-step.correcto1:before {
+  background: #6afc7b;
+}
+.barra-progreso .progress-step.correcto2:before{
+  background: linear-gradient(to right, #ff8484, #6afc7b);
+  border: none;
+  height: 21px;
+  width: 21px;
+}
+.barra-progreso .progress-step.incorrecto:before {
+  background: #ff8484;
+}
+
+.barra-progreso .progress-step.is-complete:after {
+  background: #2183dd;
+  animation: nextStep 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(33, 131, 221, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(33, 131, 221, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(33, 131, 221, 0);
+  }
+}
+@keyframes nextStep {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
 

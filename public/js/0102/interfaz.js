@@ -22,13 +22,8 @@ var tmpProgreso = localStorage.getItem('tmpProgreso') ?
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
 var tmpTotal = localStorage.getItem('tmpTotal') ?
 	Number(localStorage.getItem('tmpTotal')) : 5;
-
-$(document).ready(function(){
-	$('[data-toggle="tooltip"]').tooltip();
 	barraDeProgreso();
-	$( window ).resize(function() {
-		barraDeProgreso();
-	});
+$(document).ready(function(){
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -100,45 +95,33 @@ function answer() {
 
 function barraDeProgreso() {
   $("#progressbar").empty();
-  var svg = document.getElementById('progressbar');
-  var separacion = (1000 - 46 * tmpTotal) / tmpTotal;
-
+	var divBarra = document.getElementById('progressbar');
+	var barraTrack = document.createElement('div')
+	barraTrack.classList.add('progress-track');
+	divBarra.append(barraTrack);
+	
   for (var i = 0; i < tmpTotal; i++) {
-    var xRect = i * separacion + i * 46 + 5; //calcula centro x para rectangulo
-
-    var cxCircle = i * separacion + i * 46 + separacion + 23; //calcula x de inicio para recta
-
-    var circle = crearElemento('circle', {
-      cx: cxCircle,
-      cy: 25,
-      r: 23,
-      fill: 'black',
-      stroke: 'none'
-    });
-    var rect = crearElemento('rect', {
-      x: xRect,
-      y: 13.5,
-      width: separacion - 10,
-      height: 27,
-      fill: 'black',
-      stroke: 'none'
-    });
-    svg.appendChild(circle);
-    svg.appendChild(rect);
-  }
-
-  function crearElemento(nombre, atributos) {
-    var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
-
-    for (var p in atributos) {
-      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
-        return "-" + m.toLowerCase();
-      }), atributos[p]);
-    }
-
-    return element;
-  }
-} 
+		var step = document.createElement('div');
+		step.id = 'step'+(i+1);
+		if(tmpProgreso.length > i) {
+			if(tmpProgreso[i].correcto) {
+				step.classList.add('progress-step', 'is-complete', ('correcto'+tmpProgreso[i].NUMEROINTENTOS));
+			} else {
+				step.classList.add('progress-step', 'is-complete', 'incorrecto');
+			}
+		} else if(tmpProgreso.length === i) {
+			step.classList.add('progress-step');
+			var iPosicion = i+1;
+			setTimeout(function(){
+				document.getElementById(('step'+iPosicion)).classList.add('progress-step', 'is-active');
+			}, 2000);
+		} else {
+			step.classList.add('progress-step');
+		}
+		
+		divBarra.append(step);
+	}
+}
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {
 	var x = window.matchMedia("(max-width: 768px)");

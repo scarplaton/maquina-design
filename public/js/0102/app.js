@@ -171,36 +171,48 @@ function dibujaHtml() {
 	// INICIO RESPUESTA
 	var respuestaDiv = document.getElementById('respuesta');
 	var respuestaHtml = '';
-	var canvasSeleccionables = contenidoBody['r'].filter(function(item) {
-		return item.tag != 'general'
+
+	var contenidoRespuestas =  contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+		if(item.tag != 'general') {
+			return true;
+		} else {
+			return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+		}
 	});
-	if(canvasSeleccionables.length === 3 || canvasSeleccionables.length === 4) {
-		canvasSeleccionables = shuffle(canvasSeleccionables, 5);
-		canvasSeleccionables.forEach(function(item, index){
-			var dataContent = { 
-				feedback: regex(item.params.feed, versionBody.vars, false),
-				respuesta: `Opción ${index+1}`, 
-				errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-			};
-			respuestaHtml += `<div class="col-md-5 col-sm-6 col-xs-12">
-	<div class="radio-div" onclick="seleccionaImagenRadio(event)">
-		<canvas class="img-fluid" id="container-r${item.position}"></canvas>
-		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-		<label for="rbtn${index+1}">Opción ${index+1}</label>
-	</div>
-</div>`;
+	if(contenidoRespuestas.length > 0) {
+		contenidoRespuestas = shuffle(contenidoBody['r'], 5);
+		contenidoRespuestas.forEach(function(item, index){
+				console.log(item);
+				var dataContent = { 
+					feedback: regex(item.params.feed, versionBody.vars, false),
+					respuesta: `Opción ${index+1}`, 
+					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+				};
+				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
+					<div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+						${
+							item.tag != 'general' ? 
+							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+							`<div id="container-r${index}" class="general"></div>`
+						}
+						<input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+						<label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
+					</div>
+				</div>`;
 		});
 	} else {
 		contenidoBody['r'].forEach(function(item, index){
+			console.log(item);
 			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
 			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid" id="container-${'r'}${index}" style="background:${item.params.background}"></canvas>`
+				respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
 			} else {
-				respuestaHtml += `<div id="container-${'r'}${index}" class="general"></div>`
+				respuestaHtml += `<div id="container-r${index}" class="general"></div>`
 			}
 			respuestaHtml += '</div>'
 		});
 	}
+
 	respuestaDiv.innerHTML = respuestaHtml;
 	// INICIO GLOSA
 	var glosaDiv = document.getElementById('glosa');

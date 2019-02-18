@@ -22,13 +22,8 @@ var tmpProgreso = localStorage.getItem('tmpProgreso') ?
 	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
 var tmpTotal = localStorage.getItem('tmpTotal') ?
 	Number(localStorage.getItem('tmpTotal')) : 5;
-
-$(document).ready(function(){
-	$('[data-toggle="tooltip"]').tooltip();
 	barraDeProgreso();
-	$( window ).resize(function() {
-		barraDeProgreso();
-	});
+$(document).ready(function(){
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -111,46 +106,34 @@ function answer() {
 }
 
 function barraDeProgreso() {
-  $("#progressbar").empty();
-  var svg = document.getElementById('progressbar');
-  var separacion = (1000 - 46 * tmpTotal) / tmpTotal;
-
-  for (var i = 0; i < tmpTotal; i++) {
-    var xRect = i * separacion + i * 46 + 5; //calcula centro x para rectangulo
-
-    var cxCircle = i * separacion + i * 46 + separacion + 23; //calcula x de inicio para recta
-
-    var circle = crearElemento('circle', {
-      cx: cxCircle,
-      cy: 25,
-      r: 23,
-      fill: 'black',
-      stroke: 'none'
-    });
-    var rect = crearElemento('rect', {
-      x: xRect,
-      y: 13.5,
-      width: separacion - 10,
-      height: 27,
-      fill: 'black',
-      stroke: 'none'
-    });
-    svg.appendChild(circle);
-    svg.appendChild(rect);
-  }
-
-  function crearElemento(nombre, atributos) {
-    var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
-
-    for (var p in atributos) {
-      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
-        return "-" + m.toLowerCase();
-      }), atributos[p]);
-    }
-
-    return element;
-  }
-} 
+	$("#progressbar").empty();
+	  var divBarra = document.getElementById('progressbar');
+	  var barraTrack = document.createElement('div')
+	  barraTrack.classList.add('progress-track');
+	  divBarra.append(barraTrack);
+	  
+	for (var i = 0; i < tmpTotal; i++) {
+		  var step = document.createElement('div');
+		  step.id = 'step'+(i+1);
+		  if(tmpProgreso.length > i) {
+			  if(tmpProgreso[i].correcto) {
+				  step.classList.add('progress-step', 'is-complete', ('correcto'+tmpProgreso[i].NUMEROINTENTOS));
+			  } else {
+				  step.classList.add('progress-step', 'is-complete', 'incorrecto');
+			  }
+		  } else if(tmpProgreso.length === i) {
+			  step.classList.add('progress-step');
+			  var iPosicion = i+1;
+			  setTimeout(function(){
+				  document.getElementById(('step'+iPosicion)).classList.add('progress-step', 'is-active');
+			  }, 2000);
+		  } else {
+			  step.classList.add('progress-step');
+		  }
+		  
+		  divBarra.append(step);
+	  }
+  } 
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {
 	var x = window.matchMedia("(max-width: 768px)");
@@ -170,11 +153,11 @@ function muestraFeedback(esCorrecta, feedback) {
 		$('section.contenido').find('input').prop('disabled', true);
 		if(esCorrecta) {
 			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrCorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrCorrecta[rando]}`;
 			feedbackCorrecta(src);
 		} else {
 			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrIncorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrIncorrecta[rando]}`;
 			feedbackIncorrecta(src);
 		}
 	}
@@ -418,58 +401,6 @@ let regularExpression = {
     "8": ["o[sc]ho", "", "o[sc]henta", "o[sc]ho[scz]{1,2}iento[sz]"],
     "9": ["nue[vb]e", "", "no[vb]enta", "no[vb]e[scz]{1,2}iento[sz]"]
 };
-function createWord(numberArr){
-    numberArr = numberArr.reverse();
-    let umil = numberArr[3]
-    let centena = numberArr[2]
-    let decena = numberArr[1]
-    let unidad = numberArr[0]
-    let word = '';
-    if(unidad>0){
-        //uno, dos, tres...
-        if (decena == 0) {
-            word = palabras[unidad][0];
-        }
-        else if (decena == 1) {
-            //once doce, trece, catorce, quince
-            if(unidad>0 && unidad<6){
-                word = palabras[unidad][1] + "ce"
-            }
-            // dieciseis, diecisiete, dieciocho, diecinueve
-            else if(unidad>=6){
-                word = "dieci"+palabras[unidad][0]
-            }
-        }
-        //veinituno, veintidos, veintitres....
-        else if(decena == 2){
-            word = "veinti"+palabras[unidad][0];
-        } 
-        // treinta y uno, cuarenta y dos, cincuenta y tres...
-        else if(decena>2) {
-            word = palabras[decena][2]+ " y "+palabras[unidad][0]
-        }
-    }
-    else if(unidad==0){
-        //veinte, treinta, cuarenta...
-        if (decena>0){
-            word = palabras[decena][2]
-        }
-    }
-    //cien, doscientos, trescientos...
-    if(centena>0) {
-        if(centena==1){
-            if(decena==0 && unidad==0) word = palabras[centena][3] + " " +word;
-            if(decena!=0 || unidad!=0) word = "ciento "+ word
-        }
-        else if(centena>1){
-            word = palabras[centena][3] + " " + word;
-        }
-    }
-    //mil, dos mil, tres mil
-    if(umil==1) word = "mil "+ word;
-    else if(umil>1) word = palabras[umil][0]+ " mil "+ word;
-    return word;
-}
 function checkWord(_word, numberArr){
     let umil = numberArr[0]
     let centena = numberArr[1]
