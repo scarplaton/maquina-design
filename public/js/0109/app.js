@@ -138,7 +138,6 @@ const FUNCIONES = [
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Tabla', action:insertarTabla },
-		{ id:'Insertar Input Fraccion', action:insertarInputFraccion },
 		{ id:'Insertar Imagen', action:insertarImagen }
 	]},{ name:'Datos', tag:'datos', fns:[ 
 	]},{ name:'Numeracion', tag:'numeracion', fns:[
@@ -348,13 +347,13 @@ function insertarInput(config) {
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" onkeyup="checkTexts()"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" onkeyup="checkTexts()"/>`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)" onkeyup="checkTexts()"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)" onkeyup="checkTexts()"/>`;
 						break;
 				}
 				break;
@@ -451,13 +450,13 @@ function insertarTabla(config) {
 						};
 						switch(tipoInput) {
 							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						break;
@@ -502,13 +501,13 @@ function insertarTabla(config) {
 						var input;
 						switch(tipoInput) {
 							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						r+= `<p>${p.replace('{input}', input)}</p>`;
@@ -526,29 +525,6 @@ function insertarTabla(config) {
 		r += '</tbody></table></div>';
 		container.innerHTML = r
 	}
-}
-function insertarInputFraccion(config) {
-	const { container, params, variables, versions, vt } = config;
-	var inputFraccion = '', vars;
-	try {
-		vars = vt ? variables : versions;
-		var feedbackGood = regex(params.feedbackGood, vars, vt);
-		var feedbackBad = regex(params.feedbackBad, vars, vt);
-		var disabled = params.disabled==='si' ? 'disabled': '';
-		var entero = regex('$'.concat(params.entero), vars, vt);
-		var numerador = regex('$'.concat(params.numerador), vars, vt);
-		var denominador = regex('$'.concat(params.denominador), vars, vt);
-		inputFraccion = '<table><tbody><tr><td rowspan="2">';
-		inputFraccion += `<input type="text" id="entero" name="answer" class="input-numerador" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${entero}'}" ${disabled} ${params.disabled==='si' && `value="${entero}"`} />`;
-		inputFraccion += '</td><td style="border-bottom: 2px solid black;">'
-		inputFraccion += `<input type="text" id="numerador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${numerador}'}" ${disabled} ${params.disabled==='si' && `value="${numerador}"`}"/>`
-		inputFraccion += '</td></tr><tr><td>'
-		inputFraccion += `<input type="text" id="denominador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${denominador}'}" ${disabled} ${params.disabled==='si' && `value="${denominador}"`}/>`
-		inputFraccion += '</td></tr></tbody></table>';
-	} catch(e) {
-		console.log(e);
-	}
-	container.innerHTML = inputFraccion;
 }
 
 function recta(config) {
@@ -3079,7 +3055,7 @@ function numeroEntero(state, x, y, valor, multSize) {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'top'
   ctx.font = font.size*multSize + 'px ' + font.family
-  ctx.fillText(valor, x, y)
+  ctx.fillText(espacioMiles(valor), x, y)
   ctx.restore()
   ctx.save()
 }

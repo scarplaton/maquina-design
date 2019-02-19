@@ -111,7 +111,6 @@ const FUNCIONES = [
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Tabla', action:insertarTabla },
-		{ id:'Insertar Input Fraccion', action:insertarInputFraccion },
 		{ id:'Insertar Imagen', action:insertarImagen }
 	]},{ name:'Datos', tag:'datos', fns:[ 
 	]},{ name:'Numeracion', tag:'numeracion', fns:[
@@ -189,14 +188,14 @@ function dibujaHtml() {
 					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
 				};
 				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
-					<div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+          <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+            <input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
 						${
 							item.tag != 'general' ? 
 							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
 							`<div id="container-r${index}" class="general"></div>`
 						}
-						<input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-						<label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
 					</div>
 				</div>`;
 		});
@@ -319,13 +318,13 @@ function insertarInput(config) {
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 						break;
 				}
 				break;
@@ -497,29 +496,6 @@ function insertarTabla(config) {
 		r += '</tbody></table>';
 		container.innerHTML = r
 	}
-}
-function insertarInputFraccion(config) {
-	const { container, params, variables, versions, vt } = config;
-	var inputFraccion = '', vars;
-	try {
-		vars = vt ? variables : versions;
-		var feedbackGood = regex(params.feedbackGood, vars, vt);
-		var feedbackBad = regex(params.feedbackBad, vars, vt);
-		var disabled = params.disabled==='si' ? 'disabled': '';
-		var entero = regex('$'.concat(params.entero), vars, vt);
-		var numerador = regex('$'.concat(params.numerador), vars, vt);
-		var denominador = regex('$'.concat(params.denominador), vars, vt);
-		inputFraccion = '<table><tbody><tr><td rowspan="2">';
-		inputFraccion += `<input type="text" id="entero" name="answer" class="input-numerador" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${entero}'}" ${disabled} ${params.disabled==='si' && `value="${entero}"`} />`;
-		inputFraccion += '</td><td style="border-bottom: 2px solid black;">'
-		inputFraccion += `<input type="text" id="numerador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${numerador}'}" ${disabled} ${params.disabled==='si' && `value="${numerador}"`}"/>`
-		inputFraccion += '</td></tr><tr><td>'
-		inputFraccion += `<input type="text" id="denominador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${denominador}'}" ${disabled} ${params.disabled==='si' && `value="${denominador}"`}/>`
-		inputFraccion += '</td></tr></tbody></table>';
-	} catch(e) {
-		console.log(e);
-	}
-	container.innerHTML = inputFraccion;
 }
 
 function recta(config) {

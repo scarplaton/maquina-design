@@ -79,13 +79,11 @@ function sgteGlosa(){
 	$(hiddenTutorial).val(true).trigger('change');
 }
 
-/*---------VALIDACIÓN INGRESO A EJERCICIO--------*/
+document.addEventListener('contextmenu', event => event.preventDefault());
 
-	/*document.addEventListener('contextmenu', event => event.preventDefault());
-
-	$(document).keydown(function(event){ // previene f12
+	$(document).keydown(function(event){ 
 			if(event.keyCode==123){
-				return false;
+				return false; // previene f12
 			}
 			else if(event.ctrlKey && event.shiftKey && event.keyCode==73){        
 				return false;  //previene ctrl+shift+i
@@ -125,6 +123,8 @@ function sgteGlosa(){
 			}
 	});
 
+/*---------VALIDACIÓN INGRESO A EJERCICIO--------*/
+/*
 	function validaFormato(elemento){ 
 		var sinEspacios = $(elemento).val().replace(/ /g,"");
 		var array = sinEspacios.split("");

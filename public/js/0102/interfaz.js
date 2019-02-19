@@ -24,6 +24,9 @@ var tmpTotal = localStorage.getItem('tmpTotal') ?
 	Number(localStorage.getItem('tmpTotal')) : 5;
 	barraDeProgreso();
 $(document).ready(function(){
+	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+		e.preventDefault();
+ 	});
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -202,7 +205,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	//limpia inputs
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
 		$('section.contenido').find('input[type=text]').val('');
 	}
@@ -241,7 +244,7 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 	$('#modalFeedback').modal('hide');
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
 		$('section.contenido').find('input[type=text]').val('');
 	}

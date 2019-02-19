@@ -111,7 +111,6 @@ const FUNCIONES = [
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Tabla', action:insertarTabla },
-		{ id:'Insertar Input Fraccion', action:insertarInputFraccion },
 		{ id:'Insertar Imagen', action:insertarImagen }
 	]},{ name:'Datos', tag:'datos', fns:[ 
 	]},{ name:'Numeracion', tag:'numeracion', fns:[
@@ -171,38 +170,48 @@ function dibujaHtml() {
 	// INICIO RESPUESTA
 	var respuestaDiv = document.getElementById('respuesta');
 	var respuestaHtml = '';
-	var canvasSeleccionables = contenidoBody['r'].filter(function(item) {
-		return item.tag != 'general'
+
+	var contenidoRespuestas =  contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+		if(item.tag != 'general') {
+			return true;
+		} else {
+			return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+		}
 	});
-	if(canvasSeleccionables.length === 3 || canvasSeleccionables.length === 4) {
-		canvasSeleccionables = shuffle(canvasSeleccionables, 5);
-		canvasSeleccionables.forEach(function(item, index){
-			var dataContent = { 
-				feedback: regex(item.params.feed, versionBody.vars, false),
-				respuesta: `Opción ${index+1}`, 
-				errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-			};
-			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs}">
-	<div class="radio-div">
-		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadios(event)"/>
-		<label for="rbtn${index+1}">
-			<canvas class="img-fluid" id="container-${'r'}${item.position}"></canvas>
-			<h5 class="h5 text-center">Opcion ${index+1}</h5>
-		</label>
-	</div>
-</div>`;
+	if(contenidoRespuestas.length > 0) {
+		contenidoRespuestas = shuffle(contenidoBody['r'], 5);
+		contenidoRespuestas.forEach(function(item, index){
+				console.log(item);
+				var dataContent = { 
+					feedback: regex(item.params.feed, versionBody.vars, false),
+					respuesta: `Opción ${index+1}`, 
+					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+				};
+				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
+          <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+            <input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
+						${
+							item.tag != 'general' ? 
+							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+							`<div id="container-r${index}" class="general"></div>`
+						}
+					</div>
+				</div>`;
 		});
 	} else {
 		contenidoBody['r'].forEach(function(item, index){
+			console.log(item);
 			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
 			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid" id="container-${'r'}${index}" style="background:${item.params.background}"></canvas>`
+				respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
 			} else {
-				respuestaHtml += `<div id="container-${'r'}${index}" class="general"></div>`
+				respuestaHtml += `<div id="container-r${index}" class="general"></div>`
 			}
 			respuestaHtml += '</div>'
 		});
 	}
+
 	respuestaDiv.innerHTML = respuestaHtml;
 	// INICIO GLOSA
 	var glosaDiv = document.getElementById('glosa');
@@ -309,13 +318,13 @@ function insertarInput(config) {
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 						break;
 				}
 				break;
@@ -413,13 +422,13 @@ function insertarTabla(config) {
 						};
 						switch(tipoInput) {
 							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						break;
@@ -464,13 +473,13 @@ function insertarTabla(config) {
 						var input;
 						switch(tipoInput) {
 							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						r+= `<p>${p.replace('{input}', input)}</p>`;
@@ -489,29 +498,6 @@ function insertarTabla(config) {
 		r += '</tbody></table>';
 		container.innerHTML = r
 	}
-}
-function insertarInputFraccion(config) {
-	const { container, params, variables, versions, vt } = config;
-	var inputFraccion = '', vars;
-	try {
-		vars = vt ? variables : versions;
-		var feedbackGood = regex(params.feedbackGood, vars, vt);
-		var feedbackBad = regex(params.feedbackBad, vars, vt);
-		var disabled = params.disabled==='si' ? 'disabled': '';
-		var entero = regex('$'.concat(params.entero), vars, vt);
-		var numerador = regex('$'.concat(params.numerador), vars, vt);
-		var denominador = regex('$'.concat(params.denominador), vars, vt);
-		inputFraccion = '<table><tbody><tr><td rowspan="2">';
-		inputFraccion += `<input type="text" id="entero" name="answer" class="input-numerador" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${entero}'}" ${disabled} ${params.disabled==='si' && `value="${entero}"`} />`;
-		inputFraccion += '</td><td style="border-bottom: 2px solid black;">'
-		inputFraccion += `<input type="text" id="numerador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${numerador}'}" ${disabled} ${params.disabled==='si' && `value="${numerador}"`}"/>`
-		inputFraccion += '</td></tr><tr><td>'
-		inputFraccion += `<input type="text" id="denominador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${denominador}'}" ${disabled} ${params.disabled==='si' && `value="${denominador}"`}/>`
-		inputFraccion += '</td></tr></tbody></table>';
-	} catch(e) {
-		console.log(e);
-	}
-	container.innerHTML = inputFraccion;
 }
 
 function recta(config) {
@@ -1603,7 +1589,7 @@ function valorPosicional(config) {
           if(underline === 2) {
             ctx.fillText(`${_centenas} centenas = ${_centenas}00`, xTexto, yTexto);
           } else {
-            ctx.fillText(`${_miles} unidades de mil = ${_miles}000`, xTexto, yTexto);
+            ctx.fillText(`${_miles} unidades de mil = ${_miles} 000`, xTexto, yTexto);
           }
         }
       }
