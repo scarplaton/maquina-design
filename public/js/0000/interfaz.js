@@ -286,9 +286,13 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		$('input:checked')[0].checked = false;
 		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
-		$('.inputTexto-correcto').removeClass('inputTexto-correcto');
-		$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+		} else {
+			$('section.contenido').find('input.inputTexto-incorrecto[type=text]').val('');
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
 	$('section.contenido').find('input').prop('disabled', false);
 }
