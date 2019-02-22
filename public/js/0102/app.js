@@ -1079,7 +1079,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 
   datosEjercicio.resultado = {
     mostrar: _dibujaTextoResultado,
-    numero: _resultado, //numero del valor final centrado (puede ser texto o  numero)
+    numero: regexFunctions(_resultado), //numero del valor final centrado (puede ser texto o  numero)
     altoTexto: Number(_altoTextoResultado) //alto del texto del resultado
   }
 

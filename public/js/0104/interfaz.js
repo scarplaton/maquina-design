@@ -10,6 +10,7 @@ errFre = '',
 feed = '', 
 check = false;
 var _TIPO_INPUT_ = '';
+var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
 const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
@@ -18,10 +19,19 @@ const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
 
-var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
-	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
-var tmpTotal = localStorage.getItem('tmpTotal') ?
-	Number(localStorage.getItem('tmpTotal')) : 5;
+if(hiddenBarraDatos) {
+	var datosBarraDeProgreso = JSON.parse(hiddenBarraDatos.value);
+	tmpProgreso = datosBarraDeProgreso.tmpProgreso ? 
+		datosBarraDeProgreso.tmpProgreso : [];
+	tmpTotal = datosBarraDeProgreso.tmpProgreso ?
+		Number(datosBarraDeProgreso.tmpTotal) : 0;
+} else {
+	tmpProgreso = localStorage.getItem('tmpProgreso') ? 
+		JSON.parse(localStorage.getItem('tmpProgreso')) : [];
+	tmpTotal = localStorage.getItem('tmpTotal') ?
+		Number(localStorage.getItem('tmpTotal')) : 0;
+}
+
 	barraDeProgreso();
 $(document).ready(function(){
 	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
@@ -49,6 +59,12 @@ function validaRespuesta() { //Validar respuesta
 		} else {//si hay mas de un input de texto
 			for(var input of inputs) {
 				evaluaInputTexto(input);
+				if(errFre !== null) {
+					input.classList.add('inputTexto-incorrecto');
+					break;
+				} else {
+					input.classList.add('inputTexto-correcto');
+				}
 			}
 		}
 	}
@@ -97,33 +113,84 @@ function answer() {
 }
 
 function barraDeProgreso() {
+	var anchoBarra = 300;
   $("#progressbar").empty();
-	var divBarra = document.getElementById('progressbar');
-	var barraTrack = document.createElement('div')
-	barraTrack.classList.add('progress-track');
-	divBarra.append(barraTrack);
+	var svg = document.getElementById('progressbar');
+	var separacion = anchoBarra / (tmpTotal+1);
 	
+	var bordeBarra = crearElemento('rect', {
+		x: 2,
+		y: 2,
+		width: anchoBarra,
+		height: 32,
+		fill: 'none',
+		stroke: '#CCCBCB',
+		strokeWidth: '1',
+		rx: 5,
+		ry: 5
+	});
+	svg.appendChild(bordeBarra);
+
+	var anchoLinea = Number(anchoBarra-(separacion*2));
+	var lineaBarra = crearElemento('rect', {
+		x: separacion,
+		y: 17,
+		width: anchoLinea,
+		height: 2,
+		fill: '#E7E5E5',
+		rx: 2,
+		ry: 2
+	}); 
+	svg.appendChild(lineaBarra);
+
   for (var i = 0; i < tmpTotal; i++) {
-		var step = document.createElement('div');
-		step.id = 'step'+(i+1);
+		var colorCirculo, rCircle;
 		if(tmpProgreso.length > i) {
+			rCircle = 4;
 			if(tmpProgreso[i].correcto) {
-				step.classList.add('progress-step', 'is-complete', ('correcto'+tmpProgreso[i].NUMEROINTENTOS));
+				colorCirculo = tmpProgreso[i].NUMEROINTENTOS === 1 ? '#00AC4D' : '#E2C04D';
 			} else {
-				step.classList.add('progress-step', 'is-complete', 'incorrecto');
+				colorCirculo = '#E24B4A';
 			}
 		} else if(tmpProgreso.length === i) {
-			step.classList.add('progress-step');
-			var iPosicion = i+1;
-			setTimeout(function(){
-				document.getElementById(('step'+iPosicion)).classList.add('progress-step', 'is-active');
-			}, 2000);
+			rCircle = 10;
+			colorCirculo = '#1280B1';
 		} else {
-			step.classList.add('progress-step');
+			rCircle = 4;
+			colorCirculo = '#CCCBCB';
 		}
-		
-		divBarra.append(step);
-	}
+		var cxCircle = separacion * (i+1) + 2;
+    var circle = crearElemento('circle', {
+      cx: cxCircle,
+      cy: 18,
+      r: rCircle,
+      fill: colorCirculo,
+      stroke: 'none'
+    });
+		svg.appendChild(circle);
+		if(tmpProgreso.length === i) {
+			var textPosicion = crearElemento('text', {
+				x: cxCircle,
+				y: 22,
+				fontFamily: 'sans-serif',
+				fontSize: '12px',
+				textAnchor: 'middle',
+				fill: 'white'
+			});
+			textPosicion.textContent = tmpProgreso.length+1;
+			svg.appendChild(textPosicion);
+		}
+  }
+
+  function crearElemento(nombre, atributos) {
+    var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
+    for (var p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return "-" + m.toLowerCase();
+      }), atributos[p]);
+    }
+    return element;
+  }
 } 
 //muestgra feeedbacks
 function muestraFeedback(esCorrecta, feedback) {
@@ -208,6 +275,8 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
 		$('section.contenido').find('input[type=text]').val('');
+		$('.inputTexto-correcto').removeClass('inputTexto-correcto');
+		$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 	}
 	$('section.contenido').find('input').prop('disabled', false);
 }

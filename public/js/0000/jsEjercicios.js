@@ -4,6 +4,16 @@ var hiddenTutorial = window.parent.parent.varTutorial; //Comunicacón con frame 
 var hiddenSegundoError = window.parent.parent.varSegundoError; //Comunicacón con frame Segundo error
 var hiddenCierraFeed = window.parent.parent.cerrarFeedbackHijo; //Comunicacón con frame Segundo error
 var hiddenPressConsulta = window.parent.parent.pressConsulta; //Comunicacón con frame Segundo error
+
+var barraProgreso = window.parent.parent.barraProgreso; //Comunicacón con frame Segundo error
+/*
+JSON.parse(barraProgreso.value)
+	parsear valor barraProgreso 
+	{
+		tmpProgreso:[],
+		tmpTotal:0
+	}
+*/
 	
 function enviar(){
 	var fechaTerminoIntento = new Date();
@@ -78,7 +88,7 @@ function sgteGlosa(){
 	$("#imagenBotonRespuesta").css("visibility","hidden");	
 	$(hiddenTutorial).val(true).trigger('change');
 }
-
+/*
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 	$(document).keydown(function(event){ 

@@ -273,8 +273,24 @@ table {
 }
 
 #progressbar {
-  width: 100%;
-  height: auto;
+  width: 304px;
+  height: 40px;
+  margin-top: 5px;
+}
+
+.lineasbarra {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+
+hr.sidelinebar {
+  height: 1px;
+  border: 0;
+  color: #E7E5E5;
+  background-color: #E7E5E5;
+  width: calc(100% / 2 - 164px);
+  margin-top: 18px;
 }
 
 #botonSalir {
@@ -580,9 +596,18 @@ table {
   border-radius: 8px;
   padding: 5px;
   background: transparent;
-  /*font-family:  '';*/
   font-size: 20px;
   color: #000000;
+}
+
+.inputTexto-correcto {
+  border: 2px solid #BFF199 !important;
+  color: #BFF199 !important;
+}
+
+.inputTexto-incorrecto {
+  border: 2px solid #F6B3B1 !important;
+  color: #F6B3B1 !important;
 }
 
 .tabla input:focus {

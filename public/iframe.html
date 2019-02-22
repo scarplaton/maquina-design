@@ -13,7 +13,8 @@
   }
 
   .ejercicio {
-    border: none;
+    border: 1px solid #000;
+    border-radius: 30px;
   }
 
   @media (min-width: 1280px) and (min-height: 620px) {
@@ -43,6 +44,7 @@
 <body>
 <div class="contenedor">
   <iframe id="iframe" class="ejercicio"></iframe>
+  <input id="barraProgreso" type="hidden" />
 </div>
 <div class="container">
   <div class="row">
@@ -56,30 +58,30 @@
 </div>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
-  localStorage.setItem('tmpProgreso', JSON.stringify(
-    [{
-      "idasigejermat":00001,
-      "correcto":false,
-      "NUMEROINTENTOS":2
+  document.getElementById('barraProgreso').value = JSON.stringify({
+    tmpProgreso: [{
+      idasigejermat:00001,
+      correcto:false,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00002,
-      "correcto":true,
-      "NUMEROINTENTOS":1
+      idasigejermat:00002,
+      correcto:true,
+      NUMEROINTENTOS:1
     },{
-      "idasigejermat":00003,
-      "correcto":false,
-      "NUMEROINTENTOS":2
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00004,
-      "correcto":true,
-      "NUMEROINTENTOS":2
+      idasigejermat:00004,
+      correcto:true,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00005,
-      "correcto":true,
-      "NUMEROINTENTOS":1
-    }]
-  ));
-  localStorage.setItem('tmpTotal', '12');
+      idasigejermat:00005,
+      correcto:true,
+      NUMEROINTENTOS:1
+    }],
+    tmpTotal: 15
+  });
   var select = document.getElementById('selectEjercicios');
   axios.get('/archivos').then(function (response) {
     response.data.filter(function(x){
