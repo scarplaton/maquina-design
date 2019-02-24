@@ -391,25 +391,58 @@ function insertarInput(config) {
 	}
 }
 function insertarTabla(config) {
-	const { container, params, variables, versions, vt } = config, { table, encabezado } = params, vars = vt ? variables : versions
-	if (container) {
-		let r = '<div class="table-responsive"><table class="tabla"><tbody>';
+	const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols } = params, vars = vt ? variables : versions
+  var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
+  function debeMarcarse(tr, td) {
+    var encontrado = false;
+    marcasEnTd.forEach(function(marca){
+      if(marca[0] == (tr+1) && marca[2] == (td+1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  } 
+  if (container) {
+    let r = `<table class="tabla ${cssclases}"><tbody>`;
+    if(anchoCols) {
+      var anchoColumnas = String(anchoCols).split(',');
+      anchoColumnas.forEach(function(ancho){
+        r += `<col width="${ancho}%"/>`;
+      });
+    }
 		for(var row = 0; row < table.length; row++) {
-			r += '<tr>';
+			if(lineasHorizontales === '') {
+				r += '<tr>';
+			} else {
+				r += String(lineasHorizontales).split(',').includes(String(row+1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
+			}
 			for(var col = 0; col < table[row].length; col++) {
-				r+= '<td>';
+        if(destacado === '') {
+          r += '<td>';
+        } else {
+          if(debeMarcarse(row, col)){
+            r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
 				switch(table[row][col].type) {
 					case 'text':
+						var tachado = table[row][col].value.tachar === 'si' ? 
+							//`style="background: linear-gradient(to left top, transparent 47.75%, #ff0000, #ff0000, transparent 52.25%);"` : '';
+							`class="strikethrough"` : '';
 						if(encabezado==='arriba' && row === 0) {
-							r+= `<p><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
 						} else if(encabezado==='izquierda' && col === 0) {
-							r+= `<p><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
 						} else {
-							r+= `<p>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
+							r+= `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
 						}
 						break;
-					case 'image':
-						r+= `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+          case 'image':
+            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+						r+= `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 						break;
 					case 'input':
 						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
@@ -450,13 +483,13 @@ function insertarTabla(config) {
 						};
 						switch(tipoInput) {
 							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						break;
@@ -501,29 +534,33 @@ function insertarTabla(config) {
 						var input;
 						switch(tipoInput) {
 							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						r+= `<p>${p.replace('{input}', input)}</p>`;
 						break;
 					case 'text-image':
-						var p = regexFunctions(regex(table[row][col].value.text, vars, vt));
-						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						r+= `<p>${p.replace('{imagen}', img)}</p>`
+            var p = regex(table[row][col].value.text, vars, vt);
+            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+						var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+						
+						p = `<p>${p.replace('{imagen}', img)}</p>`
+						r += regexFunctions(p)
 						break;
 				}
 				r+= '</td>';
 			}
 			r += '</tr>'
 		}
-		r += '</tbody></table></div>';
-		container.innerHTML = r
+		r += '</tbody></table>';
+		container.classList.add("table-responsive");
+		container.innerHTML = r;
 	}
 }
 
