@@ -178,7 +178,7 @@ function dibujaHtml() {
 		}
 	});
 	if(contenidoRespuestas.length > 0) {
-		contenidoRespuestas = shuffle(contenidoBody['r'], 5);
+		contenidoRespuestas = shuffle(contenidoBody['r']);
 		contenidoRespuestas.forEach(function(item, index){
 				console.log(item);
 				var dataContent = { 
