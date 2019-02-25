@@ -620,7 +620,7 @@ function rectNumFn(config) {
   state.font = {
     family: fontFamily,
     weight: fontWeight,
-    size: c.width < 500 ? eval(fontSize)*0.6 : eval(fontSize),
+    size: fontSize,
     color: fontColor,
     align: 'left' // end, right, center, start, left
   }
@@ -1498,14 +1498,14 @@ function dibujarArco(state, x, y, arcoRadio, mini = false) {
 }
 
 /* ------------------------ NUMEROS ------------------------- */
-function numeroEntero(state, x, y, valor, multSize) {
+function numeroEntero(state, x, y, valor, multSize) {//prueba sin multsize
   const { ctx, font } = state
   ctx.save()
   ctx.strokeStyle = font.color
   ctx.fillStyle = font.color
   ctx.textAlign = 'center'
   ctx.textBaseline = 'top'
-  ctx.font = font.size*multSize + 'px ' + font.family
+  ctx.font = font.size + 'px ' + font.family
   ctx.fillText(espacioMiles(valor), x, y)
   ctx.restore()
   ctx.save()
