@@ -23,7 +23,7 @@ if(hiddenBarraDatos) {
 	var datosBarraDeProgreso = JSON.parse(hiddenBarraDatos.value);
 	tmpProgreso = datosBarraDeProgreso.tmpProgreso ? 
 		datosBarraDeProgreso.tmpProgreso : [];
-	tmpTotal = datosBarraDeProgreso.tmpProgreso ?
+	tmpTotal = datosBarraDeProgreso.tmpTotal ?
 		Number(datosBarraDeProgreso.tmpTotal) : 0;
 } else {
 	tmpProgreso = localStorage.getItem('tmpProgreso') ? 
@@ -125,7 +125,7 @@ function answer() {
 }
 
 function barraDeProgreso() {
-	var anchoBarra = 300;
+	var anchoBarra = 250;//254 para el espacio del margen
   $("#progressbar").empty();
 	var svg = document.getElementById('progressbar');
 	var separacion = anchoBarra / (tmpTotal+1);
@@ -165,7 +165,7 @@ function barraDeProgreso() {
 				colorCirculo = '#E24B4A';
 			}
 		} else if(tmpProgreso.length === i) {
-			rCircle = 10;
+			rCircle = 8;
 			colorCirculo = '#1280B1';
 		} else {
 			rCircle = 4;
@@ -185,7 +185,7 @@ function barraDeProgreso() {
 				x: cxCircle,
 				y: 22,
 				fontFamily: 'sans-serif',
-				fontSize: '12px',
+				fontSize: '11px',
 				textAnchor: 'middle',
 				fill: 'white'
 			});

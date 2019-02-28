@@ -429,13 +429,13 @@ function insertarTabla(config) {
 						};
 						switch(tipoInput) {
 							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						break;
@@ -480,13 +480,13 @@ function insertarTabla(config) {
 						var input;
 						switch(tipoInput) {
 							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 								break;
 							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 								break;
 							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 								break;
 						}
 						r+= `<p>${p.replace('{input}', input)}</p>`;
@@ -620,7 +620,7 @@ function rectNumFn(config) {
   state.font = {
     family: fontFamily,
     weight: fontWeight,
-    size: fontSize,
+    size: c.width < 500 ? eval(fontSize)*0.6 : eval(fontSize),
     color: fontColor,
     align: 'left' // end, right, center, start, left
   }
@@ -1411,7 +1411,7 @@ function mostrarArco(state, dataRecta, xPos, centroY, i, valor, desde, hasta, co
         ctx.fillStyle = '#A84C4E';
         ctx.textAlign = "center"; 
         ctx.font = '15px Helvetica';
-        ctx.fillText(`+${espacioMiles(String(scale.value))}`, xPos + arcoRadio, centroY-arcoRadio-10);
+        ctx.fillText(`+${scale.value}`, xPos + arcoRadio, centroY-arcoRadio-10);
       }
     }
   }
@@ -1498,14 +1498,14 @@ function dibujarArco(state, x, y, arcoRadio, mini = false) {
 }
 
 /* ------------------------ NUMEROS ------------------------- */
-function numeroEntero(state, x, y, valor, multSize) {//prueba sin multsize
+function numeroEntero(state, x, y, valor, multSize) {
   const { ctx, font } = state
   ctx.save()
   ctx.strokeStyle = font.color
   ctx.fillStyle = font.color
   ctx.textAlign = 'center'
   ctx.textBaseline = 'top'
-  ctx.font = font.size + 'px ' + font.family
+  ctx.font = font.size*multSize + 'px ' + font.family
   ctx.fillText(espacioMiles(valor), x, y)
   ctx.restore()
   ctx.save()

@@ -1444,7 +1444,7 @@ function mostrarArco(state, dataRecta, xPos, centroY, i, valor, desde, hasta, co
         ctx.fillStyle = '#A84C4E';
         ctx.textAlign = "center";
         ctx.font = '15px Helvetica';
-        ctx.fillText(`+${scale.value}`, xPos + arcoRadio, centroY - arcoRadio - 10);
+        ctx.fillText(`+${espacioMiles(String(scale.value))}`, xPos + arcoRadio, centroY - arcoRadio - 10);
       }
     }
   }
