@@ -46,18 +46,46 @@
          canvas.height = 350;
          canvas.width = 800;
          var ctx = canvas.getContext('2d');
-         var _separacion = 30;
+         var _separacion = 40, _altoOpciones = 20;
 
          var arreglosBidimensionales = [{
             src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
             imagen: undefined,
-            repX: 7,
-            repY: 3,
+            repX: 2,
+            repY: 4,
+            textoEjeX: '2',
+            textoEjeY: '4',
             opcion: 'a',
             altoImagen: 30,
             anchoImagen: 0,
             separacion: 10,
             tipo: 'arreglo' // arreglo o imagen estatica
+         },{
+            src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
+            imagen: undefined,
+            repX: 2,
+            repY: 5,
+            textoEjeX: '2',
+            textoEjeY: '5',
+            mostrarEjes: 'con flechas', //si, no, con flechas
+            opcion: 'b',
+            altoImagen: 30,
+            anchoImagen: 0,
+            separacion: 10,
+            tipo: 'arreglo'
+         },{
+            src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
+            imagen: undefined,
+            repX: 2,
+            repY: 6,
+            textoEjeX: '2',
+            textoEjeY: '6',
+            mostrarEjes: 'con flechas', //si, no, con flechas
+            opcion: 'c',
+            altoImagen: 30,
+            anchoImagen: 0,
+            separacion: 10,
+            tipo: 'arreglo'
          },{
             src: 'imagenes_front/simbolos/igual.svg',
             imagen: undefined,
@@ -65,17 +93,6 @@
             anchoImagen: 0,
             separacion: 10,
             tipo: 'imagen'
-         },{
-            src: 'imagenes_front/ficha_colores/Ficha_Azul.svg',
-            imagen: undefined,
-            repX: 4,
-            repY: 6,
-            mostrarEjes: 'con flechas', //si, no, con flechas
-            opcion: 'b',
-            altoImagen: 30,
-            anchoImagen: 0,
-            separacion: 10,
-            tipo: 'arreglo'
          },{
             src: 'fonts/OpenSans-Regular-webfont.woff',
             nombreFuente: 'opensansregularfont',
@@ -89,11 +106,12 @@
             cargaFuente(arreglo.nombreFuente, arreglo.src)  : 
             cargaImagen(arreglo.src))
          ).then(function(imagenes){
-            var anchoTotal = _separacion;
+            var anchoTotal = _separacion, altoRepeticiones = [];
             imagenes.forEach(function(imagen, index){
                arreglosBidimensionales[index].imagen = imagen;
                arreglosBidimensionales[index].anchoImagen = arreglosBidimensionales[index].altoImagen * imagen.width / imagen.height;
                if(arreglosBidimensionales[index].tipo === 'arreglo') {
+                  altoRepeticiones.push(arreglosBidimensionales[index].altoImagen * arreglosBidimensionales[index].repY + arreglosBidimensionales[index].separacion * (arreglosBidimensionales[index].repY+1));
                   anchoTotal += (arreglosBidimensionales[index].anchoImagen * arreglosBidimensionales[index].repX) + (arreglosBidimensionales[index].separacion * (arreglosBidimensionales[index].repX+1)) + _separacion;
                } else if(arreglosBidimensionales[index].tipo === 'imagen') {
                   anchoTotal += arreglosBidimensionales[index].anchoImagen + (arreglosBidimensionales[index].separacion * 2) + _separacion;
@@ -105,9 +123,11 @@
                }
             });
             var xInicio = canvas.width/2 - anchoTotal/2;
-            return { datos: arreglosBidimensionales, xInicio };
+            var altoRepeticionMaximo = altoRepeticiones.sort().pop();
+            var yStartRepeticiones = canvas.height/2-altoRepeticionMaximo/2;
+            return { datos: arreglosBidimensionales, xInicio, yStartRepeticiones, altoRepeticionMaximo };
          }).then(function(resultado){
-            const { datos, xInicio } = resultado;
+            const { datos, xInicio, yStartRepeticiones, altoRepeticionMaximo } = resultado;
             for(var i = 0, x = xInicio, y = 0; i < datos.length; i++){ //x => inicio de la repeticion, tiene que acumularse --- y => inicio de la repeticion, se setea en cada repeticion 
                const { imagen, altoImagen, anchoImagen, tipo, separacion } = datos[i];
                if(tipo === 'imagen') {
@@ -120,9 +140,11 @@
                   var altoTotalRep = altoImagen * repY + separacion * (repY+1); //alto total de la repeticion
                   var anchoTotalRep = anchoImagen * repX + separacion * (repX+1); //ancho total de la repeticion
                   var xStart = x + _separacion + separacion;
-                  var yStart = canvas.height / 2 - altoTotalRep / 2;
+                  var yStart = yStartRepeticiones;
                   
-                  opcion !== '' && mostrarTexto(opcion, xStart+(anchoTotalRep/2)-separacion, canvas.height-_separacion, 'center', 30, '#000000');
+                  opcion !== '' && mostrarTexto(opcion, xStart+(anchoTotalRep/2)-separacion, canvas.height-_altoOpciones, 'center', 30, '#000000');
+                  textoEjeX !== '' && mostrarTexto(textoEjeX, xStart+(anchoTotalRep/2)-separacion, yStart, 'center', 18, '#000000');
+                  textoEjeY !== '' && mostrarTexto(textoEjeY, xStart-separacion, yStart+(altoTotalRep/2), 'right', 18, '#000000');
                   for(var filas = 0, yImagen; filas < repY; filas++) {
                      yImagen = yStart + separacion * (filas+1) + altoImagen * filas;
                      for(var cols = 0, xImagen; cols < repX; cols++) {
