@@ -122,7 +122,8 @@ const FUNCIONES = [
       { id: 'Recta Numérica', action: rectNumFn },
       { id: 'Tabla Posicional', action: tablaPosicional },
       { id: 'Valor Posicional', action: valorPosicional },
-      { id: 'Repetición Pictóricos', action: repeticionPic }
+      { id: 'Repetición Pictóricos', action: repeticionPic },
+      { id: 'Repeticion Bidimensional', action:repeticionBidimensional }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -2533,18 +2534,18 @@ function repeticionPic(config) {
   let xStart = _separacion;
   container.height = Number(heightCanvas);
   container.width = Number(widthCanvas);
-  if(_canvasBorder !== '') {
+  if (_canvasBorder !== '') {
     container.style.border = _canvasBorder;
     container.style.borderRadius = _canvasBorderRadius + 'px';
   }
-  if(_tituloCanvas !== '') {
+  if (_tituloCanvas !== '') {
     var titulo = document.createElement('span');
     titulo.innerText = _tituloCanvas;
     titulo.style.fontSize = '18px';
     titulo.style.fontWeight = '600';
     container.parentNode.insertBefore(titulo, container);
   }
-  
+
   var ctx = container.getContext('2d');
   //carga las imagenes y dibuja las repeticiones
   Promise.all(repeticiones.map(x => cargaImagen(x.imagen.src))).then(imagenes => {
@@ -2925,4 +2926,127 @@ function repeticionPic(config) {
       return x;
     }
   }
+}
+
+function repeticionBidimensional(config) {
+  const { container, params, variables, versions, vt } = config;
+  const { _separacion, _altoOpciones, _anchoCanvas, _altoCanvas } = params;
+  let { datos } = params;
+  container.height = _altoCanvas;
+  container.width = _anchoCanvas;
+  var ctx = container.getContext('2d');
+  var vars = vt ? variables : versions;
+
+  datos = datos.map(dato => {//arreglo, imagen, texto
+    switch (dato.tipo) {
+      case 'arreglo':
+        return {
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          repX: Number(regex(dato.repX, vars, vt)),
+          repY: Number(regex(dato.repY, vars, vt)),
+          textoEjeX: regex(dato.textoEjeX, vars, vt),
+          textoEjeY: regex(dato.textoEjeY, vars, vt),
+          opcion: regex(dato.opcion, vars, vt),
+          altoImagen: Number(dato.altoImagen),
+          anchoImagen: Number(dato.anchoImagen),
+          separacion: Number(dato.separacion),
+          tipo: dato.tipo
+        };
+      case 'imagen':
+        return {
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          altoImagen: Number(dato.altoImagen),
+          separacion: Number(dato.separacion),
+          tipo: dato.tipo
+        };
+      case 'texto':
+        return {
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          nombreFuente: dato.nombreFuente,
+          altoTexto: Number(dato.altoTexto),
+          texto: regex(dato.texto, vars, vt),
+          separacion: Number(dato.separacion),
+          tipo: dato.tipo
+        };
+      default:
+        console.log('defecto');
+        break;
+    }
+  });
+
+  Promise.all(datos.map(arreglo => arreglo.tipo === 'texto' ?
+    cargaFuente(arreglo.nombreFuente, arreglo.src) :
+    cargaImagen(arreglo.src))
+  ).then(function (imagenes) {
+    var anchoTotal = _separacion, altoRepeticiones = [];
+    imagenes.forEach(function (imagen, index) {
+      if (datos[index].tipo === 'arreglo') {
+        datos[index].imagen = imagen;
+        datos[index].anchoImagen = datos[index].altoImagen * imagen.width / imagen.height;
+        altoRepeticiones.push(datos[index].altoImagen * datos[index].repY + datos[index].separacion * (datos[index].repY + 1));
+        anchoTotal += (datos[index].anchoImagen * datos[index].repX) + (datos[index].separacion * (datos[index].repX + 1)) + _separacion;
+      } else if (datos[index].tipo === 'imagen') {
+        datos[index].imagen = imagen;
+        datos[index].anchoImagen = datos[index].altoImagen * imagen.width / imagen.height;
+        anchoTotal += datos[index].anchoImagen + (datos[index].separacion * 2) + _separacion;
+      } else {
+        ctx.save();
+        ctx.font = `${datos[index].altoTexto}px ${datos[index].nombreFuente}`;
+        anchoTotal += datos[index].separacion * 2 + ctx.measureText(datos[index].texto).width + _separacion;
+        ctx.restore();
+      }
+    });
+    var xInicio = container.width / 2 - anchoTotal / 2;
+    var altoRepeticionMaximo = altoRepeticiones.sort().pop();
+    var yStartRepeticiones = container.height / 2 - altoRepeticionMaximo / 2;
+    return { datos: datos, xInicio, yStartRepeticiones, altoRepeticionMaximo };
+  }).then(function (resultado) {
+    const { datos, xInicio, yStartRepeticiones, altoRepeticionMaximo } = resultado;
+    for (var i = 0, x = xInicio, y = 0; i < datos.length; i++) { //x => inicio de la repeticion, tiene que acumularse --- y => inicio de la repeticion, se setea en cada repeticion 
+      const { imagen, altoImagen, anchoImagen, tipo, separacion } = datos[i];
+      if (tipo === 'imagen') {
+        x += _separacion + separacion;
+        y = container.height / 2 - altoImagen / 2;
+        ctx.drawImage(imagen, x, y, anchoImagen, altoImagen);
+        x += anchoImagen + separacion;
+      } else if (tipo === 'arreglo') {
+        const { repX, repY, textoEjeX, textoEjeY, opcion } = datos[i];
+        var altoTotalRep = altoImagen * repY + separacion * (repY + 1); //alto total de la repeticion
+        var anchoTotalRep = anchoImagen * repX + separacion * (repX + 1); //ancho total de la repeticion
+        var xStart = x + _separacion + separacion;
+        var yStart = yStartRepeticiones;
+
+        opcion !== '' && mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - _altoOpciones, 'center', 30, '#000000');
+        textoEjeX !== '' && mostrarTexto(textoEjeX, xStart + (anchoTotalRep / 2) - separacion, yStart, 'center', 18, '#000000');
+        textoEjeY !== '' && mostrarTexto(textoEjeY, xStart - separacion, yStart + (altoTotalRep / 2), 'right', 18, '#000000');
+        for (var filas = 0, yImagen; filas < repY; filas++) {
+          yImagen = yStart + separacion * (filas + 1) + altoImagen * filas;
+          for (var cols = 0, xImagen; cols < repX; cols++) {
+            xImagen = xStart + separacion * cols + anchoImagen * cols;
+            ctx.drawImage(imagen, xImagen, yImagen, anchoImagen, altoImagen);
+          }
+        }
+        x += _separacion + separacion * (repX + 1) + anchoImagen * repX;
+      } else {
+        const { nombreFuente, altoTexto, separacion, texto } = datos[i];
+        ctx.save();
+        ctx.font = `${altoTexto}px ${nombreFuente}`;
+        ctx.fillStyle = '#ff0000';
+        ctx.textAlign = 'center';
+        var anchoTexto = ctx.measureText(texto).width;
+        ctx.fillText(texto, x + _separacion + separacion + anchoTexto / 2, container.height / 2 + altoTexto / 2);
+        x += _separacion + separacion * 2 + anchoTexto;
+        ctx.restore();
+      }
+    }
+
+    function mostrarTexto(texto, x, y, aling, fontsize, color) {
+      ctx.font = `${fontsize}px opensansregularfont`;
+      ctx.textAlign = aling;
+      ctx.fillStyle = color;
+      ctx.fillText(texto, x, y);
+    }
+  }).catch(function (error) {
+    console.log(error);
+  });
 }
