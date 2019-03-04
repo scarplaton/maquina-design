@@ -195,10 +195,11 @@ function dibujaHtml() {
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
+      let textoOpcion = item.params.textoOpcion ? regex(item.params.textoOpcion, versionBody.vars, false) : `Opción ${index + 1}`
       respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
           <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
-            <input id="rbtn${index}" name="answer" value="Opción ${index + 1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-            <label for="rbtn${index}" id="label${index}">Opción ${index + 1}</label>
+            <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
 						${
         item.tag != 'general' ?
           `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
@@ -545,7 +546,7 @@ function insertarTabla(config) {
     if(tituloTabla !== '') {
       container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
       var titulo = document.createElement('span');
-      titulo.innerText = tituloTabla;
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
       titulo.style.fontSize = '18px';
       titulo.style.fontWeight = '600';
       titulo.style.color = 'black';
