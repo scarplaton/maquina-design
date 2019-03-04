@@ -371,7 +371,7 @@ function insertarInput(config) {
   }
 }
 function insertarTabla(config) {
-  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols } = params, vars = vt ? variables : versions
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
@@ -383,8 +383,9 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
+  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
-    let r = `<table class="tabla ${cssclases}"><tbody>`;
+    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
     if (anchoCols) {
       var anchoColumnas = String(anchoCols).split(',');
       anchoColumnas.forEach(function (ancho) {
@@ -530,7 +531,7 @@ function insertarTabla(config) {
             var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 
-            p = `<p>${p.replace('{imagen}', img)}</p>`
+            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
             r += regexFunctions(p)
             break;
         }
@@ -541,6 +542,15 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
+    if(tituloTabla !== '') {
+      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+      var titulo = document.createElement('span');
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
+      titulo.style.fontSize = '18px';
+      titulo.style.fontWeight = '600';
+      titulo.style.color = 'black';
+      container.parentNode.insertBefore(titulo, container);
+   }
   }
 }
 
