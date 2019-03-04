@@ -251,7 +251,7 @@ function insertarImagen(config) {
   var source;
   try {
     var vars = vt ? variables : versions;
-    var relativePath = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+    var relativePath = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
     source = regex(relativePath, vars, vt);
   } catch (e) {
     console.log(e);
@@ -371,7 +371,7 @@ function insertarInput(config) {
   }
 }
 function insertarTabla(config) {
-  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols } = params, vars = vt ? variables : versions
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
@@ -383,9 +383,8 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
-  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
-    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
+    let r = `<table class="tabla ${cssclases}"><tbody>`;
     if (anchoCols) {
       var anchoColumnas = String(anchoCols).split(',');
       anchoColumnas.forEach(function (ancho) {
@@ -422,7 +421,7 @@ function insertarTabla(config) {
             }
             break;
           case 'image':
-            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
@@ -528,10 +527,10 @@ function insertarTabla(config) {
             break;
           case 'text-image':
             var p = regex(table[row][col].value.text, vars, vt);
-            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 
-            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
+            p = `<p>${p.replace('{imagen}', img)}</p>`
             r += regexFunctions(p)
             break;
         }
@@ -542,15 +541,6 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
-    if(tituloTabla !== '') {
-      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
-      var titulo = document.createElement('span');
-      titulo.innerText = tituloTabla;
-      titulo.style.fontSize = '18px';
-      titulo.style.fontWeight = '600';
-      titulo.style.color = 'black';
-      container.parentNode.insertBefore(titulo, container);
-   }
   }
 }
 
@@ -1778,9 +1768,9 @@ function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
   var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
     _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
@@ -2001,7 +1991,7 @@ function tablaPosicional(config) {
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `../../../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2011,7 +2001,7 @@ function tablaPosicional(config) {
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = '../../imagenes_front/tablas_posicionales/' + img;
+        var src = '../../../../imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2026,10 +2016,10 @@ function tablaPosicional(config) {
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `../../../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `../../imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `../../../../imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -2280,7 +2270,7 @@ function tablaPosicional(config) {
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `../../../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),
@@ -2320,9 +2310,9 @@ function tablaPosicional(config) {
 function valorPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var { _tipo, _texto, _numeroPalabras, _marca, _separacionNumeros, _miles, _centenas, _decenas, _unidades, _altoTexo, _margenTopBottom } = params;
-  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
 
@@ -2461,49 +2451,49 @@ function repeticionPic(config) {
 
   var imagenes = [{
     name: 'bloque mil',
-    src: '../../imagenes_front/bloques_multibase/bloque-4.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-4.svg'
   }, {
     name: 'bloque cien',
-    src: '../../imagenes_front/bloques_multibase/bloque-3.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-3.svg'
   }, {
     name: 'bloque diez',
-    src: '../../imagenes_front/bloques_multibase/bloque-2.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-2.svg'
   }, {
     name: 'bloque uno',
-    src: '../../imagenes_front/bloques_multibase/bloque-1.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-1.svg'
   }, {
     name: 'billete mil',
-    src: '../../imagenes_front/monedas_billetes/1000.svg'
+    src: '../../../../imagenes_front/monedas_billetes/1000.svg'
   }, {
     name: 'moneda cien',
-    src: '../../imagenes_front/monedas_billetes/100.svg'
+    src: '../../../../imagenes_front/monedas_billetes/100.svg'
   }, {
     name: 'moneda diez',
-    src: '../../imagenes_front/monedas_billetes/10.svg'
+    src: '../../../../imagenes_front/monedas_billetes/10.svg'
   }, {
     name: 'moneda uno',
-    src: '../../imagenes_front/monedas_billetes/1.svg'
+    src: '../../../../imagenes_front/monedas_billetes/1.svg'
   }, {
     name: 'moneda quinientos',
-    src: '../../imagenes_front/monedas_billetes/500.svg'
+    src: '../../../../imagenes_front/monedas_billetes/500.svg'
   }, {
     name: 'moneda cincuenta',
-    src: '../../imagenes_front/monedas_billetes/50.svg'
+    src: '../../../../imagenes_front/monedas_billetes/50.svg'
   }, {
     name: 'moneda cinco',
-    src: '../../imagenes_front/monedas_billetes/5.svg'
+    src: '../../../../imagenes_front/monedas_billetes/5.svg'
   }, {
     name: 'signo resta',
-    src: '../../imagenes_front/simbolos/menos.svg'
+    src: '../../../../imagenes_front/simbolos/menos.svg'
   }, {
     name: 'signo igual',
-    src: '../../imagenes_front/simbolos/igual.svg'
+    src: '../../../../imagenes_front/simbolos/igual.svg'
   }, {
     name: 'signo mayor',
-    src: '../../imagenes_front/simbolos/mayor.svg'
+    src: '../../../../imagenes_front/simbolos/mayor.svg'
   }, {
     name: 'signo menor',
-    src: '../../imagenes_front/simbolos/menor.svg'
+    src: '../../../../imagenes_front/simbolos/menor.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,
@@ -2951,7 +2941,7 @@ function repeticionBidimensional(config) {
     switch (dato.tipo) {
       case 'arreglo':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           repX: Number(regex(dato.repX, vars, vt)),
           repY: Number(regex(dato.repY, vars, vt)),
           textoEjeX: regex(dato.textoEjeX, vars, vt),
@@ -2964,14 +2954,14 @@ function repeticionBidimensional(config) {
         };
       case 'imagen':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           altoImagen: Number(dato.altoImagen),
           separacion: Number(dato.separacion),
           tipo: dato.tipo
         };
       case 'texto':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           nombreFuente: dato.nombreFuente,
           altoTexto: Number(dato.altoTexto),
           texto: regex(dato.texto, vars, vt),
