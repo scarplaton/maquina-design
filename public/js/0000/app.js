@@ -2505,6 +2505,9 @@ function repeticionPic(config) {
   }, {
     name: 'signo menor',
     src: '../../imagenes_front/simbolos/menor.svg'
+  }, {
+    name: 'signo suma',
+    src: '../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,
