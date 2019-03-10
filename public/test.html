@@ -4,175 +4,22 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+      <script type="text/x-mathjax-config">MathJax.Hub.Config({ tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]} }); </script>
+      <script src="https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/js/MathJax.js?config=TeX-AMS_HTML-full"></script>
    </head>
    <body>
       <div class="container">
          <div class="row">
             <div class="col-12">
-               <canvas style="border: 1px solid #000000;" id="container"></canvas>
+               <p>When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
+                  $$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$</p>
+               <p>Violeta escribio: $$ x · y = 2x · y = 4x · { y \over 2 } $$</p>
+               <p>Martina escribio: $$ x · y = 2x · {y \over 2 } = 4x · { y \over 4 }$$</p>
             </div>
          </div>
       </div>
       <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script> 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> 
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> 
-      <script>
-         function cargaImagen(src) {
-            return new Promise(function(resolve, reject){
-               var img = new Image();
-               img.src = src;
-               img.onload = function() {
-                  resolve(img);
-               }
-               img.onerror = function() {
-                  reject('no pasa nada');
-               }
-            });
-         }
-
-         function cargaFuente(nombre, src) {
-            return new Promise(function(resolve, reject){
-               var font = new FontFace(nombre, `url('${src}')`, {});
-               font.load().then(function(loadedFont) {
-                  document.fonts.add(loadedFont);
-                  resolve(nombre);
-               }).catch(function(error){
-                  reject(error);
-               });
-            });
-         }
-
-         var canvas = document.getElementById('container');
-         canvas.height = 350;
-         canvas.width = 800;
-         var ctx = canvas.getContext('2d');
-         var _separacion = 40, _altoOpciones = 20;
-
-         var arreglosBidimensionales = [{
-            src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
-            imagen: undefined,
-            repX: 2,
-            repY: 4,
-            textoEjeX: '2',
-            textoEjeY: '4',
-            opcion: 'a',
-            altoImagen: 30,
-            anchoImagen: 0,
-            separacion: 10,
-            tipo: 'arreglo' // arreglo o imagen estatica
-         },{
-            src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
-            imagen: undefined,
-            repX: 2,
-            repY: 5,
-            textoEjeX: '2',
-            textoEjeY: '5',
-            opcion: 'b',
-            altoImagen: 30,
-            anchoImagen: 0,
-            separacion: 10,
-            tipo: 'arreglo'
-         },{
-            src: 'imagenes_front/ficha_colores/Ficha_Amarilla.svg',
-            imagen: undefined,
-            repX: 2,
-            repY: 6,
-            textoEjeX: '2',
-            textoEjeY: '6',
-            opcion: 'c',
-            altoImagen: 30,
-            anchoImagen: 0,
-            separacion: 10,
-            tipo: 'arreglo'
-         },{
-            src: 'imagenes_front/simbolos/igual.svg',
-            imagen: undefined,
-            altoImagen: 30,
-            anchoImagen: 0,
-            separacion: 10,
-            tipo: 'imagen'
-         },{
-            src: 'fonts/OpenSans-Regular-webfont.woff',
-            nombreFuente: 'opensansregularfont',
-            altoTexto: 30,
-            separacion: 10,
-            texto: '6 × 6 = 36',
-            tipo: 'texto'
-         }];
-
-         Promise.all(arreglosBidimensionales.map(arreglo => arreglo.tipo === 'texto' ? 
-            cargaFuente(arreglo.nombreFuente, arreglo.src)  : 
-            cargaImagen(arreglo.src))
-         ).then(function(imagenes){
-            var anchoTotal = _separacion, altoRepeticiones = [];
-            imagenes.forEach(function(imagen, index){
-               arreglosBidimensionales[index].imagen = imagen;
-               arreglosBidimensionales[index].anchoImagen = arreglosBidimensionales[index].altoImagen * imagen.width / imagen.height;
-               if(arreglosBidimensionales[index].tipo === 'arreglo') {
-                  altoRepeticiones.push(arreglosBidimensionales[index].altoImagen * arreglosBidimensionales[index].repY + arreglosBidimensionales[index].separacion * (arreglosBidimensionales[index].repY+1));
-                  anchoTotal += (arreglosBidimensionales[index].anchoImagen * arreglosBidimensionales[index].repX) + (arreglosBidimensionales[index].separacion * (arreglosBidimensionales[index].repX+1)) + _separacion;
-               } else if(arreglosBidimensionales[index].tipo === 'imagen') {
-                  anchoTotal += arreglosBidimensionales[index].anchoImagen + (arreglosBidimensionales[index].separacion * 2) + _separacion;
-               } else {
-                  ctx.save();
-                  ctx.font = `${arreglosBidimensionales[index].altoTexto}px ${arreglosBidimensionales[index].nombreFuente}`;
-                  anchoTotal += arreglosBidimensionales[index].separacion * 2 + ctx.measureText(arreglosBidimensionales[index].texto).width + _separacion;
-                  ctx.restore();
-               }
-            });
-            var xInicio = canvas.width/2 - anchoTotal/2;
-            var altoRepeticionMaximo = altoRepeticiones.sort().pop();
-            var yStartRepeticiones = canvas.height/2-altoRepeticionMaximo/2;
-            return { datos: arreglosBidimensionales, xInicio, yStartRepeticiones, altoRepeticionMaximo };
-         }).then(function(resultado){
-            const { datos, xInicio, yStartRepeticiones, altoRepeticionMaximo } = resultado;
-            for(var i = 0, x = xInicio, y = 0; i < datos.length; i++){ //x => inicio de la repeticion, tiene que acumularse --- y => inicio de la repeticion, se setea en cada repeticion 
-               const { imagen, altoImagen, anchoImagen, tipo, separacion } = datos[i];
-               if(tipo === 'imagen') {
-                  x += _separacion + separacion; 
-                  y = canvas.height / 2 - altoImagen / 2;
-                  ctx.drawImage(imagen,x,y,anchoImagen,altoImagen);
-                  x += anchoImagen + separacion;
-               } else if(tipo === 'arreglo'){
-                  const { repX, repY, textoEjeX, textoEjeY, opcion } = datos[i];
-                  var altoTotalRep = altoImagen * repY + separacion * (repY+1); //alto total de la repeticion
-                  var anchoTotalRep = anchoImagen * repX + separacion * (repX+1); //ancho total de la repeticion
-                  var xStart = x + _separacion + separacion;
-                  var yStart = yStartRepeticiones;
-                  
-                  opcion !== '' && mostrarTexto(opcion, xStart+(anchoTotalRep/2)-separacion, canvas.height-_altoOpciones, 'center', 30, '#000000');
-                  textoEjeX !== '' && mostrarTexto(textoEjeX, xStart+(anchoTotalRep/2)-separacion, yStart, 'center', 18, '#000000');
-                  textoEjeY !== '' && mostrarTexto(textoEjeY, xStart-separacion, yStart+(altoTotalRep/2), 'right', 18, '#000000');
-                  for(var filas = 0, yImagen; filas < repY; filas++) {
-                     yImagen = yStart + separacion * (filas+1) + altoImagen * filas;
-                     for(var cols = 0, xImagen; cols < repX; cols++) {
-                        xImagen = xStart + separacion * cols + anchoImagen * cols;
-                        ctx.drawImage(imagen,xImagen,yImagen,anchoImagen,altoImagen);
-                     }
-                  }
-                  x += _separacion + separacion * (repX+1) + anchoImagen * repX;
-               } else {
-                  const { nombreFuente, altoTexto, separacion, texto } = datos[i];
-                  ctx.save();
-                  ctx.font = `${altoTexto}px ${nombreFuente}`;
-                  ctx.fillStyle = '#ff0000';
-                  ctx.textAlign = 'center';
-                  var anchoTexto = ctx.measureText(texto).width;
-                  ctx.fillText(texto, x+_separacion+separacion+anchoTexto/2, canvas.height/2+altoTexto/2);
-                  x += _separacion + separacion * 2 + anchoTexto;
-                  ctx.restore();
-               }
-            }
-
-            function mostrarTexto(texto, x, y, aling, fontsize, color) {
-               ctx.font = `${fontsize}px opensansregularfont`;
-               ctx.textAlign = aling; 
-               ctx.fillStyle = color;
-               ctx.fillText(texto, x, y);
-            }
-         }).catch(function(error){
-            console.log(error);
-         });
-      </script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
    </body>
 </html>

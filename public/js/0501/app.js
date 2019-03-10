@@ -158,6 +158,7 @@ function print() { //Dibujar ejercicios
       }
     })
   })
+  window.MathJax && MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 }
 
 function dibujaHtml() {
@@ -1767,20 +1768,22 @@ function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
-  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
+  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
     _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
     _altoImgMilesPisoUno, _altoImgCentPisoUno, _altoImgDecPisoUno, _altoImgUniPisoUno,//termino datos piso uno
     _tipoPisoDos, _repeticionPictoricaPisoDos, _mostrarNumeroCompletoDos, _numeroCompletoPisoDos, _umilPisoDos, _centenaPisoDos, _decenaPisoDos, _unidadPisoDos, _altoTextoPisoDos,
     _altoImgMilesPisoDos, _altoImgCentPisoDos, _altoImgDecPisoDos, _altoImgUniPisoDos,//termino datos piso dos
     _tipoPisoTres, _repeticionPictoricaPisoTres, _mostrarNumeroCompletoTres, _numeroCompletoPisoTres, _umilPisoTres, _centenaPisoTres, _decenaPisoTres, _unidadPisoTres, _altoTextoPisoTres,
     _altoImgMilesPisoTres, _altoImgCentPisoTres, _altoImgDecPisoTres, _altoImgUniPisoTres,//termino datos piso tres
-    _dibujaValorPosicional1, _altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
-    _dibujaValorPosicional2, _altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
-    _dibujaTextoResultado, _altoTextoResultado, _resultado } = params;
+    _dibujaValorPosicional1, _mostrarSignoMasVP1,_altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
+    _dibujaValorPosicional2, _mostrarSignoMasVP2,_altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
+    _dibujaTextoResultado, _altoTextoResultado, _resultado,
+    _tipoUmilVP1,_tipoCentenaVP1,_tipoDecenaVP1,_tipoUnidadVP1,_altoumilvp1,_altocentenavp1,_altodecenavp1,_altounidadvp1,
+    _tipoUmilVP2,_tipoCentenaVP2,_tipoDecenaVP2,_tipoUnidadVP2,_altoumilvp2,_altocentenavp2,_altodecenavp2,_altounidadvp2 } = params;
 
   var vars = vt ? variables : versions;
   try {
@@ -1832,7 +1835,7 @@ function tablaPosicional(config) {
     altoTexto: _altoTextoPisoUno,
     umilAltoImg: _altoImgMilesPisoUno,
     decAltoImg: _altoImgDecPisoUno,
-    centAltoImg: _altoImgDecPisoUno,
+    centAltoImg: _altoImgCentPisoUno,
     uniAltoImg: _altoImgUniPisoUno
   }]
   if (datosEjercicio.tabla.configuracion.pisosTabla > 1) {
@@ -1846,7 +1849,7 @@ function tablaPosicional(config) {
       altoTexto: _altoTextoPisoDos,
       umilAltoImg: _altoImgMilesPisoDos,
       decAltoImg: _altoImgDecPisoDos,
-      centAltoImg: _altoImgDecPisoDos,
+      centAltoImg: _altoImgCentPisoDos,
       uniAltoImg: _altoImgUniPisoDos
     }
   }
@@ -1860,9 +1863,9 @@ function tablaPosicional(config) {
       unidad: _unidadPisoTres,
       altoTexto: _altoTextoPisoTres,
       umilAltoImg: _altoImgMilesPisoTres,
-      decAltoImg: _altoImgDecPisoUnoTres,
-      centAltoImg: _altoImgDecPisoUnoTres,
-      uniAltoImg: _altoImgUniPisoUnoTres
+      decAltoImg: _altoImgDecPisoTres,
+      centAltoImg: _altoImgCentPisoTres,
+      uniAltoImg: _altoImgUniPisoTres
     }
   }
   datosEjercicio.valoresPosicionales = [];
@@ -1870,12 +1873,21 @@ function tablaPosicional(config) {
   if (_dibujaValorPosicional1 === 'si') {
     datosEjercicio.valoresPosicionales[0] = {
       mostrar: _dibujaValorPosicional1,
+      mostrarSignoMas: _mostrarSignoMasVP1,
       altoTexto: Number(_altoTextoValorPosicional1), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP1,
-        centena: _centenaVP1,
-        decena: _decenaVP1,
-        unidad: _unidadVP1
+        umil: _tipoUmilVP1 === 'texto' ? _umilVP1 : { 
+          src: _umilVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp1) },
+        centena: _tipoCentenaVP1 === 'texto' ? _centenaVP1 : { 
+          src: _centenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp1) },
+        decena: _tipoDecenaVP1 === 'texto' ? _decenaVP1 : { 
+          src: _decenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp1) },
+        unidad: _tipoUnidadVP1 === 'texto' ? _unidadVP1 : { 
+          src: _unidadVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp1) }
       }
     }
   }
@@ -1883,12 +1895,21 @@ function tablaPosicional(config) {
   if (_dibujaValorPosicional2 === 'si') {
     datosEjercicio.valoresPosicionales[1] = {
       mostrar: _dibujaValorPosicional2,
+      mostrarSignoMas: _mostrarSignoMasVP2,
       altoTexto: Number(_altoTextoValorPosicional2), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP2,
-        centena: _centenaVP2,
-        decena: _decenaVP2,
-        unidad: _unidadVP2
+        umil: _tipoUmilVP2 === 'texto' ? _umilVP2 : { src: 
+          _umilVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp2) },
+        centena: _tipoCentenaVP2 === 'texto' ? _centenaVP2 : { 
+          src: _centenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp2) },
+        decena: _tipoDecenaVP2 === 'texto' ? _decenaVP2 : { 
+          src: _decenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp2) },
+        unidad: _tipoUnidadVP2 === 'texto' ? _unidadVP2 : { 
+          src: _unidadVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp2) }
       }
     }
   }
@@ -1903,6 +1924,16 @@ function tablaPosicional(config) {
   console.log(datosEjercicio);
   let recursos = cargaRecursos();
   var ctx, yStart = 0;
+  if(_titulo !== '') {
+    container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+    container.parentElement.classList.add('text-center');
+    var titulo = document.createElement('span');
+    titulo.innerText = regexFunctions(regex(_titulo, vars, vt));
+    titulo.style.fontSize = '18px';
+    titulo.style.fontWeight = '600';
+    titulo.style.color = 'black';
+    container.parentNode.insertBefore(titulo, container);
+  }
   Promise.all(recursos).then(function ([imgTabla, imgFlechaAbajo, imgSignoMas]) {
     var { altoCanvas, altoImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
     container.width = Number(_width);
@@ -1990,7 +2021,7 @@ function tablaPosicional(config) {
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `../../../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2000,7 +2031,7 @@ function tablaPosicional(config) {
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = '../../../../imagenes_front/tablas_posicionales/' + img;
+        var src = '../../imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2015,10 +2046,10 @@ function tablaPosicional(config) {
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `../../../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `../../../../imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `../../imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -2227,13 +2258,13 @@ function tablaPosicional(config) {
     }
   }
 
-  function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
+  async function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
     ctx.font = `${valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
     ctx.fillStyle = '#F58220';
     ctx.textAlign = 'center';
     var { umil, centena, decena, unidad } = valorPosicional.numeros;
     var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
-
+    //console.log(numerosValorPosicional);
     for (var i = 1, centroSeccion, centroSeparacion, yTexto; i < diviciones + 1; i++) {
       centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones / 2);
       centroSeparacion = anchoSeparaciones * i;
@@ -2241,13 +2272,26 @@ function tablaPosicional(config) {
       var xFlecha = centroSeccion - (imgFlechaAbajo.width / 2);
       ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
       //texto
-      yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
-      ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      if(typeof numerosValorPosicional[i - 1] === 'string') {
+        yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
+        ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      } else {
+        await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
+          var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
+          var xImagenVp = centroSeccion-anchoImgVp/2;
+          var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
+          ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i-1].alto);
+        }).catch(function(error){
+          console.log(error);
+        });
+      }
       //singo mas
-      if (i + 1 !== diviciones + 1) {
-        var xMas = centroSeparacion - (imgSignoMas.width / 2);
-        var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
-        ctx.drawImage(imgSignoMas, xMas, yMas);
+      if(valorPosicional.mostrarSignoMas === 'si') {
+        if (i + 1 !== diviciones + 1) {
+          var xMas = centroSeparacion - (imgSignoMas.width / 2);
+          var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
+          ctx.drawImage(imgSignoMas, xMas, yMas);
+        }
       }
     }
     return yTexto + _separacionElementos;
@@ -2269,7 +2313,7 @@ function tablaPosicional(config) {
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `../../../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),

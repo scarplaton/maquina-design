@@ -40,7 +40,11 @@ function regexFunctions(text) {
   var result = text.replace(/(?=\{).*?(\})/g, function (coincidencia) { //coincidencia => '{funcion()}'
     var final = coincidencia.length - 2;
     var funcion = coincidencia.substr(1, final);
-    return eval(funcion);
+    try {
+      return eval(funcion);
+    } catch(error) {
+      return coincidencia;
+    }
   });
   return result;
 }
@@ -158,6 +162,7 @@ function print() { //Dibujar ejercicios
       }
     })
   })
+  window.MathJax && MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 }
 
 function dibujaHtml() {
@@ -194,10 +199,11 @@ function dibujaHtml() {
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
+      let textoOpcion = item.params.textoOpcion ? regex(item.params.textoOpcion, versionBody.vars, false) : `Opción ${index + 1}`
       respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
           <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
-            <input id="rbtn${index}" name="answer" value="Opción ${index + 1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-            <label for="rbtn${index}" id="label${index}">Opción ${index + 1}</label>
+            <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
 						${
         item.tag != 'general' ?
           `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
