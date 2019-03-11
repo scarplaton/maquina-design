@@ -163,6 +163,23 @@ function print() { //Dibujar ejercicios
       }
     })
   })
+  if(window.MathJax) {
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub, function(){
+      if(document.querySelectorAll('#respuesta script').length > 0) {
+        var respuestas = document.querySelectorAll('#respuesta .radio-div');
+        var altoRespuestas = [];
+        for(var i = 0; i < respuestas.length; i++){
+          altoRespuestas.push(respuestas[i].offsetHeight);
+        }
+        var maximo = Math.max(...altoRespuestas);
+        for(var i = 0; i < respuestas.length; i++){
+          if(respuestas[i].offsetHeight != maximo) {
+            respuestas[i].style.height = maximo+'px';
+          }
+        }
+      } 
+    }]);
+  }
 }
 
 function dibujaHtml() {
@@ -256,7 +273,7 @@ function insertarImagen(config) {
   var source;
   try {
     var vars = vt ? variables : versions;
-    var relativePath = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+    var relativePath = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
     source = regex(relativePath, vars, vt);
   } catch (e) {
     console.log(e);
@@ -1783,8 +1800,8 @@ function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
   var srcFuente = '../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
   var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
@@ -2036,7 +2053,7 @@ function tablaPosicional(config) {
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `../../../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2046,7 +2063,7 @@ function tablaPosicional(config) {
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = '../../imagenes_front/tablas_posicionales/' + img;
+        var src = '../../../../imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -2061,10 +2078,10 @@ function tablaPosicional(config) {
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `../../../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `../../imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `../../../../imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -2328,7 +2345,7 @@ function tablaPosicional(config) {
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `../../../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),
@@ -2368,8 +2385,8 @@ function tablaPosicional(config) {
 function valorPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var { _tipo, _texto, _numeroPalabras, _marca, _separacionNumeros, _miles, _centenas, _decenas, _unidades, _altoTexo, _margenTopBottom } = params;
-  var imgSrcFlechaAbajo = '../../imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = '../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
   var srcFuente = '../../fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
@@ -2509,52 +2526,52 @@ function repeticionPic(config) {
 
   var imagenes = [{
     name: 'bloque mil',
-    src: '../../imagenes_front/bloques_multibase/bloque-4.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-4.svg'
   }, {
     name: 'bloque cien',
-    src: '../../imagenes_front/bloques_multibase/bloque-3.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-3.svg'
   }, {
     name: 'bloque diez',
-    src: '../../imagenes_front/bloques_multibase/bloque-2.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-2.svg'
   }, {
     name: 'bloque uno',
-    src: '../../imagenes_front/bloques_multibase/bloque-1.svg'
+    src: '../../../../imagenes_front/bloques_multibase/bloque-1.svg'
   }, {
     name: 'billete mil',
-    src: '../../imagenes_front/monedas_billetes/1000.svg'
+    src: '../../../../imagenes_front/monedas_billetes/1000.svg'
   }, {
     name: 'moneda cien',
-    src: '../../imagenes_front/monedas_billetes/100.svg'
+    src: '../../../../imagenes_front/monedas_billetes/100.svg'
   }, {
     name: 'moneda diez',
-    src: '../../imagenes_front/monedas_billetes/10.svg'
+    src: '../../../../imagenes_front/monedas_billetes/10.svg'
   }, {
     name: 'moneda uno',
-    src: '../../imagenes_front/monedas_billetes/1.svg'
+    src: '../../../../imagenes_front/monedas_billetes/1.svg'
   }, {
     name: 'moneda quinientos',
-    src: '../../imagenes_front/monedas_billetes/500.svg'
+    src: '../../../../imagenes_front/monedas_billetes/500.svg'
   }, {
     name: 'moneda cincuenta',
-    src: '../../imagenes_front/monedas_billetes/50.svg'
+    src: '../../../../imagenes_front/monedas_billetes/50.svg'
   }, {
     name: 'moneda cinco',
-    src: '../../imagenes_front/monedas_billetes/5.svg'
+    src: '../../../../imagenes_front/monedas_billetes/5.svg'
   }, {
     name: 'signo resta',
-    src: '../../imagenes_front/simbolos/menos.svg'
+    src: '../../../../imagenes_front/simbolos/menos.svg'
   }, {
     name: 'signo igual',
-    src: '../../imagenes_front/simbolos/igual.svg'
+    src: '../../../../imagenes_front/simbolos/igual.svg'
   }, {
     name: 'signo mayor',
-    src: '../../imagenes_front/simbolos/mayor.svg'
+    src: '../../../../imagenes_front/simbolos/mayor.svg'
   }, {
     name: 'signo menor',
-    src: '../../imagenes_front/simbolos/menor.svg'
+    src: '../../../../imagenes_front/simbolos/menor.svg'
   }, {
     name: 'signo suma',
-    src: '../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
+    src: '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,

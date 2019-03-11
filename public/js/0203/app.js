@@ -162,7 +162,24 @@ function print() { //Dibujar ejercicios
       }
     })
   })
-  window.MathJax && MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+  if(window.MathJax) {
+    MathJax.Hub.Queue(["Typeset",MathJax.Hub, function(){
+      if(document.querySelectorAll('#respuesta script').length > 0) {
+        var respuestas = document.querySelectorAll('#respuesta .radio-div');
+        var altoRespuestas = [];
+        for(var i = 0; i < respuestas.length; i++){
+          altoRespuestas.push(respuestas[i].offsetHeight);
+        }
+        var maximo = Math.max(...altoRespuestas);
+        for(var i = 0; i < respuestas.length; i++){
+          if(respuestas[i].offsetHeight != maximo) {
+            respuestas[i].style.height = maximo+'px';
+          }
+        }
+      } 
+    }]);
+  }
+  
 }
 
 function dibujaHtml() {
