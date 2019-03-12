@@ -2279,7 +2279,7 @@ function tablaPosicional(config) {
         await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
           var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
           var xImagenVp = centroSeccion-anchoImgVp/2;
-          var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
+          var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto/2) - (numerosValorPosicional[i-1].alto/2);
           ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i-1].alto);
         }).catch(function(error){
           console.log(error);
