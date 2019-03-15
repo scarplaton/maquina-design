@@ -6,14 +6,13 @@ var hiddenCierraFeed = window.parent.parent.cerrarFeedbackHijo; //Comunicacón c
 var hiddenPressConsulta = window.parent.parent.pressConsulta; //Comunicacón con frame Segundo error
 
 var barraProgreso = window.parent.parent.barraProgreso; //Comunicacón con frame Segundo error
-/*
-JSON.parse(barraProgreso.value)
-	parsear valor barraProgreso 
-	{
-		tmpProgreso:[],
-		tmpTotal:0
-	}
-*/
+
+$('#hiddenIntento').attr('onchange', 'cambio(this)');
+
+function cambio(elemento){
+	numeroIntento = $(elemento).val();
+	respGeneral = parseInt($(elemento).val())-1;
+}
 	
 function enviar(){
 	var fechaTerminoIntento = new Date();

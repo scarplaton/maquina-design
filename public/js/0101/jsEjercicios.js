@@ -4,6 +4,14 @@ var hiddenTutorial = window.parent.parent.varTutorial; //Comunicacón con frame 
 var hiddenSegundoError = window.parent.parent.varSegundoError; //Comunicacón con frame Segundo error
 var hiddenCierraFeed = window.parent.parent.cerrarFeedbackHijo; //Comunicacón con frame Segundo error
 var hiddenPressConsulta = window.parent.parent.pressConsulta; //Comunicacón con frame Segundo error
+
+
+$('#hiddenIntento').attr('onchange', 'cambio(this)');
+
+function cambio(elemento){
+	numeroIntento = $(elemento).val();
+	respGeneral = parseInt($(elemento).val())-1;
+}
 	
 function enviar(){
 	var fechaTerminoIntento = new Date();

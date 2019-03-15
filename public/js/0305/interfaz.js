@@ -273,7 +273,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	//limpia inputs
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
@@ -318,7 +318,7 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 	$('#modalFeedback').modal('hide');
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
 		$('section.contenido').find('input[type=text]').val('');
 	}
@@ -339,6 +339,19 @@ function cambiaRadios(e) {
 	console.log(e.target.value);
 	_TIPO_INPUT_ = 'radio';
 	btnRespuesta.disabled = false;
+}
+function cambiaRadioImagen(e) {
+	_TIPO_INPUT_ = 'radio';
+	console.log('seleccionado');
+	var seleccionado = document.querySelector('.radio-div_selected');
+	if(seleccionado) {
+		seleccionado.classList.remove('radio-div_selected');
+	}
+	e.target.parentElement.classList.add("radio-div_selected");
+	btnRespuesta.disabled = false;
+}
+function seleccionaImagenRadio(e, labelId) {
+	document.getElementById(labelId).click();
 }
 function cambiaInputTexto(e) {
 	var theEvent = e || window.event;

@@ -596,6 +596,11 @@ function rectNumFn(config) {
     showFirstValue, showExValues, showAllValues, selectValuesToShow, showPointValue,
     wichPointValue, showFigValue, wichFigValues,
     showArcs, initArcPt, endArcPt, showConstant,
+    //mostrar figuras
+    srcFig1,altoFig1,ubicacionFig1,textoFig1,altoTextoFig1,posicionTextoFig1,posicionesFig1,separacionRectaFig1,
+    srcFig2,altoFig2,ubicacionFig2,textoFig2,altoTextoFig2,posicionTextoFig2,posicionesFig2,separacionRectaFig2,
+    // Tramo LLave
+    showTramoLlave,tramoInicio,tramoFin,tramoTexto,tramoAltoTexto,tramoMostrarNumero,tramoColor,tramoForma,tramoAltura,
     // Mini Escala
     showMiniScale, showMiniTheValue, showMiniExValues, showMiniAllValues,
     showMiniPointValue, showMiniFig, wichMiniFigValues, showMiniArcs,
@@ -603,7 +608,7 @@ function rectNumFn(config) {
     // Ejes
     axisColor, withArrows, axisWidth,
     // Fuente
-    fontColor, fontSize, fontFamily, fontWeight
+    fontColor, fontSize, fontFamily, fontWeight,
   } = params
 
   let canvasPaddingAux = {}, containerPaddingAux = {}, chartPaddingAux = {}/*, innerChartPaddingAux = {}*/
@@ -651,7 +656,26 @@ function rectNumFn(config) {
     },
     figures: {
       show: showFigValue === 'no' ? false : showFigValue,
-      values: wichFigValues
+      values: wichFigValues,
+      imagenes: [{
+        src:srcFig1.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
+        alto:Number(altoFig1),
+        ubicacion:ubicacionFig1,
+        texto: regex(textoFig1, vars, vt),
+        altoTexto:Number(altoTextoFig1),
+        posicionTexto:posicionTextoFig1,
+        posiciones: regex(posicionesFig1, vars, vt),
+        separacion:Number(separacionRectaFig1)
+      },{
+        src:srcFig2.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
+        alto:Number(altoFig2),
+        ubicacion:ubicacionFig2,
+        texto: regex(textoFig2, vars, vt),
+        altoTexto:Number(altoTextoFig2),
+        posicionTexto:posicionTextoFig2,
+        posiciones: regex(posicionesFig2, vars, vt),
+        separacion:Number(separacionRectaFig2)
+      }]
     },
     arcs: {
       show: showArcs !== 'no' ? showArcs : false,
@@ -660,6 +684,17 @@ function rectNumFn(config) {
         end: regex(endArcPt, vars, vt),
         constant: showConstant === 'si' ? true : false
       }
+    },
+    tramoLLave:{
+      mostrar: showTramoLlave === 'si' ? true : false,
+      inicio: regex(tramoInicio, vars, vt),
+      fin: regex(tramoFin, vars, vt),
+      texto: regex(tramoTexto, vars, vt),
+      alto: Number(tramoAltoTexto),
+      mostrarNumero: tramoMostrarNumero === 'si' ? true: false,
+      color: tramoColor,
+      forma: tramoForma,
+      altura: Number(tramoAltura)
     },
     miniScale: {
       show: (rectType !== 'enteros' && rectType !== 'mixta') && showMiniScale === 'si' ? true : false,
@@ -1075,8 +1110,9 @@ function generarEscalaDec(state, dataRecta) {
 
 function mostrarDatos(state, dataRecta) {
   const { show } = state
-  const { extValues, firstValue, allValues, points, figures, arcs } = show
+  const { extValues, firstValue, allValues, points, figures, arcs, tramoLLave } = show
   const { xIni, centroY, segmento, divisiones } = dataRecta
+  let valores = [];
   for (let i = 0; i <= divisiones; i++) {
     let xPos = xIni + segmento * i
     let valor = numeroValidacion(state, i)
@@ -1095,7 +1131,118 @@ function mostrarDatos(state, dataRecta) {
     let arrValoresArcInit = arrNumerosValidacion(state, arcs.values.init)
     let arrValoresArcEnd = arrNumerosValidacion(state, arcs.values.end)
     arcs.show && mostrarArco(state, dataRecta, xPos, centroY, i, valor, arrValoresArcInit, arrValoresArcEnd, arcs.values.constant)
+    valores.push({ valor, xPos });
   }
+  if(tramoLLave.mostrar) {
+    mostrarTramoLlave(state, valores, tramoLLave);
+  }
+  if(figures.show) {
+    mostrarImagenesEnPosicion(state, valores, dataRecta);
+  }
+}
+
+/*
+imagenes: [{
+  src:srcFig1.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
+  alto:Number(altoFig1),
+  ubicacion:ubicacionFig1,
+  texto:textoFig1,
+  altoTexto:Number(altoTextoFig1),
+  posicionTexto:posicionTextoFig1,
+  posiciones:posicionesFig1,
+  separacion:Number(separacionRectaFig1)
+},{
+  src:srcFig2.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
+  alto:Number(altoFig2),
+  ubicacion:ubicacionFig2,
+  texto:textoFig2,
+  altoTexto:Number(altoTextoFig2),
+  posicionTexto:posicionTextoFig2,
+  posiciones:posicionesFig2,
+  separacion:Number(separacionRectaFig2)
+}]
+*/
+
+function mostrarImagenesEnPosicion(state, valores, dataRecta) {
+  const { ctx, show, scale, font } = state;
+  const { figures } = show;
+  const { xIni, centroY, segmento } = dataRecta;
+  Promise.all(figures.imagenes.map(x => x.src !== '' ? cargaImagen(x.src) : null)).then((imagen) => {
+    imagen.forEach((imagen, index) => {
+      figures.imagenes[index].imagenRecta = imagen;
+    });
+    return figures.imagenes;
+  }).then(imagenes => {
+    console.log(imagenes);
+    imagenes.forEach(img => {
+      const { alto, ubicacion, texto, posiciones, imagenRecta } = img; //texto no se usa
+      let posicionesImagen = posiciones.split(',');
+      let yImagen = ubicacion === 'arriba' ? 
+        centroY - scale.length * 1.7 - alto: 
+        centroY + scale.length * 1.7;
+      let widthImagen = imagenRecta.width * alto / imagenRecta.height;
+      posicionesImagen.forEach((posicion, index) => {
+        let datosPosicion = valores.find(x => x.valor === posicion);
+        let xCentro;
+        if(datosPosicion) {
+          xCentro = datosPosicion.xPos;
+          let xImagen = xCentro - widthImagen/2;
+          ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
+        } else {
+          xCentro = xIni + (posicion * segmento / scale.value);
+          let xImagen = xCentro - widthImagen/2;
+          ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
+        }
+        if(texto != '') {
+          let textoImagen = texto.split(',');
+          let textoImagenPosicion = textoImagen[index] === 'numero' ? posicion :  textoImagen[index];
+          let yTexto = ubicacion === 'arriba' ? centroY : centroY - (scale.length * 1.7)*2 - font.size;
+          mostrarValor(state, xCentro, yTexto, 0, textoImagenPosicion, [posicion]);
+        }
+      });
+    });
+  }).catch(error => {
+    console.log(error);
+  });
+}
+
+function mostrarTramoLlave(state, valores, tramoLLave) {
+  const { ctx, canvas, scale, font } = state
+  const { inicio, fin, color, alto, texto, forma, altura, mostrarNumero } = tramoLLave;
+  let radio = 15;
+  let datosInicio = valores.find(x => x.valor === inicio);
+  let datosFin = valores.find(x => x.valor === fin);
+  let xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
+  let xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+  let xMitad = (xInicio + xFin) / 2;
+  let yTramo = mostrarNumero ? canvas.height/2 - scale.length - altura - alto - 20 : canvas.height/2 - scale.length - altura;
+  let yTramoInicio = yTramo + radio;
+  let yTramoFin = yTramo - radio;
+  console.log({yTramo, yTramoFin, yTramoInicio, mostrarNumero, altura, alto})
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  
+  ctx.arc(xInicio+radio, yTramoInicio, radio, Math.PI, 1.5*Math.PI)
+  
+  ctx.lineTo(xMitad-radio, yTramo);
+
+  ctx.arc(xMitad-radio, yTramoFin, radio, 0.5*Math.PI, 0, true);
+  ctx.arc(xMitad+radio, yTramoFin, radio, Math.PI, 0.5 * Math.PI, true);
+  
+  ctx.lineTo(xFin-radio, yTramo);
+
+  ctx.arc(xFin-radio, yTramoInicio, radio, 1.5*Math.PI, 0);  
+  ctx.stroke();
+  
+  ctx.textAlign = "center";
+  ctx.font = `${alto}px ${font.family}`;
+  ctx.fillStyle = font.color;
+  ctx.fillText(texto, xMitad, yTramoFin-5);
+
+  ctx.restore();
 }
 
 function mostrarDatosEjeSec(state, dataRecta) {
@@ -1564,14 +1711,14 @@ function dibujarArco(state, x, y, arcoRadio, mini = false) {
 }
 
 /* ------------------------ NUMEROS ------------------------- */
-function numeroEntero(state, x, y, valor, multSize) {
+function numeroEntero(state, x, y, valor, multSize) {//multsize no se ocupa 
   const { ctx, font } = state
   ctx.save()
   ctx.strokeStyle = font.color
   ctx.fillStyle = font.color
   ctx.textAlign = 'center'
   ctx.textBaseline = 'top'
-  ctx.font = font.size * multSize + 'px ' + font.family
+  ctx.font = font.size + 'px ' + font.family
   ctx.fillText(espacioMiles(valor), x, y)
   ctx.restore()
   ctx.save()
