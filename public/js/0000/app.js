@@ -444,7 +444,7 @@ function insertarTabla(config) {
             }
             break;
           case 'image':
-            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
@@ -550,7 +550,7 @@ function insertarTabla(config) {
             break;
           case 'text-image':
             var p = regex(table[row][col].value.text, vars, vt);
-            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../');
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 
             p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
@@ -2722,18 +2722,18 @@ function repeticionPic(config) {
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,
-    _imagen1, _altoImagen1, _formaRepeticion1, _repeticiones1, _separacion1, _separaciony1,
-    _imagen2, _altoImagen2, _formaRepeticion2, _repeticiones2, _separacion2, _separaciony2,
-    _imagen3, _altoImagen3, _formaRepeticion3, _repeticiones3, _separacion3, _separaciony3,
-    _imagen4, _altoImagen4, _formaRepeticion4, _repeticiones4, _separacion4, _separaciony4,
-    _imagen5, _altoImagen5, _formaRepeticion5, _repeticiones5, _separacion5, _separaciony5,
-    _imagen6, _altoImagen6, _formaRepeticion6, _repeticiones6, _separacion6, _separaciony6,
-    _imagen7, _altoImagen7, _formaRepeticion7, _repeticiones7, _separacion7, _separaciony7,
-    _imagen8, _altoImagen8, _formaRepeticion8, _repeticiones8, _separacion8, _separaciony8,
-    _imagen9, _altoImagen9, _formaRepeticion9, _repeticiones9, _separacion9, _separaciony9,
-    _imagen10, _altoImagen10, _formaRepeticion10, _repeticiones10, _separacion10, _separaciony10,
-    _imagen11, _altoImagen11, _formaRepeticion11, _repeticiones11, _separacion11, _separaciony11,
-    _imagen12, _altoImagen12, _formaRepeticion12, _repeticiones12, _separacion12, _separaciony12 } = params;
+    _imagen1,_altoImagen1,_formaRepeticion1,_repeticiones1,_separacion1,_separaciony1,_repBiY1,
+    _imagen2,_altoImagen2,_formaRepeticion2,_repeticiones2,_separacion2,_separaciony2,_repBiY2,
+    _imagen3,_altoImagen3,_formaRepeticion3,_repeticiones3,_separacion3,_separaciony3,_repBiY3,
+    _imagen4,_altoImagen4,_formaRepeticion4,_repeticiones4,_separacion4,_separaciony4,_repBiY4,
+    _imagen5,_altoImagen5,_formaRepeticion5,_repeticiones5,_separacion5,_separaciony5,_repBiY5,
+    _imagen6,_altoImagen6,_formaRepeticion6,_repeticiones6,_separacion6,_separaciony6,_repBiY6,
+    _imagen7,_altoImagen7,_formaRepeticion7,_repeticiones7,_separacion7,_separaciony7,_repBiY7,
+    _imagen8,_altoImagen8,_formaRepeticion8,_repeticiones8,_separacion8,_separaciony8,_repBiY8,
+    _imagen9,_altoImagen9,_formaRepeticion9,_repeticiones9,_separacion9,_separaciony9,_repBiY9,
+    _imagen10,_altoImagen10,_formaRepeticion10,_repeticiones10,_separacion10,_separaciony10,_repBiY10,
+    _imagen11,_altoImagen11,_formaRepeticion11,_repeticiones11,_separacion11,_separaciony11,_repBiY11,
+    _imagen12,_altoImagen12,_formaRepeticion12,_repeticiones12,_separacion12,_separaciony12,_repBiY12, } = params;
 
   var vars = vt ? variables : versions;
   try {
@@ -2757,6 +2757,7 @@ function repeticionPic(config) {
 
   _separacion = Number(_separacion);
   let xStart = _separacion;
+  let posicicionesInicio = [xStart];
   container.height = Number(heightCanvas);
   container.width = Number(widthCanvas);
   if (_canvasBorder !== '') {
@@ -2780,7 +2781,6 @@ function repeticionPic(config) {
     return repeticiones;
   }).then(function (repeticionesPictoricas) {
     for (let repeticion of repeticionesPictoricas) {
-      console.log(repeticion);
       if (repeticion.repeticiones > 0) {
         switch (repeticion.formaRepeticion) {
           case 'dado':
@@ -2801,12 +2801,17 @@ function repeticionPic(config) {
           case 'vertical':
             xStart = dibujaRepeticionVertical(repeticion);
             break;
+          case 'bidimensional':
+            xStart = dibujaRepeticionBidimensional(repeticion);
+            break;
           default:
             console.log(repeticion);
             break;
         }
+        posicicionesInicio.push(xStart);
       }
     }
+    console.log(posicicionesInicio);
   }).catch(function (error) {
     console.log(error);
   });
@@ -2826,7 +2831,8 @@ function repeticionPic(config) {
       formaRepeticion: _formaRepeticion1,
       repeticiones: Number(_repeticiones1),
       separacion: Number(_separacion1),
-      separaciony: Number(_separaciony1)
+      separaciony: Number(_separaciony1),
+      ejeY: Number(_repBiY1)
     }];
 
     if (_pictoricos > 1) {
@@ -2836,7 +2842,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion2,
         repeticiones: Number(_repeticiones2),
         separacion: Number(_separacion2),
-        separaciony: Number(_separaciony2)
+        separaciony: Number(_separaciony2),
+        ejeY: Number(_repBiY2)
       }
     }
 
@@ -2847,7 +2854,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion3,
         repeticiones: Number(_repeticiones3),
         separacion: Number(_separacion3),
-        separaciony: Number(_separaciony3)
+        separaciony: Number(_separaciony3),
+        ejeY: Number(_repBiY3)
       }
     }
 
@@ -2858,7 +2866,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion4,
         repeticiones: Number(_repeticiones4),
         separacion: Number(_separacion4),
-        separaciony: Number(_separaciony4)
+        separaciony: Number(_separaciony4),
+        ejeY: Number(_repBiY4)
       }
     }
 
@@ -2869,7 +2878,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion5,
         repeticiones: Number(_repeticiones5),
         separacion: Number(_separacion5),
-        separaciony: Number(_separaciony5)
+        separaciony: Number(_separaciony5),
+        ejeY: Number(_repBiY5)
       }
     }
 
@@ -2880,7 +2890,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion6,
         repeticiones: Number(_repeticiones6),
         separacion: Number(_separacion6),
-        separaciony: Number(_separaciony6)
+        separaciony: Number(_separaciony6),
+        ejeY: Number(_repBiY6)
       }
     }
 
@@ -2891,7 +2902,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion7,
         repeticiones: Number(_repeticiones7),
         separacion: Number(_separacion7),
-        separaciony: Number(_separaciony7)
+        separaciony: Number(_separaciony7),
+        ejeY: Number(_repBiY7)
       }
     }
 
@@ -2902,7 +2914,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion8,
         repeticiones: Number(_repeticiones8),
         separacion: Number(_separacion8),
-        separaciony: Number(_separaciony8)
+        separaciony: Number(_separaciony8),
+        ejeY: Number(_repBiY8)
       }
     }
 
@@ -2913,7 +2926,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion9,
         repeticiones: Number(_repeticiones9),
         separacion: Number(_separacion9),
-        separaciony: Number(_separaciony9)
+        separaciony: Number(_separaciony9),
+        ejeY: Number(_repBiY9)
       }
     }
 
@@ -2924,7 +2938,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion10,
         repeticiones: Number(_repeticiones10),
         separacion: Number(_separacion10),
-        separaciony: Number(_separaciony10)
+        separaciony: Number(_separaciony10),
+        ejeY: Number(_repBiY10)
       }
     }
 
@@ -2935,7 +2950,8 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion11,
         repeticiones: Number(_repeticiones11),
         separacion: Number(_separacion11),
-        separaciony: Number(_separaciony11)
+        separaciony: Number(_separaciony11),
+        ejeY: Number(_repBiY11)
       }
     }
 
@@ -2946,12 +2962,34 @@ function repeticionPic(config) {
         formaRepeticion: _formaRepeticion12,
         repeticiones: Number(_repeticiones12),
         separacion: Number(_separacion12),
-        separaciony: Number(_separaciony12)
+        separaciony: Number(_separaciony12),
+        ejeY: Number(_repBiY12)
       }
     }
 
 
     return repeticiones;
+  }
+
+  function dibujaRepeticionBidimensional(repeticion) {
+    console.log(xStart);
+    const { imagen, altoImagen, repeticiones, separacion, ejeY } = repeticion;
+    var anchoImagen = imagen.width * altoImagen / imagen.height;
+    var altoTotal = altoImagen * ejeY + separacion * (ejeY+1);
+    var yStart = container.height/2-altoTotal/2;
+    for(var i = 0, fila = 1, columna, xImagen, yImagen; i < repeticiones; i++) {
+      columna = Math.floor(i/ejeY);
+      yImagen = yStart + altoImagen*(fila-1) + separacion*fila;
+      xImagen = xStart + anchoImagen*columna + separacion*columna;
+      console.log(xImagen);
+      ctx.drawImage(imagen, xImagen, yImagen, anchoImagen, altoImagen);
+      if(fila === ejeY) {
+        fila = 1;
+      } else {
+        fila++;
+      }
+    }
+    return xImagen + anchoImagen + _separacion;
   }
 
   function dibujaRepeticionVertical(repeticion) {
@@ -3166,7 +3204,7 @@ function repeticionBidimensional(config) {
     switch (dato.tipo) {
       case 'arreglo':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           repX: Number(regex(dato.repX, vars, vt)),
           repY: Number(regex(dato.repY, vars, vt)),
           textoEjeX: regex(dato.textoEjeX, vars, vt),
@@ -3179,14 +3217,14 @@ function repeticionBidimensional(config) {
         };
       case 'imagen':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           altoImagen: Number(dato.altoImagen),
           separacion: Number(dato.separacion),
           tipo: dato.tipo
         };
       case 'texto':
         return {
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../'),
+          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           nombreFuente: dato.nombreFuente,
           altoTexto: Number(dato.altoTexto),
           texto: regex(dato.texto, vars, vt),
