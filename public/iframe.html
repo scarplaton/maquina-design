@@ -66,10 +66,51 @@
     </tfoot>
   </table>
 </div>
+<div class="contenedor">
+<p>
+progreso = {
+  tmpProgreso: [{
+    idasigejermat:00001,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00002,
+    correcto:true,
+    NUMEROINTENTOS:1
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  }],
+  tmpTotal: 15
+};
+document.getElementById('barraProgreso').value = JSON.stringify(progreso);
+</p>
+</div>
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script>
-  document.getElementById('barraProgreso').value = JSON.stringify({
+  let progreso = {
     tmpProgreso: [{
       idasigejermat:00001,
       correcto:false,
@@ -104,7 +145,8 @@
       NUMEROINTENTOS:2
     }],
     tmpTotal: 15
-  });
+  };
+  document.getElementById('barraProgreso').value = JSON.stringify(progreso);
   $(document).ready(function() {
     var table = $('#ejercicios').DataTable( {
       "processing": false,
