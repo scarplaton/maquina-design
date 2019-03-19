@@ -2827,6 +2827,41 @@ function repeticionPic(config) {
     }
   }
 
+  function dibujaAgrupacionDePictoricos() {
+    let agrupaciones = _agruparRepeticiones.split(';');
+    let yRect = _separacion/2;
+    let heightRect = container.height - _separacion;
+    agrupaciones.forEach(function(agrupacion) {
+      let puntos = agrupacion.split('-');
+      let puntoInicio = Number(puntos[0]);
+      let puntoFinal = Number(puntos[1]);
+      let color = puntos[2] ? puntos[2] : getColorDeEje(ejeF);
+      let xRect = posicicionesInicio[puntoInicio-1]-(_separacion/2);
+      let widthRect = posicicionesInicio[puntoFinal]-(_separacion/2)-xRect;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.strokeRect(xRect, yRect, widthRect, heightRect);
+      ctx.restore();
+    });
+  }
+
+  function getColorDeEje(eje) {
+    switch(eje){
+      case '00':
+        return '#BC2424';
+      case '01':
+        return '#BC2424';
+      case '02':
+        return '#91518F';
+      case '03':
+        return '#00AAAD';
+      case '04':
+        return '#175389';
+      case '05':
+        return '#549C02';
+    }
+  }
+
   function getRepeticiones() {
     let repeticiones = [{
       imagen: _imagen1 !== '' ? buscarImagen(_imagen1) : { src: '' },
