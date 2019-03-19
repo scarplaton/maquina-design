@@ -2721,7 +2721,7 @@ function repeticionPic(config) {
     src: '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
-  let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,
+  let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,_agruparRepeticiones,
     _imagen1,_altoImagen1,_formaRepeticion1,_repeticiones1,_separacion1,_separaciony1,_repBiY1,
     _imagen2,_altoImagen2,_formaRepeticion2,_repeticiones2,_separacion2,_separaciony2,_repBiY2,
     _imagen3,_altoImagen3,_formaRepeticion3,_repeticiones3,_separacion3,_separaciony3,_repBiY3,
@@ -2757,7 +2757,7 @@ function repeticionPic(config) {
 
   _separacion = Number(_separacion);
   let xStart = _separacion;
-  let posicicionesInicio = [xStart];
+  let posicicionesInicio = [Number(xStart)];
   container.height = Number(heightCanvas);
   container.width = Number(widthCanvas);
   if (_canvasBorder !== '') {
@@ -2810,6 +2810,9 @@ function repeticionPic(config) {
         }
         posicicionesInicio.push(xStart);
       }
+    }
+    if(_agruparRepeticiones!=="") {
+      dibujaAgrupacionDePictoricos();
     }
     console.log(posicicionesInicio);
   }).catch(function (error) {
