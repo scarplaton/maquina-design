@@ -591,6 +591,7 @@ hr.sidelinebar {
 
 .tabla input {
   min-width: 40px;
+  max-width: 120px;
   max-height:  50px;
   border: 2px solid #cfcfcf;
   border-radius: 8px;
