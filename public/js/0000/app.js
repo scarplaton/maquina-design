@@ -575,7 +575,7 @@ function insertarTabla(config) {
     }
   }
 }
-
+//inicio rect num
 function rectNumFn(config) {
   const { container, params, variables, versions, vt } = config
 
@@ -1944,7 +1944,7 @@ function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
   ctx.restore()
   ctx.save()
 }
-
+//fin reta numerica
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
@@ -3259,6 +3259,7 @@ function repeticionBidimensional(config) {
           separacion: Number(dato.separacion),
           altoOpcion: Number(dato.altoOpcion),
           tipoOpcion: dato.tipoOpcion,
+          colorTextoOpcion: dato.colorTextoOpcion,
           tipo: dato.tipo
         };
       case 'imagen':
@@ -3320,14 +3321,14 @@ function repeticionBidimensional(config) {
       } else if (tipo === 'arreglo') {
         let altoTextoOpcion = (errFrec || feed) ? 45 : 30;
         let altoTextoLaterales = (errFrec || feed) ? 40 : 18;
-        const { repX, repY, textoEjeX, textoEjeY, opcion, altoOpcion, tipoOpcion } = datos[i];
+        const { repX, repY, textoEjeX, textoEjeY, opcion, altoOpcion, tipoOpcion, colorTextoOpcion } = datos[i];
         var altoTotalRep = altoImagen * repY + separacion * (repY + 1); //alto total de la repeticion
         var anchoTotalRep = anchoImagen * repX + separacion * (repX + 1); //ancho total de la repeticion
         var xStart = x + sepElem + separacion;
         var yStart = yStartRepeticiones;
         if(opcion !== '') {
           if(tipoOpcion === 'texto') {
-            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion/2), 'center', altoOpcion, '#000000');
+            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion/2), 'center', altoOpcion, colorTextoOpcion);
           } else {
             let imgOpcionSrc = opcion.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             let img = new Image();
@@ -3369,7 +3370,7 @@ function repeticionBidimensional(config) {
     function mostrarTexto(texto, x, y, aling, fontsize, color) {
       ctx.font = `${fontsize}px opensansregularfont`;
       ctx.textAlign = aling;
-      ctx.fillStyle = color;
+      ctx.fillStyle = color ? color : '#000000';
       ctx.fillText(texto, x, y);
     }
   }).catch(function (error) {
@@ -3424,7 +3425,7 @@ function multiplicacionPic(config) {
   });
 
   Promise.all(datos.map(x => cargaImagen(x.src))).then(function(imagenes){
-    let altoTotal = separacionElem, anchoRepeticion, anchoElementos = [];
+    let altoTotal = separacionElem, anchoElementos = [];
     for(let [index, imagen] of imagenes.entries()) {
       const { formaRepeticion, alto, cantidad } = datos[index];
       datos[index].imagen = imagen;
@@ -3433,40 +3434,93 @@ function multiplicacionPic(config) {
         case 'izqDer':
           const { numeroX } = datos[index];
           altoTotal += alto * (cantidad / numeroX) + separacionImg * ((cantidad / numeroX)+1) + separacionElem;
-          anchoRepeticion = datos[index].ancho * numeroX + separacionImg * (numeroX+1) + separacionElem * 2;
+          datos[index].anchoRepeticion = datos[index].ancho * numeroX + separacionImg * (numeroX+1) + separacionElem * 2;
           break;
         case 'horVert':
           altoTotal += cantidad <= 4 ? 
             alto + separacionImg * 2 + separacionElem : 
             alto + separacionImg * 2 + (cantidad - 4) * datos[index].ancho + (cantidad - 4) * separacionImg + separacionElem;
-          anchoRepeticion = cantidad > 4 ? 
+          datos[index].anchoRepeticion = cantidad > 4 ? 
             datos[index].alto + separacionElem * 2 :
             datos[index].ancho * cantidad + separacionImg * (cantidad+1) + separacionElem * 2;
           break;
         case 'diagonal':
           const { separacionX, separacionY } = datos[index];
           altoTotal += alto + separacionY * (cantidad-1) + separacionImg * 2 + separacionElem;
-          anchoRepeticion = datos[index].ancho + separacionX * (cantidad-1) + separacionImg * 2 + separacionElem * 2;
+          datos[index].anchoRepeticion = datos[index].ancho + separacionX * (cantidad-1) + separacionImg * 2 + separacionElem * 2;
           break;
         default:
           console.log('degault');
           break;
       }
-      anchoElementos.push(anchoRepeticion);
+      anchoElementos.push(datos[index].anchoRepeticion);
     }
     return { repeticiones: datos, altoTotal, anchoMaximo: Math.max(...anchoElementos) };
-  }).then(function(datos){
+  }).then(async function(datos){
     const { repeticiones, altoTotal, anchoMaximo } = datos;
+    console.log(altoTotal);
     let anchoSeccion = container.width / repgrupos;
     for(var i = 0, centro; i < repgrupos; i++) {
+      let yStart = container.height/2 - altoTotal/2;
       centro = (i+1) * anchoSeccion - (anchoSeccion/2);
+      ctx.moveTo(centro, 0);
+      ctx.lineTo(centro, container.height);
+      ctx.stroke();
       for(let repeticion of repeticiones) {
+        let xStart = centro - repeticion.anchoRepeticion/2;
         switch(repeticion.formaRepeticion) {
           case 'izqDer':
+            console.log('izqDer => ', yStart)
+            let fila = 0, columna = 0;
+            for(let r = 0, xImg, yImg; r < repeticion.cantidad; r++) {
+              xImg = xStart + separacionElem + separacionImg * (fila+1) + repeticion.ancho * fila;
+              yImg = yStart + separacionElem + separacionImg * (columna+1) + repeticion.alto * columna;
+              ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+              if(fila+1 === repeticion.numeroX) {
+                fila = 0;
+                columna++;
+              } else {
+                fila++;
+              }
+              if(r+1 === repeticion.cantidad) {
+                yStart += repeticion.alto * (repeticion.cantidad / repeticion.numeroX) + separacionImg * ((repeticion.cantidad / repeticion.numeroX)+1) + separacionElem;
+                console.log('paso por izqDer => ', yImg);
+              }
+            }
             break;
           case 'horVert':
+            console.log('horVert => ', yStart)
+            let limite = 4;
+            let imagen = await cargaImagen(repeticion.srcVert);
+            for(let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
+              if(hv < limite) {
+                xImg = xStart + separacionElem + separacionImg * (hv+1) + repeticion.ancho * hv;
+                yImg = yStart + separacionElem + separacionImg;
+                ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+              } else {
+                xImg = xStart + separacionElem;
+                yImg = yStart + separacionElem + repeticion.alto + separacionImg * (hv-limite+2) + repeticion.ancho * (hv-limite);
+                ctx.drawImage(imagen, xImg, yImg, repeticion.alto, repeticion.ancho);
+              }
+              if(hv+1 === repeticion.cantidad) {
+                yStart += repeticion.cantidad <= 4 ? 
+                  repeticion.alto + separacionImg * 2 + separacionElem : 
+                  repeticion.alto + separacionImg * 2 + (repeticion.cantidad - 4) * repeticion.ancho + (repeticion.cantidad - 4) * separacionImg + separacionElem;
+                console.log('paso por horVert => ', yImg);
+              }
+            }
             break;
           case 'diagonal':
+            console.log('diagonal => ', yStart)
+            for(let d = 0, xImg, yImg; d < repeticion.cantidad; d++) {
+              xImg = xStart + separacionElem + separacionImg + repeticion.separacionX * d;
+              yImg = yStart + separacionElem + separacionImg + repeticion.separacionY * d;
+              ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+              if(d+1 === repeticion.cantidad) {
+                yStart += repeticion.alto + repeticion.separacionY * (repeticion.cantidad-1) + separacionImg * 2 + separacionElem;
+                console.log('paso por diagonal => ', yImg);
+              }
+            }
             break;
           default:
             console.log('degault');

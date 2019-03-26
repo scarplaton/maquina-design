@@ -403,7 +403,6 @@ function insertarTabla(config) {
         switch (table[row][col].type) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
-              //`style="background: linear-gradient(to left top, transparent 47.75%, #ff0000, #ff0000, transparent 52.25%);"` : '';
               `class="strikethrough"` : '';
             if (encabezado === 'arriba' && row === 0) {
               r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
@@ -456,13 +455,13 @@ function insertarTabla(config) {
             };
             switch (tipoInput) {
               case 'text':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             break;
@@ -507,13 +506,13 @@ function insertarTabla(config) {
             var input;
             switch (tipoInput) {
               case 'text':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             r += `<p>${p.replace('{input}', input)}</p>`;
@@ -2833,13 +2832,19 @@ function repeticionPic(config) {
 
 function repeticionBidimensional(config) {
   const { container, params, variables, versions, vt } = config;
-  const { _separacion, _altoOpciones, _anchoCanvas, _altoCanvas } = params;
+  console.log(params);
+  const { _separacion, _altoOpciones, _anchoCanvas, _altoCanvas, errFrec, feed } = params;
   let { datos } = params;
-  container.height = _altoCanvas;
-  container.width = _anchoCanvas;
+  let sepElem = Number(_separacion);
+  let altoOpciones = Number(_altoOpciones);
+  let anchoCanvas = Number(_anchoCanvas);
+  let altoCanvas = Number(_altoCanvas)
+  container.height = altoCanvas;
+  container.width = anchoCanvas;
+  
   var ctx = container.getContext('2d');
   var vars = vt ? variables : versions;
-
+  
   datos = datos.map(dato => {//arreglo, imagen, texto
     switch (dato.tipo) {
       case 'arreglo':
@@ -2853,6 +2858,9 @@ function repeticionBidimensional(config) {
           altoImagen: Number(dato.altoImagen),
           anchoImagen: Number(dato.anchoImagen),
           separacion: Number(dato.separacion),
+          altoOpcion: Number(dato.altoOpcion),
+          tipoOpcion: dato.tipoOpcion,
+          colorTextoOpcion: dato.colorTextoOpcion,
           tipo: dato.tipo
         };
       case 'imagen':
@@ -2876,26 +2884,25 @@ function repeticionBidimensional(config) {
         break;
     }
   });
-
   Promise.all(datos.map(arreglo => arreglo.tipo === 'texto' ?
     cargaFuente(arreglo.nombreFuente, arreglo.src) :
     cargaImagen(arreglo.src))
   ).then(function (imagenes) {
-    var anchoTotal = _separacion, altoRepeticiones = [];
+    var anchoTotal = sepElem, altoRepeticiones = [];
     imagenes.forEach(function (imagen, index) {
       if (datos[index].tipo === 'arreglo') {
         datos[index].imagen = imagen;
         datos[index].anchoImagen = datos[index].altoImagen * imagen.width / imagen.height;
         altoRepeticiones.push(datos[index].altoImagen * datos[index].repY + datos[index].separacion * (datos[index].repY + 1));
-        anchoTotal += (datos[index].anchoImagen * datos[index].repX) + (datos[index].separacion * (datos[index].repX + 1)) + _separacion;
+        anchoTotal += (datos[index].anchoImagen * datos[index].repX) + (datos[index].separacion * (datos[index].repX + 1)) + sepElem;
       } else if (datos[index].tipo === 'imagen') {
         datos[index].imagen = imagen;
         datos[index].anchoImagen = datos[index].altoImagen * imagen.width / imagen.height;
-        anchoTotal += datos[index].anchoImagen + (datos[index].separacion * 2) + _separacion;
+        anchoTotal += datos[index].anchoImagen + (datos[index].separacion * 2) + sepElem;
       } else {
         ctx.save();
         ctx.font = `${datos[index].altoTexto}px ${datos[index].nombreFuente}`;
-        anchoTotal += datos[index].separacion * 2 + ctx.measureText(datos[index].texto).width + _separacion;
+        anchoTotal += datos[index].separacion * 2 + ctx.measureText(datos[index].texto).width + sepElem;
         ctx.restore();
       }
     });
@@ -2908,20 +2915,38 @@ function repeticionBidimensional(config) {
     for (var i = 0, x = xInicio, y = 0; i < datos.length; i++) { //x => inicio de la repeticion, tiene que acumularse --- y => inicio de la repeticion, se setea en cada repeticion 
       const { imagen, altoImagen, anchoImagen, tipo, separacion } = datos[i];
       if (tipo === 'imagen') {
-        x += _separacion + separacion;
+        x += sepElem + separacion;
         y = container.height / 2 - altoImagen / 2;
         ctx.drawImage(imagen, x, y, anchoImagen, altoImagen);
         x += anchoImagen + separacion;
       } else if (tipo === 'arreglo') {
-        const { repX, repY, textoEjeX, textoEjeY, opcion } = datos[i];
+        let altoTextoOpcion = (errFrec || feed) ? 45 : 30;
+        let altoTextoLaterales = (errFrec || feed) ? 40 : 18;
+        const { repX, repY, textoEjeX, textoEjeY, opcion, altoOpcion, tipoOpcion, colorTextoOpcion } = datos[i];
         var altoTotalRep = altoImagen * repY + separacion * (repY + 1); //alto total de la repeticion
         var anchoTotalRep = anchoImagen * repX + separacion * (repX + 1); //ancho total de la repeticion
-        var xStart = x + _separacion + separacion;
+        var xStart = x + sepElem + separacion;
         var yStart = yStartRepeticiones;
-
-        opcion !== '' && mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - _altoOpciones, 'center', 30, '#000000');
-        textoEjeX !== '' && mostrarTexto(textoEjeX, xStart + (anchoTotalRep / 2) - separacion, yStart, 'center', 18, '#000000');
-        textoEjeY !== '' && mostrarTexto(textoEjeY, xStart - separacion, yStart + (altoTotalRep / 2), 'right', 18, '#000000');
+        if(opcion !== '') {
+          if(tipoOpcion === 'texto') {
+            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion/2), 'center', altoOpcion, colorTextoOpcion);
+          } else {
+            let imgOpcionSrc = opcion.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            let img = new Image();
+            img.src = imgOpcionSrc;
+            const dibujaImagen = (img, centro, yImg, altoOpcion) => {
+              console.log(img, centro, yImg, altoOpcion);
+              let anchoOpcion = img.width * altoOpcion / img.height;
+              let xImg = centro - (anchoOpcion / 2);
+              ctx.drawImage(img, xImg, yImg, anchoOpcion, altoOpcion);
+            };
+            let centro = xStart + (anchoTotalRep / 2) - separacion;
+            let yImg = container.height - altoOpciones - (altoOpcion/2)*.85;
+            img.onload = () => dibujaImagen(img, centro, yImg, altoOpcion);
+          }
+        }
+        textoEjeX !== '' && mostrarTexto(textoEjeX, xStart + (anchoTotalRep / 2) - separacion, yStart, 'center', altoTextoLaterales, '#000000');
+        textoEjeY !== '' && mostrarTexto(textoEjeY, xStart - separacion, yStart + (altoTotalRep / 2), 'right', altoTextoLaterales, '#000000');
         for (var filas = 0, yImagen; filas < repY; filas++) {
           yImagen = yStart + separacion * (filas + 1) + altoImagen * filas;
           for (var cols = 0, xImagen; cols < repX; cols++) {
@@ -2929,16 +2954,16 @@ function repeticionBidimensional(config) {
             ctx.drawImage(imagen, xImagen, yImagen, anchoImagen, altoImagen);
           }
         }
-        x += _separacion + separacion * (repX + 1) + anchoImagen * repX;
+        x += sepElem + separacion * (repX + 1) + anchoImagen * repX;
       } else {
         const { nombreFuente, altoTexto, separacion, texto } = datos[i];
         ctx.save();
         ctx.font = `${altoTexto}px ${nombreFuente}`;
-        ctx.fillStyle = '#ff0000';
+        ctx.fillStyle = '#F05024';
         ctx.textAlign = 'center';
         var anchoTexto = ctx.measureText(texto).width;
-        ctx.fillText(texto, x + _separacion + separacion + anchoTexto / 2, container.height / 2 + altoTexto / 2);
-        x += _separacion + separacion * 2 + anchoTexto;
+        ctx.fillText(texto, x + sepElem + separacion + anchoTexto / 2, container.height / 2 + altoTexto / 2);
+        x += sepElem + separacion * 2 + anchoTexto;
         ctx.restore();
       }
     }
@@ -2946,7 +2971,7 @@ function repeticionBidimensional(config) {
     function mostrarTexto(texto, x, y, aling, fontsize, color) {
       ctx.font = `${fontsize}px opensansregularfont`;
       ctx.textAlign = aling;
-      ctx.fillStyle = color;
+      ctx.fillStyle = color ? color : '#000000';
       ctx.fillText(texto, x, y);
     }
   }).catch(function (error) {
