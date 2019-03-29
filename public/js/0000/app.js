@@ -309,7 +309,8 @@ function insertarImagen(config) {
 }
 function insertarInput(config) {
   const { container, params, variables, versions, vt } = config,
-    { tipoInput, maxLength, inputSize, error0, error2, error3, error4, defaultError,
+    { tipoInput, maxLength, inputSize, placeholder, anchoInput, 
+      error0, error2, error3, error4, defaultError,
       feed0, feed1, feed2, feed3, feed4, defaultFeed,
       value1, value2, value3, value4, inputType, colmd, colsm, col } = params
   var vars = vt ? variables : versions;
@@ -350,13 +351,13 @@ function insertarInput(config) {
         container.innerHTML = '';
         switch (tipoInput) {
           case 'texto':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
             break;
           case 'numero':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
             break;
           case 'alfanumerico':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
             break;
         }
         break;
@@ -448,7 +449,8 @@ function insertarTabla(config) {
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
-            var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+            var { tipoInput, maxLength, placeholder, anchoInput, 
+              error0, error2, error3, error4, defaultError,
               feed0, feed1, feed2, feed3, feed4, defaultFeed,
               value1, value2, value3, value4 } = table[row][col].value;
             var feedGenerico = regex(feed0, vars, vt);
@@ -486,13 +488,13 @@ function insertarTabla(config) {
             };
             switch (tipoInput) {
               case 'text':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             break;
@@ -540,7 +542,7 @@ function insertarTabla(config) {
                 input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:70px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
                 input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
@@ -1164,18 +1166,28 @@ imagenes: [{
 */
 
 function mostrarImagenesEnPosicion(state, valores, dataRecta) {
-  const { ctx, show, scale, font } = state;
+  const { ctx, show, scale, font, chart } = state;
+  const { initValue } = chart.values
   const { figures } = show;
-  const { xIni, centroY, segmento } = dataRecta;
+  const { xIni, xFin, centroY, segmento, escalaValor, divisiones } = dataRecta;
   Promise.all(figures.imagenes.map(x => x.src !== '' ? cargaImagen(x.src) : null)).then((imagen) => {
     imagen.forEach((imagen, index) => {
       figures.imagenes[index].imagenRecta = imagen;
     });
     return figures.imagenes;
   }).then(imagenes => {
-    console.log(imagenes);
+    let xInicio = xIni - segmento;
+    let xFinal = xFin + segmento;
+    let anchoTotalRecta = xFinal - xInicio; // calcula en el canvas cuanto espacio ocupa la recta del canvas
+    let valorInicial = Number(initValue) - escalaValor;
+    let valorFinal = Number(initValue) + escalaValor * (divisiones+1);
+    let dimensionRecta = valorFinal - valorInicial; //calcula el largo de la escala de la recta,
     imagenes.forEach(img => {
-      const { alto, ubicacion, texto, posiciones, imagenRecta } = img; //texto no se usa
+      
+      const { alto, ubicacion, posiciones, imagenRecta, mostrarNumero, mostrarMarca } = img; //texto no se usa
+      if(imagenRecta === null) {
+        return;
+      }
       let posicionesImagen = posiciones.split(',');
       let yImagen = ubicacion === 'arriba' ? 
         centroY - scale.length * 1.7 - alto: 
@@ -1189,15 +1201,29 @@ function mostrarImagenesEnPosicion(state, valores, dataRecta) {
           let xImagen = xCentro - widthImagen/2;
           ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
         } else {
-          xCentro = xIni + (posicion * segmento / scale.value);
+          xCentro = xInicio + (posicion * anchoTotalRecta / dimensionRecta) - segmento*2;
           let xImagen = xCentro - widthImagen/2;
           ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
         }
-        if(texto != '') {
-          let textoImagen = texto.split(',');
-          let textoImagenPosicion = textoImagen[index] === 'numero' ? posicion :  textoImagen[index];
-          let yTexto = ubicacion === 'arriba' ? centroY : centroY - (scale.length * 1.7)*2 - font.size;
-          mostrarValor(state, xCentro, yTexto, 0, textoImagenPosicion, [posicion]);
+        if(mostrarNumero) { 
+          let yNumero = ubicacion === 'arriba' ? centroY : centroY - (scale.length * 1.7)*2 - font.size;
+          console.log({yNumero, xCentro, posicion});
+          mostrarValor(state, xCentro, yNumero, 0, posicion, [posicion]);
+        }
+        if(mostrarMarca) {
+          ctx.save()
+          let bordersScales = scale.length
+          ctx.strokeStyle = scale.color
+          ctx.lineCap = 'round'
+          ctx.lineJoin = 'round'
+          ctx.lineWidth = scale.width
+          ctx.beginPath()
+          ctx.moveTo(xCentro, centroY - bordersScales)
+          ctx.lineTo(xCentro, centroY + bordersScales)
+          ctx.stroke()
+          ctx.closePath()
+          ctx.restore()
+          ctx.save()
         }
       });
     });
@@ -1624,7 +1650,7 @@ function mostrarArco(state, dataRecta, xPos, centroY, i, valor, desde, hasta, co
         ctx.fillStyle = '#A84C4E';
         ctx.textAlign = "center";
         ctx.font = '15px Helvetica';
-        ctx.fillText(`+${espacioMiles(String(scale.value))}`, xPos + arcoRadio, centroY - arcoRadio - 10);
+        ctx.fillText(espacioMiles(String(scale.value), xPos + arcoRadio, centroY - arcoRadio - 10));
       }
     }
   }
@@ -1949,7 +1975,7 @@ function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
   var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
   var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
     _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
@@ -2534,7 +2560,7 @@ function valorPosicional(config) {
   var { _tipo, _texto, _numeroPalabras, _marca, _separacionNumeros, _miles, _centenas, _decenas, _unidades, _altoTexo, _margenTopBottom } = params;
   var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
   var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = '../../fonts/LarkeNeueThin.ttf';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
 
@@ -3381,12 +3407,12 @@ function repeticionBidimensional(config) {
 function multiplicacionPic(config) {
   const { container, params, variables, versions, vt } = config;
   console.log(params);
-  let { datos, _altoCanvas, _anchoCanvas, _repeticiones, _separacion } = params;
+  let { datos, _altoCanvas, _anchoCanvas, _repeticiones, _separacion, _sepImgs, _mostrarValores, _separar } = params;
   container.height = Number(_altoCanvas);
   container.width = Number(_anchoCanvas);
-  let separacionImg = 10;
+  let separacionImg = Number(_sepImgs);
   var ctx = container.getContext('2d');
-  let repgrupos = Number(_repeticiones);
+  let repgrupos = _mostrarValores === 'si' ? Number(_repeticiones)+1 : Number(_repeticiones);
   let separacionElem = Number(_separacion);
 
   var vars = vt ? variables : versions;
@@ -3396,27 +3422,39 @@ function multiplicacionPic(config) {
       case 'izqDer':
         return {
           formaRepeticion: dato.formaRepeticion,
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           alto:  Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
-          numeroX: Number(dato.numeroX)
+          numeroX: Number(dato.numeroX),
+          tipoValorFinal: dato.tipoValorFinal,
+          valorFinal: dato.valorFinal,
+          altoValorFinal: Number(dato.altoValorFinal),
+          colorValorFinal: dato.colorValorFinal
         };
       case 'horVert':
         return {
           formaRepeticion: dato.formaRepeticion,
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           alto:  Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
-          srcVert: String(regex(dato.srcVert, vars, vt))
+          srcVert: String(regex(dato.srcVert, vars, vt)),
+          tipoValorFinal: dato.tipoValorFinal,
+          valorFinal: dato.valorFinal,
+          altoValorFinal: Number(dato.altoValorFinal),
+          colorValorFinal: dato.colorValorFinal
         };
       case 'diagonal':
         return {
           formaRepeticion: dato.formaRepeticion,
-          src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
           alto:  Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           separacionX: Number(dato.separacionX),
-          separacionY: Number(dato.separacionY)
+          separacionY: Number(dato.separacionY),
+          tipoValorFinal: dato.tipoValorFinal,
+          valorFinal: dato.valorFinal,
+          altoValorFinal: Number(dato.altoValorFinal),
+          colorValorFinal: dato.colorValorFinal
         };
       default:
         console.log('defecto');
@@ -3433,21 +3471,25 @@ function multiplicacionPic(config) {
       switch(formaRepeticion) {
         case 'izqDer':
           const { numeroX } = datos[index];
-          altoTotal += alto * (cantidad / numeroX) + separacionImg * ((cantidad / numeroX)+1) + separacionElem;
+          let filas = cantidad % numeroX === 0 ? cantidad / numeroX : Math.floor(cantidad / numeroX)+1;
+          datos[index].altoRepeticion = alto * filas + separacionImg * (filas+1) + separacionElem;
           datos[index].anchoRepeticion = datos[index].ancho * numeroX + separacionImg * (numeroX+1) + separacionElem * 2;
+          altoTotal += datos[index].altoRepeticion;
           break;
         case 'horVert':
-          altoTotal += cantidad <= 4 ? 
+          datos[index].altoRepeticion = cantidad <= 4 ? 
             alto + separacionImg * 2 + separacionElem : 
             alto + separacionImg * 2 + (cantidad - 4) * datos[index].ancho + (cantidad - 4) * separacionImg + separacionElem;
           datos[index].anchoRepeticion = cantidad > 4 ? 
             datos[index].alto + separacionElem * 2 :
             datos[index].ancho * cantidad + separacionImg * (cantidad+1) + separacionElem * 2;
+          altoTotal += datos[index].altoRepeticion;
           break;
         case 'diagonal':
           const { separacionX, separacionY } = datos[index];
-          altoTotal += alto + separacionY * (cantidad-1) + separacionImg * 2 + separacionElem;
+          datos[index].altoRepeticion = alto + separacionY * (cantidad-1) + separacionImg * 2 + separacionElem;
           datos[index].anchoRepeticion = datos[index].ancho + separacionX * (cantidad-1) + separacionImg * 2 + separacionElem * 2;
+          altoTotal += datos[index].altoRepeticion;
           break;
         default:
           console.log('degault');
@@ -3458,74 +3500,101 @@ function multiplicacionPic(config) {
     return { repeticiones: datos, altoTotal, anchoMaximo: Math.max(...anchoElementos) };
   }).then(async function(datos){
     const { repeticiones, altoTotal, anchoMaximo } = datos;
-    console.log(altoTotal);
     let anchoSeccion = container.width / repgrupos;
     for(var i = 0, centro; i < repgrupos; i++) {
       let yStart = container.height/2 - altoTotal/2;
       centro = (i+1) * anchoSeccion - (anchoSeccion/2);
-      ctx.moveTo(centro, 0);
-      ctx.lineTo(centro, container.height);
-      ctx.stroke();
-      for(let repeticion of repeticiones) {
-        let xStart = centro - repeticion.anchoRepeticion/2;
-        switch(repeticion.formaRepeticion) {
-          case 'izqDer':
-            console.log('izqDer => ', yStart)
-            let fila = 0, columna = 0;
-            for(let r = 0, xImg, yImg; r < repeticion.cantidad; r++) {
-              xImg = xStart + separacionElem + separacionImg * (fila+1) + repeticion.ancho * fila;
-              yImg = yStart + separacionElem + separacionImg * (columna+1) + repeticion.alto * columna;
-              ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
-              if(fila+1 === repeticion.numeroX) {
-                fila = 0;
-                columna++;
-              } else {
-                fila++;
-              }
-              if(r+1 === repeticion.cantidad) {
-                yStart += repeticion.alto * (repeticion.cantidad / repeticion.numeroX) + separacionImg * ((repeticion.cantidad / repeticion.numeroX)+1) + separacionElem;
-                console.log('paso por izqDer => ', yImg);
-              }
-            }
-            break;
-          case 'horVert':
-            console.log('horVert => ', yStart)
-            let limite = 4;
-            let imagen = await cargaImagen(repeticion.srcVert);
-            for(let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
-              if(hv < limite) {
-                xImg = xStart + separacionElem + separacionImg * (hv+1) + repeticion.ancho * hv;
-                yImg = yStart + separacionElem + separacionImg;
-                ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
-              } else {
-                xImg = xStart + separacionElem;
-                yImg = yStart + separacionElem + repeticion.alto + separacionImg * (hv-limite+2) + repeticion.ancho * (hv-limite);
-                ctx.drawImage(imagen, xImg, yImg, repeticion.alto, repeticion.ancho);
-              }
-              if(hv+1 === repeticion.cantidad) {
-                yStart += repeticion.cantidad <= 4 ? 
-                  repeticion.alto + separacionImg * 2 + separacionElem : 
-                  repeticion.alto + separacionImg * 2 + (repeticion.cantidad - 4) * repeticion.ancho + (repeticion.cantidad - 4) * separacionImg + separacionElem;
-                console.log('paso por horVert => ', yImg);
-              }
-            }
-            break;
-          case 'diagonal':
-            console.log('diagonal => ', yStart)
-            for(let d = 0, xImg, yImg; d < repeticion.cantidad; d++) {
-              xImg = xStart + separacionElem + separacionImg + repeticion.separacionX * d;
-              yImg = yStart + separacionElem + separacionImg + repeticion.separacionY * d;
-              ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
-              if(d+1 === repeticion.cantidad) {
-                yStart += repeticion.alto + repeticion.separacionY * (repeticion.cantidad-1) + separacionImg * 2 + separacionElem;
-                console.log('paso por diagonal => ', yImg);
-              }
-            }
-            break;
-          default:
-            console.log('degault');
-            break;
+      if(_mostrarValores === 'si' && (i+1) === repgrupos) {
+        let centroY = yStart;
+        let imgFlechas = await cargaImagen('../../../../imagenes_front/simbolos/igual.svg');
+        for(let repeticion of repeticiones) {
+          centroY += repeticion.altoRepeticion/2;
+          let xImg = centro - (anchoSeccion/2);
+          let yImg = centroY - (50/2);
+          ctx.drawImage(imgFlechas, xImg, yImg, 50, 50);
+          switch(repeticion.tipoValorFinal) {
+            case 'texto':
+              ctx.textAlign = "center"; 
+              ctx.font = repeticion.altoValorFinal+"px Helvetica"
+              let yTexto = centroY + repeticion.altoValorFinal/2;
+              ctx.fillText(repeticion.valorFinal, centro, yTexto);
+              break;
+            case 'imagen':
+              let imagenValor = await cargaImagen(repeticion.valorFinal);
+              let anchoImagen = imagenValor.width * repeticion.altoValorFinal / imagenValor.height;
+              xImg = centro - (anchoImagen/2);
+              yImg = centroY - (repeticion.altoValorFinal/2);
+              ctx.drawImage(imagenValor, xImg, yImg, anchoImagen, repeticion.altoValorFinal);
+              break;
+            default: 
+              console.log('degault');
+              break;
+          }
+          centroY += repeticion.altoRepeticion/2;
         }
+      } else {
+        if(_separar === 'si') {
+          let xRect = centro - (anchoMaximo/2)+separacionElem;
+          let yRect = yStart + separacionElem;
+          ctx.strokeStyle = "#808080";
+          ctx.strokeRect(xRect, yRect, anchoMaximo-(separacionElem*2), altoTotal-(separacionElem*2));
+        }
+        for(let repeticion of repeticiones) {
+          let xStart = centro - repeticion.anchoRepeticion/2;
+          switch(repeticion.formaRepeticion) {
+            case 'izqDer':
+              let fila = 0, columna = 0;
+              for(let r = 0, xImg, yImg; r < repeticion.cantidad; r++) {
+                xImg = xStart + separacionElem + separacionImg * (fila+1) + repeticion.ancho * fila;
+                yImg = yStart + separacionElem + separacionImg * (columna+1) + repeticion.alto * columna;
+                ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+                if(fila+1 === repeticion.numeroX) {
+                  fila = 0;
+                  columna++;
+                } else {
+                  fila++;
+                }
+                if(r+1 === repeticion.cantidad) {
+                  let filas = repeticion.cantidad % repeticion.numeroX === 0 ? repeticion.cantidad / repeticion.numeroX : Math.floor(repeticion.cantidad / repeticion.numeroX)+1;
+                  yStart += repeticion.alto * filas + separacionImg * (filas+1) + separacionElem;
+                }
+              }
+              break;
+            case 'horVert':
+              let limite = 4;
+              let imagen = await cargaImagen(repeticion.srcVert);
+              for(let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
+                if(hv < limite) {
+                  xImg = xStart + separacionElem + separacionImg * (hv+1) + repeticion.ancho * hv;
+                  yImg = yStart + separacionElem + separacionImg;
+                  ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+                } else {
+                  xImg = xStart + separacionElem;
+                  yImg = yStart + separacionElem + repeticion.alto + separacionImg * (hv-limite+2) + repeticion.ancho * (hv-limite);
+                  ctx.drawImage(imagen, xImg, yImg, repeticion.alto, repeticion.ancho);
+                }
+                if(hv+1 === repeticion.cantidad) {
+                  yStart += repeticion.cantidad <= 4 ? 
+                    repeticion.alto + separacionImg * 2 + separacionElem : 
+                    repeticion.alto + separacionImg * 2 + (repeticion.cantidad - 4) * repeticion.ancho + (repeticion.cantidad - 4) * separacionImg + separacionElem;
+                }
+              }
+              break;
+            case 'diagonal':
+              for(let d = 0, xImg, yImg; d < repeticion.cantidad; d++) {
+                xImg = xStart + separacionElem + separacionImg + repeticion.separacionX * d;
+                yImg = yStart + separacionElem + separacionImg + repeticion.separacionY * d;
+                ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
+                if(d+1 === repeticion.cantidad) {
+                  yStart += repeticion.alto + repeticion.separacionY * (repeticion.cantidad-1) + separacionImg * 2 + separacionElem;
+                }
+              }
+              break;
+            default:
+              console.log('degault');
+              break;
+          }
+        }    
       }
     }
   }).catch(function(error) {

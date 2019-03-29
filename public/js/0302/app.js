@@ -370,7 +370,7 @@ function insertarInput(config) {
   }
 }
 function insertarTabla(config) {
-  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols } = params, vars = vt ? variables : versions
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
@@ -382,8 +382,9 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
+  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
-    let r = `<table class="tabla ${cssclases}"><tbody>`;
+    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
     if (anchoCols) {
       var anchoColumnas = String(anchoCols).split(',');
       anchoColumnas.forEach(function (ancho) {
@@ -409,7 +410,6 @@ function insertarTabla(config) {
         switch (table[row][col].type) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
-              //`style="background: linear-gradient(to left top, transparent 47.75%, #ff0000, #ff0000, transparent 52.25%);"` : '';
               `class="strikethrough"` : '';
             if (encabezado === 'arriba' && row === 0) {
               r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
@@ -462,13 +462,13 @@ function insertarTabla(config) {
             };
             switch (tipoInput) {
               case 'text':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             break;
@@ -513,13 +513,13 @@ function insertarTabla(config) {
             var input;
             switch (tipoInput) {
               case 'text':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             r += `<p>${p.replace('{input}', input)}</p>`;
@@ -529,7 +529,7 @@ function insertarTabla(config) {
             var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 
-            p = `<p>${p.replace('{imagen}', img)}</p>`
+            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
             r += regexFunctions(p)
             break;
         }
@@ -540,6 +540,15 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
+    if(tituloTabla !== '') {
+      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+      var titulo = document.createElement('span');
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
+      titulo.style.fontSize = '18px';
+      titulo.style.fontWeight = '600';
+      titulo.style.color = 'black';
+      container.parentNode.insertBefore(titulo, container);
+    }
   }
 }
 

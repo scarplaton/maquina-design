@@ -153,78 +153,79 @@ function print() { //Dibujar ejercicios
 }
 
 function dibujaHtml() {
-	// INICIO ENUNCIADO
-	var contenidoDiv = document.getElementById('enunciado');
-	var contenidoHtml = '';
-	contenidoBody['e'].forEach((m, i) => {
-		contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
-		} else {
-			contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
-		}
-		contenidoHtml += '</div>'
-	});
-	contenidoDiv.innerHTML = contenidoHtml;
-	// INICIO RESPUESTA
-	var respuestaDiv = document.getElementById('respuesta');
-	var respuestaHtml = '';
+  // INICIO ENUNCIADO
+  var contenidoDiv = document.getElementById('enunciado');
+  var contenidoHtml = '';
+  contenidoBody['e'].forEach((m, i) => {
+    contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
+    } else {
+      contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
+    }
+    contenidoHtml += '</div>'
+  });
+  contenidoDiv.innerHTML = contenidoHtml;
+  // INICIO RESPUESTA
+  var respuestaDiv = document.getElementById('respuesta');
+  var respuestaHtml = '';
 
-	var contenidoRespuestas =  contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
-		if(item.tag != 'general') {
-			return true;
-		} else {
-			return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
-		}
-	});
-	if(contenidoRespuestas.length > 0) {
-		contenidoRespuestas = shuffle(contenidoBody['r']);
-		contenidoRespuestas.forEach(function(item, index){
-				console.log(item);
-				var dataContent = { 
-					feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
-					respuesta: `Opción ${index+1}`, 
-					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-				};
-				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
+  var contenidoRespuestas = contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+    if (item.tag != 'general') {
+      return true;
+    } else {
+      return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+    }
+  });
+  if (contenidoRespuestas.length > 0) {
+    contenidoRespuestas = shuffle(contenidoBody['r']);
+    contenidoRespuestas.forEach(function (item, index) {
+      console.log(item);
+      var dataContent = {
+        feedback: regex(item.params.feed, versionBody.vars, false),
+        respuesta: `Opción ${index + 1}`,
+        errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+      };
+      let textoOpcion = item.params.textoOpcion ? regex(item.params.textoOpcion, versionBody.vars, false) : `Opción ${index + 1}`
+      respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
           <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
-            <input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-            <label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
+            <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
 						${
-							item.tag != 'general' ? 
-							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
-							`<div id="container-r${index}" class="general"></div>`
-						}
+        item.tag != 'general' ?
+          `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+          `<div id="container-r${index}" class="general"></div>`
+        }
 					</div>
 				</div>`;
-		});
-	} else {
-		contenidoBody['r'].forEach(function(item, index){
-			console.log(item);
-			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
-			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
-			} else {
-				respuestaHtml += `<div id="container-r${index}" class="general"></div>`
-			}
-			respuestaHtml += '</div>'
-		});
-	}
+    });
+  } else {
+    contenidoBody['r'].forEach(function (item, index) {
+      console.log(item);
+      respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
+      if (item.tag != 'general') {
+        respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
+      } else {
+        respuestaHtml += `<div id="container-r${index}" class="general"></div>`
+      }
+      respuestaHtml += '</div>'
+    });
+  }
 
-	respuestaDiv.innerHTML = respuestaHtml;
-	// INICIO GLOSA
-	var glosaDiv = document.getElementById('glosa');
-	var glosaHtml = '';
-	contenidoBody['g'].forEach((m, i) => {
-		glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
-		} else {
-			glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
-		}
-		glosaHtml += '</div>'
-	});
-	glosaDiv.innerHTML = glosaHtml;
+  respuestaDiv.innerHTML = respuestaHtml;
+  // INICIO GLOSA
+  var glosaDiv = document.getElementById('glosa');
+  var glosaHtml = '';
+  contenidoBody['g'].forEach((m, i) => {
+    glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
+    } else {
+      glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
+    }
+    glosaHtml += '</div>'
+  });
+  glosaDiv.innerHTML = glosaHtml;
 }
 
 function insertarTexto(config) {
@@ -360,140 +361,186 @@ function insertarInput(config) {
 	}
 }
 function insertarTabla(config) {
-	const { container, params, variables, versions, vt } = config, { table, encabezado } = params, vars = vt ? variables : versions
-	if (container) {
-		let r = '<table class="tabla"><tbody>';
-		for(var row = 0; row < table.length; row++) {
-			r += '<tr>';
-			for(var col = 0; col < table[row].length; col++) {
-				r+= '<td>';
-				switch(table[row][col].type) {
-					case 'text':
-						if(encabezado==='arriba' && row === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
-						} else if(encabezado==='izquierda' && col === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
-						} else {
-							r+= `<p>${regex(table[row][col].value.text, vars, vt)}</p>`;
-						}
-						break;
-					case 'image':
-						r+= `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						break;
-					case 'input':
-						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						switch(tipoInput) {
-							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						break;
-					case 'text-input':
-						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var p = regex(text, vars, vt);
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						var input;
-						switch(tipoInput) {
-							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						r+= `<p>${p.replace('{input}', input)}</p>`;
-						break;
-					case 'text-image':
-						var p = regex(table[row][col].value.text, vars, vt);
-						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						r+= `<p>${p.replace('{imagen}', img)}</p>`
-						break;
-				}
-				r+= '</td>';
-			}
-			r += '</tr>'
-		}
-		r += '</tbody></table>';
-		container.innerHTML = r
-	}
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
+  var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
+  function debeMarcarse(tr, td) {
+    var encontrado = false;
+    marcasEnTd.forEach(function (marca) {
+      if (marca[0] == (tr + 1) && marca[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
+  if (container) {
+    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
+    if (anchoCols) {
+      var anchoColumnas = String(anchoCols).split(',');
+      anchoColumnas.forEach(function (ancho) {
+        r += `<col width="${ancho}%"/>`;
+      });
+    }
+    for (var row = 0; row < table.length; row++) {
+      if (lineasHorizontales === '') {
+        r += '<tr>';
+      } else {
+        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
+      }
+      for (var col = 0; col < table[row].length; col++) {
+        if (destacado === '') {
+          r += '<td>';
+        } else {
+          if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
+        switch (table[row][col].type) {
+          case 'text':
+            var tachado = table[row][col].value.tachar === 'si' ?
+              `class="strikethrough"` : '';
+            if (encabezado === 'arriba' && row === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else if (encabezado === 'izquierda' && col === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else {
+              r += `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
+            }
+            break;
+          case 'image':
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+            break;
+          case 'input':
+            var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            switch (tipoInput) {
+              case 'text':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            break;
+          case 'text-input':
+            var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var p = regex(text, vars, vt);
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            var input;
+            switch (tipoInput) {
+              case 'text':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            r += `<p>${p.replace('{input}', input)}</p>`;
+            break;
+          case 'text-image':
+            var p = regex(table[row][col].value.text, vars, vt);
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+
+            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
+            r += regexFunctions(p)
+            break;
+        }
+        r += '</td>';
+      }
+      r += '</tr>'
+    }
+    r += '</tbody></table>';
+    container.classList.add("table-responsive");
+    container.innerHTML = r;
+    if(tituloTabla !== '') {
+      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+      var titulo = document.createElement('span');
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
+      titulo.style.fontSize = '18px';
+      titulo.style.fontWeight = '600';
+      titulo.style.color = 'black';
+      container.parentNode.insertBefore(titulo, container);
+    }
+  }
 }
 
 function igualPerimetro(config) {
@@ -552,16 +599,18 @@ function tablaPosicional(config) {
   var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
   var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
-  var {_width,_tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
-_tipoPisoUno,_repeticionPictoricaPisoUno,_mostrarNumeroCompletoUno,_numeroCompletoPisoUno,_umilPisoUno,_centenaPisoUno,_decenaPisoUno,_unidadPisoUno,_altoTextoPisoUno, /*numerico , imagenes, repeticion*/
-_altoImgMilesPisoUno,_altoImgCentPisoUno,_altoImgDecPisoUno,_altoImgUniPisoUno,//termino datos piso uno
-_tipoPisoDos,_repeticionPictoricaPisoDos,_mostrarNumeroCompletoDos,_numeroCompletoPisoDos,_umilPisoDos,_centenaPisoDos,_decenaPisoDos,_unidadPisoDos,_altoTextoPisoDos,
-_altoImgMilesPisoDos,_altoImgCentPisoDos,_altoImgDecPisoDos,_altoImgUniPisoDos,//termino datos piso dos
-_tipoPisoTres,_repeticionPictoricaPisoTres,_mostrarNumeroCompletoTres,_numeroCompletoPisoTres,_umilPisoTres,_centenaPisoTres,_decenaPisoTres,_unidadPisoTres,_altoTextoPisoTres,
-_altoImgMilesPisoTres,_altoImgCentPisoTres,_altoImgDecPisoTres,_altoImgUniPisoTres,//termino datos piso tres
-_dibujaValorPosicional1,_altoTextoValorPosicional1,_umilVP1,_centenaVP1,_decenaVP1,_unidadVP1,
-_dibujaValorPosicional2,_altoTextoValorPosicional2,_umilVP2,_centenaVP2,_decenaVP2,_unidadVP2,
-_dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
+  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
+    _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
+    _altoImgMilesPisoUno, _altoImgCentPisoUno, _altoImgDecPisoUno, _altoImgUniPisoUno,//termino datos piso uno
+    _tipoPisoDos, _repeticionPictoricaPisoDos, _mostrarNumeroCompletoDos, _numeroCompletoPisoDos, _umilPisoDos, _centenaPisoDos, _decenaPisoDos, _unidadPisoDos, _altoTextoPisoDos,
+    _altoImgMilesPisoDos, _altoImgCentPisoDos, _altoImgDecPisoDos, _altoImgUniPisoDos,//termino datos piso dos
+    _tipoPisoTres, _repeticionPictoricaPisoTres, _mostrarNumeroCompletoTres, _numeroCompletoPisoTres, _umilPisoTres, _centenaPisoTres, _decenaPisoTres, _unidadPisoTres, _altoTextoPisoTres,
+    _altoImgMilesPisoTres, _altoImgCentPisoTres, _altoImgDecPisoTres, _altoImgUniPisoTres,//termino datos piso tres
+    _dibujaValorPosicional1, _mostrarSignoMasVP1,_altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
+    _dibujaValorPosicional2, _mostrarSignoMasVP2,_altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
+    _dibujaTextoResultado, _altoTextoResultado, _resultado,
+    _tipoUmilVP1,_tipoCentenaVP1,_tipoDecenaVP1,_tipoUnidadVP1,_altoumilvp1,_altocentenavp1,_altodecenavp1,_altounidadvp1,
+    _tipoUmilVP2,_tipoCentenaVP2,_tipoDecenaVP2,_tipoUnidadVP2,_altoumilvp2,_altocentenavp2,_altodecenavp2,_altounidadvp2 } = params;
 
   var vars = vt ? variables : versions;
   try {
@@ -575,7 +624,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     _umilPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[0] : regex(_umilPisoDos, vars, vt);
     _centenaPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[1] : regex(_centenaPisoDos, vars, vt);
     _decenaPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[2] : regex(_decenaPisoDos, vars, vt);
-    _unidadPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[3] :regex(_unidadPisoDos, vars, vt);
+    _unidadPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[3] : regex(_unidadPisoDos, vars, vt);
 
     var numeroCompletoPisoTres = _mostrarNumeroCompletoTres === 'si' ? regex(_numeroCompletoPisoTres, vars, vt) : '';
     _umilPisoTres = _mostrarNumeroCompletoTres === 'si' ? numeroCompletoPisoTres[0] : regex(_umilPisoTres, vars, vt);
@@ -594,7 +643,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     _unidadVP2 = regex(_unidadVP2, vars, vt);
 
     _resultado = regex(_resultado, vars, vt);
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
   let datosEjercicio = {};
@@ -604,7 +653,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     pisosTabla: Number(_pisosTabla)
   }
   datosEjercicio.tabla.detallePisos = [{//tipo piso uno
-    tipo: _tipoPisoUno, 
+    tipo: _tipoPisoUno,
     tipoRepeticion: _repeticionPictoricaPisoUno,
     umil: _umilPisoUno,
     centena: _centenaPisoUno,
@@ -651,12 +700,21 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   if (_dibujaValorPosicional1 === 'si') {
     datosEjercicio.valoresPosicionales[0] = {
       mostrar: _dibujaValorPosicional1,
+      mostrarSignoMas: _mostrarSignoMasVP1,
       altoTexto: Number(_altoTextoValorPosicional1), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP1,
-        centena: _centenaVP1,
-        decena: _decenaVP1,
-        unidad: _unidadVP1
+        umil: _tipoUmilVP1 === 'texto' ? _umilVP1 : { 
+          src: _umilVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp1) },
+        centena: _tipoCentenaVP1 === 'texto' ? _centenaVP1 : { 
+          src: _centenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp1) },
+        decena: _tipoDecenaVP1 === 'texto' ? _decenaVP1 : { 
+          src: _decenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp1) },
+        unidad: _tipoUnidadVP1 === 'texto' ? _unidadVP1 : { 
+          src: _unidadVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp1) }
       }
     }
   }
@@ -664,12 +722,21 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   if (_dibujaValorPosicional2 === 'si') {
     datosEjercicio.valoresPosicionales[1] = {
       mostrar: _dibujaValorPosicional2,
+      mostrarSignoMas: _mostrarSignoMasVP2,
       altoTexto: Number(_altoTextoValorPosicional2), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP2,
-        centena: _centenaVP2,
-        decena: _decenaVP2,
-        unidad: _unidadVP2
+        umil: _tipoUmilVP2 === 'texto' ? _umilVP2 : { src: 
+          _umilVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp2) },
+        centena: _tipoCentenaVP2 === 'texto' ? _centenaVP2 : { 
+          src: _centenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp2) },
+        decena: _tipoDecenaVP2 === 'texto' ? _decenaVP2 : { 
+          src: _decenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp2) },
+        unidad: _tipoUnidadVP2 === 'texto' ? _unidadVP2 : { 
+          src: _unidadVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp2) }
       }
     }
   }
@@ -684,10 +751,20 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   console.log(datosEjercicio);
   let recursos = cargaRecursos();
   var ctx, yStart = 0;
+  if(_titulo !== '') {
+    container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+    container.parentElement.classList.add('text-center');
+    var titulo = document.createElement('span');
+    titulo.innerText = regexFunctions(regex(_titulo, vars, vt));
+    titulo.style.fontSize = '18px';
+    titulo.style.fontWeight = '600';
+    titulo.style.color = 'black';
+    container.parentNode.insertBefore(titulo, container);
+  }
   Promise.all(recursos).then(function ([imgTabla, imgFlechaAbajo, imgSignoMas]) {
-    var { altoCanvas, altoImagen, soloImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
+    var { altoCanvas, altoImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
     container.width = Number(_width);
-    container.height = soloImagen ? altoImagen+3 : altoCanvas;
+    container.height = altoCanvas;
     ctx = container.getContext('2d');
     ctx.drawImage(imgTabla, 0, 0, _width, altoImagen); //dibuja la tabla de repeticion
 
@@ -716,7 +793,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     var altoCuadro = porcion * 2;
     var separaciones = tipoTabla === 'centenas' ? 3 : 4;
     var anchoSeparacion = container.width / separaciones;
-    
+
 
     for (var fila = 0; fila < detallePisos.length; fila++) {
       const { tipo, tipoRepeticion, umil, centena, decena, unidad, altoTexto, umilAltoImg, centAltoImg, decAltoImg, uniAltoImg } = detallePisos[fila];
@@ -731,22 +808,22 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
             break;
           case 'repeticion':
             var altoImagenDeRepeticion;
-            if(tipoTabla === 'miles') {
-              if(columna === 0) {
+            if (tipoTabla === 'miles') {
+              if (columna === 0) {
                 altoImagenDeRepeticion = umilAltoImg;
-              } else if(columna === 1) {
+              } else if (columna === 1) {
                 altoImagenDeRepeticion = centAltoImg;
-              } else if(columna === 2) {
+              } else if (columna === 2) {
                 altoImagenDeRepeticion = decAltoImg;
-              } else if(columna === 3) {
+              } else if (columna === 3) {
                 altoImagenDeRepeticion = uniAltoImg;
               }
             } else {
-              if(columna === 0) {
+              if (columna === 0) {
                 altoImagenDeRepeticion = centAltoImg;
-              } else if(columna === 1) {
+              } else if (columna === 1) {
                 altoImagenDeRepeticion = decAltoImg;
-              } else if(columna === 2) {
+              } else if (columna === 2) {
                 altoImagenDeRepeticion = uniAltoImg;
               }
             }
@@ -872,8 +949,8 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
             ctx.drawImage(image, x2, y2, widthImg, altoImg);
             break;
           case '5':
-            var x1 = cx - separacion / 2 - widthImg, 
-            x2 = cx + separacion / 2;
+            var x1 = cx - separacion / 2 - widthImg,
+              x2 = cx + separacion / 2;
             var y1 = cy - container / 2,
               y2 = cy + container / 2 - altoImg,
               y3 = cy - altoImg / 2,
@@ -907,8 +984,8 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         var altoImg = altoImgRep;
         var anchoImg = image.width * altoImg / image.height;
         var separacion = 10;
-        var xStart = cx - ((numero * anchoImg) + (separacion * (numero -1))) /2
-        var yStart = cy - (altoImg /2)
+        var xStart = cx - ((numero * anchoImg) + (separacion * (numero - 1))) / 2
+        var yStart = cy - (altoImg / 2)
         for (var i = 0, x, y; i < numero; i++) {
           x = xStart + (anchoImg * i) + (separacion * i);
           y = yStart;
@@ -1008,13 +1085,13 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     }
   }
 
-  function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
+  async function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
     ctx.font = `${valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
     ctx.fillStyle = '#F58220';
     ctx.textAlign = 'center';
     var { umil, centena, decena, unidad } = valorPosicional.numeros;
     var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
-
+    //console.log(numerosValorPosicional);
     for (var i = 1, centroSeccion, centroSeparacion, yTexto; i < diviciones + 1; i++) {
       centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones / 2);
       centroSeparacion = anchoSeparaciones * i;
@@ -1022,13 +1099,26 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       var xFlecha = centroSeccion - (imgFlechaAbajo.width / 2);
       ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
       //texto
-      yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
-      ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      if(typeof numerosValorPosicional[i - 1] === 'string') {
+        yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
+        ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      } else {
+        await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
+          var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
+          var xImagenVp = centroSeccion-anchoImgVp/2;
+          var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
+          ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i-1].alto);
+        }).catch(function(error){
+          console.log(error);
+        });
+      }
       //singo mas
-      if (i + 1 !== diviciones + 1) {
-        var xMas = centroSeparacion - (imgSignoMas.width / 2);
-        var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
-        ctx.drawImage(imgSignoMas, xMas, yMas);
+      if(valorPosicional.mostrarSignoMas === 'si') {
+        if (i + 1 !== diviciones + 1) {
+          var xMas = centroSeparacion - (imgSignoMas.width / 2);
+          var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
+          ctx.drawImage(imgSignoMas, xMas, yMas);
+        }
       }
     }
     return yTexto + _separacionElementos;
@@ -1082,7 +1172,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       altoFlechas * flechas + //alto de las imagenes de flechas
       separaciones * _separacionElementos + // alto de las separaciones
       texto; //alto de la fuente de los textos
-    return { altoCanvas, altoImagen, soloImagen: !(_dibujaTextoResultado == 'si' || datosEjercicio.valoresPosicionales.length > 0) };
+    return { altoCanvas, altoImagen };
   }
 }
 
