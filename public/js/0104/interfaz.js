@@ -85,6 +85,18 @@ function evaluaInputTexto(inputElement) {
 				}
 			}
 			break;
+		case 'texto':
+			var resp = inputElement.value;
+			for(var answer of content.answers) {
+				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
+				if(checkWord(resp, numberArr)) {
+					feed = answer.feedback;
+					errFre = answer.errFrec;
+					match = true;
+					break;
+				}
+			}
+			break;
 	}
 	if(!match) {
 		feed = content.feedbackDefecto;
@@ -278,7 +290,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
 		} else {
-			$('section.contenido').find('input.inputTexto-incorrecto[type=text]').val('');
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}

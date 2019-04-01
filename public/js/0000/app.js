@@ -42,7 +42,7 @@ function regexFunctions(text) {
     var funcion = coincidencia.substr(1, final);
     try {
       return eval(funcion);
-    } catch(error) {
+    } catch (error) {
       return coincidencia;
     }
   });
@@ -127,8 +127,8 @@ const FUNCIONES = [
       { id: 'Tabla Posicional', action: tablaPosicional },
       { id: 'Valor Posicional', action: valorPosicional },
       { id: 'Repetición Pictóricos', action: repeticionPic },
-      { id: 'Repeticion Bidimensional', action:repeticionBidimensional },
-      { id: 'Multiplicacion Pictoricos', action:multiplicacionPic }
+      { id: 'Repeticion Bidimensional', action: repeticionBidimensional },
+      { id: 'Multiplicacion Pictoricos', action: multiplicacionPic }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -164,21 +164,21 @@ function print() { //Dibujar ejercicios
       }
     })
   })
-  if(window.MathJax) {
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub, function(){
-      if(document.querySelectorAll('#respuesta script').length > 0) {
+  if (window.MathJax) {
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, function () {
+      if (document.querySelectorAll('#respuesta script').length > 0) {
         var respuestas = document.querySelectorAll('#respuesta .radio-div');
         var altoRespuestas = [];
-        for(var i = 0; i < respuestas.length; i++){
+        for (var i = 0; i < respuestas.length; i++) {
           altoRespuestas.push(respuestas[i].offsetHeight);
         }
         var maximo = Math.max(...altoRespuestas);
-        for(var i = 0; i < respuestas.length; i++){
-          if(respuestas[i].offsetHeight != maximo) {
-            respuestas[i].style.height = maximo+'px';
+        for (var i = 0; i < respuestas.length; i++) {
+          if (respuestas[i].offsetHeight != maximo) {
+            respuestas[i].style.height = maximo + 'px';
           }
         }
-      } 
+      }
     }]);
   }
 }
@@ -213,7 +213,7 @@ function dibujaHtml() {
     contenidoRespuestas.forEach(function (item, index) {
       console.log(item);
       var dataContent = {
-        feedback: regex(item.params.feed, versionBody.vars, false),
+        feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
@@ -309,7 +309,7 @@ function insertarImagen(config) {
 }
 function insertarInput(config) {
   const { container, params, variables, versions, vt } = config,
-    { tipoInput, maxLength, inputSize, placeholder, anchoInput, 
+    { tipoInput, maxLength, inputSize, placeholder, anchoInput,
       error0, error2, error3, error4, defaultError,
       feed0, feed1, feed2, feed3, feed4, defaultFeed,
       value1, value2, value3, value4, inputType, colmd, colsm, col } = params
@@ -449,7 +449,7 @@ function insertarTabla(config) {
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
-            var { tipoInput, maxLength, placeholder, anchoInput, 
+            var { tipoInput, maxLength, placeholder, anchoInput,
               error0, error2, error3, error4, defaultError,
               feed0, feed1, feed2, feed3, feed4, defaultFeed,
               value1, value2, value3, value4 } = table[row][col].value;
@@ -566,7 +566,7 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
-    if(tituloTabla !== '') {
+    if (tituloTabla !== '') {
       container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
       var titulo = document.createElement('span');
       titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
@@ -599,10 +599,12 @@ function rectNumFn(config) {
     wichPointValue, showFigValue, wichFigValues,
     showArcs, initArcPt, endArcPt, showConstant,
     //mostrar figuras
-    srcFig1,altoFig1,ubicacionFig1,textoFig1,altoTextoFig1,posicionTextoFig1,posicionesFig1,separacionRectaFig1,
-    srcFig2,altoFig2,ubicacionFig2,textoFig2,altoTextoFig2,posicionTextoFig2,posicionesFig2,separacionRectaFig2,
+    srcFig1, altoFig1, ubicacionFig1, mostrarNum1, mostrarMar1, posicionesFig1,
+    srcFig2, altoFig2, ubicacionFig2, mostrarNum2, mostrarMar2, posicionesFig2,
+    srcFig3, altoFig3, ubicacionFig3, mostrarNum3, mostrarMar3, posicionesFig3,
+    srcFig4, altoFig4, ubicacionFig4, mostrarNum4, mostrarMar4, posicionesFig4,
     // Tramo LLave
-    showTramoLlave,tramoInicio,tramoFin,tramoTexto,tramoAltoTexto,tramoMostrarNumero,tramoColor,tramoForma,tramoAltura,
+    showTramoLlave, tramoInicio, tramoFin, tramoTexto, tramoAltoTexto, tramoMostrarNumero, tramoColor, tramoForma, tramoAltura,
     // Mini Escala
     showMiniScale, showMiniTheValue, showMiniExValues, showMiniAllValues,
     showMiniPointValue, showMiniFig, wichMiniFigValues, showMiniArcs,
@@ -659,25 +661,7 @@ function rectNumFn(config) {
     figures: {
       show: showFigValue === 'no' ? false : showFigValue,
       values: wichFigValues,
-      imagenes: [{
-        src:srcFig1.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
-        alto:Number(altoFig1),
-        ubicacion:ubicacionFig1,
-        texto: regex(textoFig1, vars, vt),
-        altoTexto:Number(altoTextoFig1),
-        posicionTexto:posicionTextoFig1,
-        posiciones: regex(posicionesFig1, vars, vt),
-        separacion:Number(separacionRectaFig1)
-      },{
-        src:srcFig2.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
-        alto:Number(altoFig2),
-        ubicacion:ubicacionFig2,
-        texto: regex(textoFig2, vars, vt),
-        altoTexto:Number(altoTextoFig2),
-        posicionTexto:posicionTextoFig2,
-        posiciones: regex(posicionesFig2, vars, vt),
-        separacion:Number(separacionRectaFig2)
-      }]
+      imagenes: []
     },
     arcs: {
       show: showArcs !== 'no' ? showArcs : false,
@@ -687,13 +671,12 @@ function rectNumFn(config) {
         constant: showConstant === 'si' ? true : false
       }
     },
-    tramoLLave:{
+    tramoLLave: {
       mostrar: showTramoLlave === 'si' ? true : false,
       inicio: regex(tramoInicio, vars, vt),
       fin: regex(tramoFin, vars, vt),
       texto: regex(tramoTexto, vars, vt),
       alto: Number(tramoAltoTexto),
-      mostrarNumero: tramoMostrarNumero === 'si' ? true: false,
       color: tramoColor,
       forma: tramoForma,
       altura: Number(tramoAltura)
@@ -802,6 +785,40 @@ function rectNumFn(config) {
     y1: state.container.position.y1 - state.chart.padding.bottom
   }
 
+  state.show.figures.imagenes[0] = srcFig1 != '' ? {
+    src: srcFig1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    alto: Number(altoFig1),
+    ubicacion: ubicacionFig1,
+    posiciones: regex(posicionesFig1, vars, vt),
+    mostrarNumero: mostrarNum1 == 'si' ? true : false,
+    mostrarMarca: mostrarMar1 == 'si' ? true : false
+  } : undefined;
+
+  state.show.figures.imagenes[1] = srcFig2 != '' ? {
+    src: srcFig2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    alto: Number(altoFig2),
+    ubicacion: ubicacionFig2,
+    posiciones: regex(posicionesFig2, vars, vt),
+    mostrarNumero: mostrarNum2 == 'si' ? true : false,
+    mostrarMarca: mostrarMar2 == 'si' ? true : false
+  } : undefined;
+  state.show.figures.imagenes[2] = srcFig3 != '' ? {
+    src: srcFig3.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    alto: Number(altoFig3),
+    ubicacion: ubicacionFig3,
+    posiciones: regex(posicionesFig3, vars, vt),
+    mostrarNumero: mostrarNum3 == 'si' ? true : false,
+    mostrarMarca: mostrarMar3 == 'si' ? true : false
+  } : undefined
+  state.show.figures.imagenes[3] = srcFig4 != '' ? {
+    src: srcFig4.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    alto: Number(altoFig4),
+    ubicacion: ubicacionFig4,
+    posiciones: regex(posicionesFig4, vars, vt),
+    mostrarNumero: mostrarNum4 == 'si' ? true : false,
+    mostrarMarca: mostrarMar4 == 'si' ? true : false
+  } : undefined;
+
   let mainData = {
     pointsData: ptosPrincipales(state),
     pointsDataMini: ptosPrincipalesMini(state)
@@ -811,1184 +828,1147 @@ function rectNumFn(config) {
   // dibujarBordes(state, state.chart, 'green') // Chart
 
   init(state, mainData)
-}
 
-// Dibuja los espacios definidos, container, chart
-/*
-function dibujarBordes(state, el, color) {
-  const { ctx } = state
-  ctx.save()
-  ctx.beginPath()
-  ctx.strokeStyle = color
-  ctx.rect(el.position.x0, el.position.y0, el.position.x1 - el.position.x0, el.position.y1 - el.position.y0)
-  ctx.stroke()
-  ctx.restore()
-  ctx.save()
-}
-*/
-
-function ptosPrincipales(state) {
-  const { typeRect, chart, show, scale } = state
-  const { x0, y0, x1, y1 } = chart.position
-  let centroY = (y1 - y0) / 2 + y0
-  if (show.miniScale.show && !(typeRect === 'centesimal' || typeRect === 'mixta centesimal')) {
-    centroY = (y1 - y0) / 4 + y0
-  }
-  let segmento = (x1 - x0) / (scale.divisions + 2)
-  let divisiones = scale.divisions
-  let escalaValor = scale.value
-  let xIni = x0 + segmento
-  let xFin = x1 - segmento
-  return {
-    eje: {
-      xIni: x0,
-      xFin: x1,
-      centroY,
-      segmento,
-      divisiones
-    },
-    recta: {
-      xIni,
-      xFin,
-      centroY,
-      segmento,
-      divisiones,
-      escalaValor
+  function ptosPrincipales(state) {
+    const { typeRect, chart, show, scale } = state
+    const { x0, y0, x1, y1 } = chart.position
+    let centroY = (y1 - y0) / 2 + y0
+    if (show.miniScale.show && !(typeRect === 'centesimal' || typeRect === 'mixta centesimal')) {
+      centroY = (y1 - y0) / 4 + y0
+    }
+    let segmento = (x1 - x0) / (scale.divisions + 2)
+    let divisiones = scale.divisions
+    let escalaValor = scale.value
+    let xIni = x0 + segmento
+    let xFin = x1 - segmento
+    return {
+      eje: {
+        xIni: x0,
+        xFin: x1,
+        centroY,
+        segmento,
+        divisiones
+      },
+      recta: {
+        xIni,
+        xFin,
+        centroY,
+        segmento,
+        divisiones,
+        escalaValor
+      }
     }
   }
-}
 
-function ptosPrincipalesMini(state) {
-  const { chart } = state
-  const { x0, y0, x1, y1 } = chart.position
-  let divisiones = 10
-  let escalaValor = 1
-  let contenedorAncho = x1 - x0
-  let margenEje = contenedorAncho / 8
-  let xIniEje = x0 + margenEje
-  let xFinEje = x1 - margenEje
-  let ejeAncho = xFinEje - xIniEje
-  let segmento = ejeAncho / (divisiones + 2)
-  let xIniRecta = xIniEje + segmento
-  let xFinRecta = xFinEje - segmento
+  function ptosPrincipalesMini(state) {
+    const { chart } = state
+    const { x0, y0, x1, y1 } = chart.position
+    let divisiones = 10
+    let escalaValor = 1
+    let contenedorAncho = x1 - x0
+    let margenEje = contenedorAncho / 8
+    let xIniEje = x0 + margenEje
+    let xFinEje = x1 - margenEje
+    let ejeAncho = xFinEje - xIniEje
+    let segmento = ejeAncho / (divisiones + 2)
+    let xIniRecta = xIniEje + segmento
+    let xFinRecta = xFinEje - segmento
 
-  let centroY = (y1 - y0) * 3 / 4 + y0
-  return {
-    eje: {
-      xIni: xIniEje,
-      xFin: xFinEje,
-      centroY,
-      segmento,
-      divisiones
-    },
-    recta: {
-      xIni: xIniRecta,
-      xFin: xFinRecta,
-      centroY,
-      segmento,
-      divisiones,
-      escalaValor
+    let centroY = (y1 - y0) * 3 / 4 + y0
+    return {
+      eje: {
+        xIni: xIniEje,
+        xFin: xFinEje,
+        centroY,
+        segmento,
+        divisiones
+      },
+      recta: {
+        xIni: xIniRecta,
+        xFin: xFinRecta,
+        centroY,
+        segmento,
+        divisiones,
+        escalaValor
+      }
     }
   }
-}
 
-// Inicializa la graficación de la recta
-function init(state, mainData) {
-  const { show, typeRect } = state
-  insertarTitPrinc(state)
-  ejePrincipal(state, mainData.pointsData)
-  const { guides, lens } = show.miniScale
-  if (show.miniScale.show && !(typeRect === 'centesimal' || typeRect === 'mixta centesimal')) {
-    ejeSecundario(state, mainData.pointsDataMini)
-    if (guides || lens.show) {
-      dibujarGuiasLente(state, mainData)
+  // Inicializa la graficación de la recta
+  function init(state, mainData) {
+    const { show, typeRect } = state
+    insertarTitPrinc(state)
+    ejePrincipal(state, mainData.pointsData)
+    const { guides, lens } = show.miniScale
+    if (show.miniScale.show && !(typeRect === 'centesimal' || typeRect === 'mixta centesimal')) {
+      ejeSecundario(state, mainData.pointsDataMini)
+      if (guides || lens.show) {
+        dibujarGuiasLente(state, mainData)
+      }
+    }
+    function dibujarGuiasLente(state, mainData) {
+      const { typeRect, show, scale, chart, font } = state
+      const { theValue, guides } = show.miniScale
+      const { pointsData } = mainData
+      let iniVal = Number(chart.values.initValue)
+      let miniVal = Number(theValue)
+      let valMin, valMax, miniValMin, /*miniValMax,*/ puntoXIni, puntoXFin
+
+      let posIniGuia, posFinGuia
+      if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+        if (iniVal.toFixed(2).split('.')[1][0]) {
+          valMin = Number(`${iniVal.toFixed(2).split('.')[0]}.${iniVal.toFixed(2).split('.')[1][0]}`)
+          valMax = valMin + 1
+          if (miniVal.toFixed(2).split('.')[1][0]) {
+            miniValMin = Number(`${miniVal.toFixed(2).split('.')[0]}.${miniVal.toFixed(2).split('.')[1][0]}`)
+            // miniValMax = miniValMin + 0.1
+            posIniGuia = Number(((miniValMin - valMin) * 10).toFixed(0))
+            posFinGuia = posIniGuia + 1
+          }
+        }
+      }
+      if (miniVal >= valMin && miniVal <= valMax) {
+        puntoXIni = pointsData.recta.xIni + pointsData.recta.segmento * posIniGuia
+        puntoXFin = pointsData.recta.xIni + pointsData.recta.segmento * posFinGuia
+      }
+
+
+
+      let miniPuntoXIni = mainData.pointsDataMini.recta.xIni
+      let miniPuntoXFin = mainData.pointsDataMini.recta.xFin
+      let miniPuntoY = mainData.pointsDataMini.recta.centroY
+      let delta = scale.length * 2
+      let puntoY = miniPuntoY - mainData.pointsData.recta.centroY - scale.length * 2 - font.size * 2.3
+      guides && dibujarLinea(state, miniPuntoXIni, miniPuntoXFin, miniPuntoY, puntoXIni, puntoXFin, puntoY, delta)
+      lens.show && dibujarLente(state, puntoXIni, puntoXFin, puntoY, pointsData.recta.segmento)
+      // xIni, xFin, centroY, segmento
+      function dibujarLinea(state, miniPuntoXIni, miniPuntoXFin, miniPuntoY, puntoXIni, puntoXFin, puntoY, delta) {
+        const { ctx, scale, font } = state
+        ctx.lineWidth = scale.width * 2 / 3
+        ctx.strokeStyle = font.color
+        ctx.fillStyle = font.color
+        // let delta = scale.length*2
+        ctx.beginPath()
+        ctx.moveTo(miniPuntoXIni, miniPuntoY - delta)
+        ctx.lineTo(puntoXIni, miniPuntoY - puntoY)
+        ctx.closePath()
+        ctx.stroke()
+        ctx.fill()
+        ctx.beginPath()
+        ctx.moveTo(miniPuntoXFin, miniPuntoY - delta)
+        ctx.lineTo(puntoXFin, miniPuntoY - puntoY)
+        ctx.closePath()
+        ctx.stroke()
+        ctx.fill()
+      }
+      function dibujarLente(state, puntoXIni, puntoXFin, puntoY, imgWidth) {
+        const { ctx, chart } = state
+        const { lupa } = chart.image
+        ctx.save()
+        let img = new Image()
+        img.src = lupa
+        let factorImg = (129 / 191)
+        let imageWidth = imgWidth * 2.2
+        let imageHeight = imageWidth * factorImg
+        let centerX, centerY
+        centerY = puntoY - imageHeight * 0.38
+        centerX = puntoXIni - imgWidth / 2.2
+        img.onload = function () {
+          // img.width = imgWidth
+          // img.height = imgWidth*factorImg
+          ctx.translate(centerX + imageWidth / 2, centerY + imageHeight / 2)
+          ctx.rotate(60 * Math.PI / 180)
+          ctx.drawImage(img, -imageWidth / 2, -imageHeight / 2, imageWidth, imageHeight)
+        }
+        ctx.restore()
+        ctx.save()
+
+      }
     }
   }
-  function dibujarGuiasLente(state, mainData) {
-    const { typeRect, show, scale, chart, font } = state
-    const { theValue, guides } = show.miniScale
-    const { pointsData } = mainData
-    let iniVal = Number(chart.values.initValue)
-    let miniVal = Number(theValue)
-    let valMin, valMax, miniValMin, /*miniValMax,*/ puntoXIni, puntoXFin
 
-    let posIniGuia, posFinGuia
-    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-      if (iniVal.toFixed(2).split('.')[1][0]) {
-        valMin = Number(`${iniVal.toFixed(2).split('.')[0]}.${iniVal.toFixed(2).split('.')[1][0]}`)
-        valMax = valMin + 1
-        if (miniVal.toFixed(2).split('.')[1][0]) {
-          miniValMin = Number(`${miniVal.toFixed(2).split('.')[0]}.${miniVal.toFixed(2).split('.')[1][0]}`)
-          // miniValMax = miniValMin + 0.1
-          posIniGuia = Number(((miniValMin - valMin) * 10).toFixed(0))
-          posFinGuia = posIniGuia + 1
+  // Main Title
+  function insertarTitPrinc(state) {
+    const { ctx, canvas } = state
+    const { mainTitle } = state.titles
+    if (mainTitle.title !== '') {
+      ctx.save()
+      let x = (canvas.position.x1) / 2 + mainTitle.move.moveX + canvas.position.x0
+      let y = 0 + canvas.position.y0 + mainTitle.move.moveY
+      ctx.translate(x, y)
+      ctx.fillStyle = mainTitle.color
+      ctx.textAlign = mainTitle.alignX
+      ctx.textBaseline = mainTitle.alignY
+      ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + mainTitle.font.family
+      ctx.fillText(mainTitle.title, 0, 0)
+      ctx.restore()
+      ctx.save()
+    }
+  }
+
+  /*-------------------------------- Begin Eje Principal --------------------------------*/
+
+  function ejePrincipal(state, data) {
+    const { scale, typeRect, chart } = state
+    generarEje(state, data.eje)
+    generarEscala(state, data.recta)
+    if (typeRect === 'enteros' || typeRect === 'enteros con decimales' || typeRect === 'decimal' || typeRect === 'mixta' || typeRect === 'mixta decimal') {
+      scale.decimalScale && generarEscalaDec(state, data.recta)
+    }
+    if (chart.values.initValue) {
+      mostrarDatos(state, data.recta)
+    }
+  }
+
+  function ejeSecundario(state, data) {
+    generarEje(state, data.eje)
+    generarEscala(state, data.recta)
+    mostrarDatosEjeSec(state, data.recta)
+  }
+
+  /*-------------------------------- End Eje Principal --------------------------------*/
+
+  /* -------------------------------- Begin Eje Genérico -------------------------------- */
+  function generarEje(state, dataEje) {
+    const { xIni, xFin, centroY } = dataEje
+    const { ctx, chart, scale } = state
+    ctx.save()
+    ctx.lineWidth = chart.axis.width
+    ctx.strokeStyle = chart.axis.color
+    let arrowsLenght = scale.length * 0.7
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    if (chart.axis.arrows) {
+      ctx.beginPath()
+      ctx.moveTo(xIni + arrowsLenght, centroY - arrowsLenght)
+      ctx.lineTo(xIni, centroY)
+      ctx.lineTo(xIni + arrowsLenght, centroY + arrowsLenght)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(xFin - arrowsLenght, centroY - arrowsLenght)
+      ctx.lineTo(xFin, centroY)
+      ctx.lineTo(xFin - arrowsLenght, centroY + arrowsLenght)
+      ctx.stroke()
+    }
+    ctx.beginPath()
+    ctx.lineWidth = chart.axis.width
+    ctx.moveTo(xIni, centroY)
+    ctx.lineTo(xFin, centroY)
+    ctx.stroke()
+    //ctx.closePath()
+    ctx.restore()
+    ctx.save()
+  }
+
+  function generarEscala(state, dataRecta) {
+    const { ctx, scale } = state
+    const { xIni, centroY, segmento, divisiones } = dataRecta
+    ctx.save()
+    let bordersScales = scale.length
+    ctx.strokeStyle = scale.color
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.lineWidth = scale.width
+    for (let i = 0; i <= divisiones; i++) {
+      let xPos = xIni + segmento * i
+      ctx.beginPath()
+      ctx.moveTo(xPos, centroY - bordersScales)
+      ctx.lineTo(xPos, centroY + bordersScales)
+      ctx.stroke()
+      ctx.closePath()
+    }
+    ctx.restore()
+    ctx.save()
+  }
+
+  function generarEscalaDec(state, dataRecta) {
+    const { xIni, centroY, segmento, divisiones } = dataRecta
+    const { ctx, scale, typeRect } = state
+    ctx.save()
+    ctx.strokeStyle = scale.color
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    for (let i = 0; i < divisiones; i++) {
+      ctx.lineWidth = scale.width
+      let bordersScales = scale.length
+      if (typeRect !== 'enteros' || typeRect !== 'mixta') {
+        for (let j = 1; j < 10; j++) {
+          let extraLarge = j === 5 ? bordersScales * 0.2 : 0
+          let xPos = xIni + segmento * i + segmento / 10 * j
+          ctx.lineWidth = 1
+          ctx.beginPath()
+          ctx.moveTo(xPos, centroY - bordersScales * 0.7 - extraLarge)
+          ctx.lineTo(xPos, centroY + bordersScales * 0.7 + extraLarge)
+          ctx.stroke()
+          ctx.closePath()
         }
       }
     }
-    if (miniVal >= valMin && miniVal <= valMax) {
-      puntoXIni = pointsData.recta.xIni + pointsData.recta.segmento * posIniGuia
-      puntoXFin = pointsData.recta.xIni + pointsData.recta.segmento * posFinGuia
-    }
+    ctx.restore()
+    ctx.save()
+  }
+  /* -------------------------------- End Eje Genérico -------------------------------- */
+
+  /*-------------------------------- Eje Secundario --------------------------------*/
 
 
-
-    let miniPuntoXIni = mainData.pointsDataMini.recta.xIni
-    let miniPuntoXFin = mainData.pointsDataMini.recta.xFin
-    let miniPuntoY = mainData.pointsDataMini.recta.centroY
-    let delta = scale.length * 2
-    let puntoY = miniPuntoY - mainData.pointsData.recta.centroY - scale.length * 2 - font.size * 2.3
-    guides && dibujarLinea(state, miniPuntoXIni, miniPuntoXFin, miniPuntoY, puntoXIni, puntoXFin, puntoY, delta)
-    lens.show && dibujarLente(state, puntoXIni, puntoXFin, puntoY, pointsData.recta.segmento)
-    // xIni, xFin, centroY, segmento
-    function dibujarLinea(state, miniPuntoXIni, miniPuntoXFin, miniPuntoY, puntoXIni, puntoXFin, puntoY, delta) {
-      const { ctx, scale, font } = state
-      ctx.lineWidth = scale.width * 2 / 3
-      ctx.strokeStyle = font.color
-      ctx.fillStyle = font.color
-      // let delta = scale.length*2
-      ctx.beginPath()
-      ctx.moveTo(miniPuntoXIni, miniPuntoY - delta)
-      ctx.lineTo(puntoXIni, miniPuntoY - puntoY)
-      ctx.closePath()
-      ctx.stroke()
-      ctx.fill()
-      ctx.beginPath()
-      ctx.moveTo(miniPuntoXFin, miniPuntoY - delta)
-      ctx.lineTo(puntoXFin, miniPuntoY - puntoY)
-      ctx.closePath()
-      ctx.stroke()
-      ctx.fill()
-    }
-    function dibujarLente(state, puntoXIni, puntoXFin, puntoY, imgWidth) {
-      const { ctx, chart } = state
-      const { lupa } = chart.image
-      ctx.save()
-      let img = new Image()
-      img.src = lupa
-      let factorImg = (129 / 191)
-      let imageWidth = imgWidth * 2.2
-      let imageHeight = imageWidth * factorImg
-      let centerX, centerY
-      centerY = puntoY - imageHeight * 0.38
-      centerX = puntoXIni - imgWidth / 2.2
-      img.onload = function () {
-        // img.width = imgWidth
-        // img.height = imgWidth*factorImg
-        ctx.translate(centerX + imageWidth / 2, centerY + imageHeight / 2)
-        ctx.rotate(60 * Math.PI / 180)
-        ctx.drawImage(img, -imageWidth / 2, -imageHeight / 2, imageWidth, imageHeight)
+  function mostrarDatos(state, dataRecta) {
+    const { show } = state
+    const { extValues, firstValue, allValues, points, figures, arcs, tramoLLave } = show
+    const { xIni, centroY, segmento, divisiones } = dataRecta
+    let valores = [];
+    for (let i = 0; i <= divisiones; i++) {
+      let xPos = xIni + segmento * i
+      let valor = numeroValidacion(state, i)
+      // Mostrar valores externos
+      if (i === 0 || i === divisiones) {
+        extValues && mostrarValorExterno(state, xPos, centroY, i, valor);
+        (i === 0 && firstValue) && mostrarValorExterno(state, xPos, centroY, i, valor);
+      } else {
+        let arrValoresAll = arrNumerosValidacion(state, allValues.values)
+        allValues.show && mostrarValor(state, xPos, centroY, i, valor, arrValoresAll)
       }
-      ctx.restore()
-      ctx.save()
-
+      let arrValoresPoints = arrNumerosValidacion(state, points.values)
+      points.show && mostrarPunto(state, dataRecta, xPos, centroY, i, valor, arrValoresPoints)
+      let arrValoresFig = arrNumerosValidacion(state, figures.values)
+      figures.show && mostrarFigura(state, dataRecta, xPos, centroY, i, valor, arrValoresFig)
+      let arrValoresArcInit = arrNumerosValidacion(state, arcs.values.init)
+      let arrValoresArcEnd = arrNumerosValidacion(state, arcs.values.end)
+      arcs.show && mostrarArco(state, dataRecta, xPos, centroY, i, valor, arrValoresArcInit, arrValoresArcEnd, arcs.values.constant)
+      valores.push({ valor, xPos });
+    }
+    if (tramoLLave.mostrar) {
+      mostrarTramoLlave(state, valores, tramoLLave);
+    }
+    if (figures.show) {
+      mostrarImagenesEnPosicion(state, valores, dataRecta);
     }
   }
-}
 
-// Main Title
-function insertarTitPrinc(state) {
-  const { ctx, canvas } = state
-  const { mainTitle } = state.titles
-  if (mainTitle.title !== '') {
+  function mostrarImagenesEnPosicion(state, valores, dataRecta) {
+    const { ctx, show, scale, font, chart } = state;
+    const { initValue } = chart.values
+    const { figures } = show;
+    const { xIni, centroY, segmento, escalaValor } = dataRecta;
+    Promise.all(figures.imagenes.map(x => x ? cargaImagen(x.src) : null)).then((imagen) => {
+      imagen.forEach((imagen, index) => {
+        if(!figures.imagenes[index]) {
+          return;
+        }
+        figures.imagenes[index].imagenRecta = imagen;
+      });
+      return figures.imagenes;
+    }).then(imagenes => {
+      let xInicio = xIni - segmento;
+      let valorInicial = Number(initValue) - escalaValor;
+      console.log(imagenes);
+      imagenes.forEach(img => {
+        if (!img) {
+          return;
+        }
+        const { alto, ubicacion, posiciones, imagenRecta, mostrarNumero, mostrarMarca } = img;
+        let posicionesImagen = posiciones.split(',');
+        let yImagen = ubicacion === 'arriba' ?
+          centroY - scale.length * 1.7 - alto :
+          centroY + scale.length * 1.7;
+        let widthImagen = imagenRecta.width * alto / imagenRecta.height;
+        posicionesImagen.forEach((posicion, index) => {
+          let datosPosicion = valores.find(x => x.valor === posicion);
+          let xCentro;
+          if (datosPosicion) {
+            xCentro = datosPosicion.xPos;
+            let xImagen = xCentro - widthImagen / 2;
+            ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
+          } else {
+            let diferenciaEnEscala = (posicion - valorInicial) / escalaValor;
+            xCentro = xInicio + segmento * diferenciaEnEscala;
+            let xImagen = xCentro - widthImagen / 2;
+            ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
+          }
+          if (mostrarNumero) {
+            let yNumero = ubicacion === 'arriba' ? centroY : centroY - (scale.length * 1.7) * 2 - font.size;
+            mostrarValor(state, xCentro, yNumero, 0, posicion, [posicion]);
+          }
+          if (mostrarMarca) {
+            ctx.save()
+            let bordersScales = scale.length
+            ctx.strokeStyle = scale.color
+            ctx.lineCap = 'round'
+            ctx.lineJoin = 'round'
+            ctx.lineWidth = scale.width
+            ctx.beginPath()
+            ctx.moveTo(xCentro, centroY - bordersScales)
+            ctx.lineTo(xCentro, centroY + bordersScales)
+            ctx.stroke()
+            ctx.closePath()
+            ctx.restore()
+            ctx.save()
+          }
+        });
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+
+  function mostrarTramoLlave(state, valores, tramoLLave) {
+    const { ctx, canvas, scale, font } = state
+    const { inicio, fin, color, alto, texto, forma, altura } = tramoLLave;
+    let radio = 15;
+    let datosInicio = valores.find(x => x.valor === inicio);
+    let datosFin = valores.find(x => x.valor === fin);
+    let xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
+    let xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+    let xMitad = (xInicio + xFin) / 2;
+    let yTramo = canvas.height / 2 - scale.length - altura;
+    let yTramoInicio = yTramo + radio;
+    let yTramoFin = yTramo - radio;
+    console.log({ yTramo, yTramoFin, yTramoInicio, altura, alto })
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+
+    ctx.arc(xInicio + radio, yTramoInicio, radio, Math.PI, 1.5 * Math.PI)
+
+    ctx.lineTo(xMitad - radio, yTramo);
+
+    ctx.arc(xMitad - radio, yTramoFin, radio, 0.5 * Math.PI, 0, true);
+    ctx.arc(xMitad + radio, yTramoFin, radio, Math.PI, 0.5 * Math.PI, true);
+
+    ctx.lineTo(xFin - radio, yTramo);
+
+    ctx.arc(xFin - radio, yTramoInicio, radio, 1.5 * Math.PI, 0);
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.font = `${alto}px ${font.family}`;
+    ctx.fillStyle = font.color;
+    ctx.fillText(texto, xMitad, yTramoFin - 5);
+
+    ctx.restore();
+  }
+
+  function mostrarDatosEjeSec(state, dataRecta) {
+    const { show, scale } = state
+    const { miniScale } = show
+    const { theValue, extValues, allValues, point, figure, arcs } = miniScale
+    const { xIni, centroY, segmento } = dataRecta
+
+    //console.log(miniScale)
+    let centroYNum = centroY + scale.length * 1.7
+    let valor = Number(theValue)
+    for (let i = 0; i <= 10; i++) {
+      let xPos = xIni + segmento * i
+      if (i === 0 || i === 10) {
+        extValues && valorExternoEjeSec(state, xPos, centroYNum, valor, i, 1.7)
+      } else {
+        allValues && valoresEjeSec(state, xPos, centroYNum, valor, i, 1.4)
+        point && puntoEjeSec(state, xPos, centroY, valor, i)
+        figure.show && figuraEjeSec(state, xPos, centroY, valor, i)
+      }
+      if (i < 10) {
+        let desde = arcs.init, hasta = arcs.end
+        arcs.show && arcosEjeSec(state, xPos, centroY, valor, i, desde, hasta, segmento)
+      }
+    }
+
+    function arcosEjeSec(state, x, y, valor, posicion, desde, hasta, segmento) {
+      valor = Number(`${valor.toFixed(2).split('.')[0]}.${valor.toFixed(2).split('.')[1][0]}${posicion}`)
+      let valorDesde = Number(desde)
+      let valorHasta = Number(hasta)
+      if (valor >= valorDesde && valor < valorHasta) {
+        let arcoRadio = segmento / 2
+        dibujarArco(state, x + arcoRadio, y - arcoRadio / 2, arcoRadio, true)
+      }
+    }
+    function figuraEjeSec(state, x, y, valor, posicion) {
+      const { typeRect } = state
+      let figura
+      if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+        figura = valor.toFixed(2).split('.')[1][1]
+      }
+      figura = Number(figura)
+      if (figura === posicion) {
+        dibujarRomboEjeSec(state, x, y, false)
+      }
+      function dibujarRomboEjeSec(state, x, y, grande) {
+        const { ctx, scale, font } = state
+        const { figure, allValues } = state.show.miniScale
+        const xPos = x, centroY = y
+        ctx.save()
+        let diamondSize = grande ? font.size * 1.4 : font.size * 1.2
+        let diamondW = diamondSize
+        let diamondH = diamondW * 1.3
+        let yDist = scale.length * 1.5
+        if (figure.show !== 'abajo') {
+          yDist -= (scale.length * 1.5 * 2 + diamondH)
+        } else {
+          if (allValues) {
+            yDist += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? font.size * 2.3 : font.size * 2
+          }
+        }
+        ctx.strokeStyle = scale.color
+        ctx.fillStyle = font.color
+        ctx.fillStyle = '#dbac04'
+        ctx.strokeStyle = '#dbac04'
+        ctx.beginPath()
+        ctx.moveTo(xPos, centroY + yDist)
+        ctx.lineTo(xPos + diamondW / 2, centroY + diamondH / 2 + yDist)
+        ctx.lineTo(xPos, centroY + diamondH + yDist)
+        ctx.lineTo(xPos - diamondW / 2, centroY + diamondH / 2 + yDist)
+        ctx.lineTo(xPos, centroY + yDist)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
+        ctx.save()
+      }
+    }
+    function puntoEjeSec(state, x, y, valor, posicion) {
+      const { typeRect } = state
+      let punto
+      if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+        punto = valor.toFixed(2).split('.')[1][1]
+      }
+      punto = Number(punto)
+      if (punto === posicion) {
+        dibujarPunto(state, x, y, true)
+      }
+    }
+    function valoresEjeSec(state, x, y, valor, posicion, size) {
+      const { typeRect } = state
+      if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+        valor = Number(`${valor.toFixed(2).split('.')[0]}.${valor.toFixed(2).split('.')[1][0]}${posicion}`)
+        valor = valor.toFixed(2)
+        if (typeRect === 'decimal') {
+          numeroCentesimal(state, x, y, valor, size)
+        } else {
+          numeroMixtoCentesimal(state, x, y, valor, size)
+        }
+      }
+
+    }
+    function valorExternoEjeSec(state, x, y, valor, posicion, size) {
+      const { typeRect } = state
+      if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+        if (posicion === 0) {
+          valor -= Number(`0.0${valor.toFixed(2).split('.')[1][1]}`)
+        } else {
+          valor += 0.1 - Number(`0.0${valor.toFixed(2).split('.')[1][1]}`)
+        }
+        valor = valor.toFixed(1)
+        if (typeRect === 'decimal') {
+          numeroDecimal(state, x, y, valor, size)
+        } else {
+          numeroMixtoDecimal(state, x, y, valor, size)
+        }
+      }
+    }
+  }
+
+  function arrNumerosValidacion(state, arr) {
+    const { typeRect } = state
+    let arrValores = arr
+    switch (typeRect) {
+      case 'enteros':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'enteros con decimales':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'decimal':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'centesimal':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'mixta':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'mixta decimal':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      case 'mixta centesimal':
+        arrValores = arr.split(',') ? arr.split(',') : arr.split('')
+        break;
+      default:
+        break;
+    }
+    return arrValores
+  }
+
+  function numeroValidacion(state, index) {
+    const { typeRect, scale, chart } = state
+    const { initValue } = chart.values
+    let valor = initValue
+    switch (typeRect) {
+      case 'enteros':
+        valor = eval(valor) + index * scale.value
+        valor = valor.toString()
+        valor = valor.split('.') ? valor.split('.')[0] : valor
+        break;
+      case 'enteros con decimales':
+        valor = eval(valor) + index * scale.value
+        valor = valor.toFixed(2), valor = valor.toString()
+        if (valor.split('.')[1].toString()) {
+          valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
+        } else {
+          valor = `${valor.split('.')[0]}.0`
+        }
+        break;
+      case 'decimal':
+        valor = eval(valor) + index * scale.value / 10
+        valor = valor.toString()
+        if (valor.split('.')[1]) {
+          valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
+        } else {
+          valor = `${valor.split('.')[0]}.0`
+        }
+        break;
+      case 'centesimal':
+        valor = (eval(valor) + index * scale.value / 100).toFixed(2)
+        valor = valor.toString()
+        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
+        break;
+      case 'mixta':
+        valor = eval(valor) + index * scale.value / 10
+        valor = valor.toFixed(2), valor = valor.toString()
+        if (valor.split('.')[1]) {
+          valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
+        } else {
+          valor = `${valor.split('.')[0]}.0`
+        }
+        break;
+      case 'mixta decimal':
+        valor = eval(valor) + index * scale.value / 10
+        valor = valor.toFixed(2), valor = valor.toString()
+        if (valor.split('.')[1]) {
+          valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
+        } else {
+          valor = `${valor.split('.')[0]}.00`
+        }
+        break;
+      case 'mixta centesimal':
+        valor = (eval(valor) + index * scale.value / 100).toFixed(2)
+        valor = valor.toString()
+        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
+        break;
+    }
+    return valor
+  }
+
+  /* ------------------------ MOSTRAR DATOS  ------------------------- */
+
+  function mostrarValorExterno(state, x, y, index, valor) {
+    const { typeRect, scale } = state
+    y += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? scale.length * 2 : scale.length * 1.7
+    switch (typeRect) {
+      case 'enteros':
+        numeroEntero(state, x, y, valor, 2)
+        break;
+      case 'enteros con decimales':
+        numeroEnteroDecimal(state, x, y, valor, 2)
+        break;
+      case 'decimal':
+        numeroDecimal(state, x, y, valor, 2)
+        break;
+      case 'centesimal':
+        numeroCentesimal(state, x, y, valor, 1.8)
+        break;
+      case 'mixta':
+        numeroMixto(state, x, y, valor, 2, index)
+        break;
+      case 'mixta decimal':
+        numeroMixtoDecimal(state, x, y, valor, 2, index)
+        break;
+      case 'mixta centesimal':
+        numeroMixtoCentesimal(state, x, y, valor, 1.8, index)
+        break;
+    }
+  }
+
+  function mostrarValor(state, x, y, index, valor, arrValores) {
+    const { typeRect, show, scale } = state
+    y += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? scale.length * 2 : scale.length * 1.7
+    let mostrar = false
+    if (show.allValues.show === 'todos') {
+      mostrar = true
+    } else if (show.allValues.show === 'mostrar') {
+      if (arrValores.includes(valor)) {
+        mostrar = true
+      }
+    } else if (show.allValues.show === 'ocultar') {
+      if (!arrValores.includes(valor)) {
+        mostrar = true
+      }
+    }
+    switch (typeRect) {
+      case 'enteros':
+        mostrar && numeroEntero(state, x, y, valor, 1.5)
+        break;
+      case 'enteros con decimales':
+        mostrar && numeroEnteroDecimal(state, x, y, valor, 1.5)
+        break;
+      case 'decimal':
+        mostrar && numeroDecimal(state, x, y, valor, 1.5)
+        break;
+      case 'centesimal':
+        mostrar && numeroCentesimal(state, x, y, valor, 1.4)
+        break;
+      case 'mixta':
+        mostrar && numeroMixto(state, x, y, valor, 1.5, index)
+        break;
+      case 'mixta decimal':
+        mostrar = false
+        let valAux = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
+        if (show.allValues.show === 'todos') {
+          numeroMixtoDecimal(state, x, y, valor, 1.5, index)
+        } else if (show.allValues.show === 'mostrar') {
+          if (arrValores.includes(valAux)) {
+            numeroMixtoDecimal(state, x, y, valor, 1.5, index)
+          }
+        } else if (show.allValues.show === 'ocultar') {
+          if (!arrValores.includes(valAux)) {
+            numeroMixtoDecimal(state, x, y, valor, 1.5, index)
+          }
+        }
+        break;
+      case 'mixta centesimal':
+        mostrar && numeroMixtoCentesimal(state, x, y, valor, 1.4, index)
+        break;
+    }
+  }
+
+  function mostrarPunto(state, dataRecta, x, y, index, valor, arrValores) {
+    const { typeRect } = state
+    const { segmento } = dataRecta
+    //valor = valor.toString()
+    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+      let valorAuxIni = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
+      let valorAuxFin = eval(valor.split('.')[1][0]) === 9 ? `${eval(valor.split('.')[0]) + 1}.0` : `${valor.split('.')[0]}.${eval(valor.split('.')[1][0]) + 1}`
+      if (arrValores[0] !== '') {
+        arrValores.forEach(el => {
+          if (eval(el) !== NaN && el.split('.')[1]) {
+            valor = eval(valor), valorAuxIni = eval(valorAuxIni), valorAuxFin = eval(valorAuxFin)
+            if (eval(el) >= valorAuxIni && eval(el) <= valorAuxFin) {
+              if (eval(el) === valorAuxIni) {
+                dibujarPunto(state, x, y, true)
+              } else {
+                let delta = eval(el.split('.')[1][1]) * segmento / 10
+                let centroX = x + delta
+                dibujarPunto(state, centroX, y, false)
+              }
+            }
+          }
+        })
+      }
+    } else {
+      if (arrValores.includes(valor)) {
+        dibujarPunto(state, x, y, true)
+      }
+    }
+  }
+
+  function mostrarFigura(state, dataRecta, x, y, index, valor, arrValores) {
+    const { typeRect } = state
+    const { segmento } = dataRecta
+    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
+      let valorAuxIni = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
+      let valorAuxFin = eval(valor.split('.')[1][0]) === 9 ? `${eval(valor.split('.')[0]) + 1}.0` : `${valor.split('.')[0]}.${eval(valor.split('.')[1][0]) + 1}`
+      if (arrValores[0] !== '') {
+        arrValores.forEach(el => {
+          if (eval(el) !== NaN && el.split('.')[1]) {
+            valor = eval(valor), valorAuxIni = eval(valorAuxIni), valorAuxFin = eval(valorAuxFin)
+            if (eval(el) >= valorAuxIni && eval(el) <= valorAuxFin) {
+              if (eval(el) === valorAuxIni) {
+                dibujarRombo(state, x, y, valor, true)
+              } else {
+                let delta = eval(el.split('.')[1][1]) * segmento / 10
+                let centroX = x + delta
+                dibujarRombo(state, centroX, y, valor, false)
+              }
+            }
+          }
+        })
+      }
+    } else {
+      if (arrValores.includes(valor)) {
+        dibujarRombo(state, x, y, valor, true)
+      }
+    }
+  }
+
+  function mostrarArco(state, dataRecta, xPos, centroY, i, valor, desde, hasta, constante) {
+    const { ctx, typeRect, chart, scale } = state
+    const { segmento } = dataRecta
+    let maximoValorEscala = eval(chart.values.initValue) + scale.divisions * scale.value
+    let arcoRadio = segmento / 2
+    let valorDesde = desde[0]
+    let valorHasta = hasta[0]
+    if (valorDesde !== '' & valorHasta !== '') {
+      valorDesde = eval(valorDesde)
+      valorHasta = eval(valorHasta) < maximoValorEscala ? eval(valorHasta) : maximoValorEscala
+      if (typeRect === 'enteros') {
+        valorDesde = valorDesde.toString().split('.') ? eval(valorDesde.toString().split('.')[0]) : valorDesde
+        valorHasta = valorHasta.toString().split('.') ? eval(valorHasta.toString().split('.')[0]) : valorHasta
+      } else if (typeRect === 'mixta decimal') {
+        if (valorDesde.toString().split('.')[1] && valorHasta.toString().split('.')[1]) {
+          maximoValorEscala = eval(chart.values.initValue) + scale.divisions * scale.value / 10
+          valorHasta = eval(valorHasta) < maximoValorEscala ? eval(valorHasta) : maximoValorEscala
+          valorDesde = valorDesde.toString().split('.')[0] ? eval(`${(valorDesde.toString().split('.')[0])}.${(valorDesde.toString().split('.')[1][0])}`) : valorDesde
+          valorHasta = valorHasta.toString().split('.')[0] ? eval(`${(valorHasta.toString().split('.')[0])}.${(valorHasta.toString().split('.')[1][0])}`) : valorHasta
+        }
+      }
+      valor = eval(valor)
+      if (valor >= valorDesde && valor < valorHasta) {
+
+        dibujarArco(state, xPos + arcoRadio, centroY, arcoRadio)
+        if (constante) {
+          ctx.fillStyle = '#A84C4E';
+          ctx.textAlign = "center";
+          ctx.font = '15px Helvetica';
+          ctx.fillText(scale.value, xPos + arcoRadio, centroY - arcoRadio - 10);
+        }
+      }
+    }
+  }
+
+  /* ------------------------ DIBUJOS ------------------------- */
+
+  function dibujarPunto(state, x, y, grande) {
+    const { ctx, scale, chart, font } = state
     ctx.save()
-    let x = (canvas.position.x1) / 2 + mainTitle.move.moveX + canvas.position.x0
-    let y = 0 + canvas.position.y0 + mainTitle.move.moveY
-    ctx.translate(x, y)
-    ctx.fillStyle = mainTitle.color
-    ctx.textAlign = mainTitle.alignX
-    ctx.textBaseline = mainTitle.alignY
-    ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + mainTitle.font.family
-    ctx.fillText(mainTitle.title, 0, 0)
+    let arcoRadio = grande ? scale.length / 2 : scale.length / 3
+    ctx.fillStyle = font.color
+    ctx.lineWidth = grande ? scale.width * 0.6 : scale.width * 0.5
+    ctx.strokeStyle = chart.axis.color
+    ctx.beginPath()
+    ctx.arc(x, y, arcoRadio, 0, 360 * Math.PI / 180)
+    ctx.fill()
+    ctx.stroke()
+    ctx.closePath()
+    ctx.restore()
+    ctx.save()
+  }
+  function dibujarRombo(state, x, y, valor, grande) {
+    const { ctx, typeRect, scale, font } = state
+    const { figures, allValues } = state.show
+    const xPos = x, centroY = y
+    ctx.save()
+    let diamondSize = grande ? font.size * 1.4 : font.size * 1.2
+    let diamondW = diamondSize
+    let diamondH = diamondW * 1.3
+    let yDist = scale.length * 1.5
+    if (figures.show !== 'abajo') {
+      yDist -= (scale.length * 1.5 * 2 + diamondH)
+    } else {
+      let incluVal = allValues.show === 'mostrar' && allValues.values.includes((valor).toString())
+      let noIncluVal = allValues.show === 'ocultar' && !allValues.values.includes((valor).toString())
+      if (allValues.show === 'todos' || incluVal || noIncluVal) {
+        yDist += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? font.size * 2.3 : font.size * 2
+      }
+    }
+    ctx.strokeStyle = scale.color
+    ctx.fillStyle = font.color
+    ctx.fillStyle = '#dbac04'
+    ctx.strokeStyle = '#dbac04'
+    ctx.beginPath()
+    ctx.moveTo(xPos, centroY + yDist)
+    ctx.lineTo(xPos + diamondW / 2, centroY + diamondH / 2 + yDist)
+    ctx.lineTo(xPos, centroY + diamondH + yDist)
+    ctx.lineTo(xPos - diamondW / 2, centroY + diamondH / 2 + yDist)
+    ctx.lineTo(xPos, centroY + yDist)
+    ctx.fill()
+    ctx.stroke()
+    ctx.closePath()
+    ctx.restore()
+    ctx.save()
+  }
+  function dibujarArco(state, x, y, arcoRadio, mini = false) {
+    const { ctx, font, show } = state
+    let direccion = show.arcs.show === 'derecha' ? true : false
+    if (mini) {
+      direccion = show.miniScale.arcs.show === 'derecha' ? true : false
+    }
+    ctx.save()
+    ctx.beginPath()
+    ctx.strokeStyle = font.color
+    ctx.lineWidth = 2
+    let iniAngulo = 220 * Math.PI / 180
+    let finAngulo = 320 * Math.PI / 180
+    ctx.arc(x, y, arcoRadio, iniAngulo, finAngulo)
+    let xDist, ladoDib
+    ladoDib = -(arcoRadio) * Math.cos(40 * Math.PI / 180)
+    xDist = -arcoRadio * 0.3
+    if (direccion) {
+      xDist *= -1
+      ladoDib *= -1
+    }
+    ctx.moveTo(x + ladoDib, y - (arcoRadio) * Math.sin(40 * Math.PI / 180) - arcoRadio * 0.3)
+    ctx.lineTo(x + ladoDib, y - (arcoRadio) * Math.sin(40 * Math.PI / 180))
+    ctx.lineTo(x + ladoDib - xDist, y - (arcoRadio) * Math.sin(40 * Math.PI / 180))
+    ctx.stroke()
+    ctx.closePath()
+    ctx.restore()
+    ctx.save()
+  }
+
+  /* ------------------------ NUMEROS ------------------------- */
+  function numeroEntero(state, x, y, valor, multSize) {
+    const { ctx, font } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.font = font.size + 'px ' + font.family
+    ctx.fillText(espacioMiles(valor), x, y)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroEnteroDecimal(state, x, y, valor, multSize) {
+    const { ctx, font } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    let unidad, decimal//, centesimal
+    unidad = valor.split('.')[0]
+    if (valor.split('.')[1][0]) {
+      decimal = valor.split('.')[1][0]
+      // if (decimal) {
+      //   centesimal = valor.split('.')[0][1]
+      // }
+    }
+    valor = `${unidad}.${decimal}`
+    ctx.fillText(valor, x, y)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroDecimal(state, x, y, valor, multSize) {
+    const { ctx, font } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.fillText(valor, x, y)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroCentesimal(state, x, y, valor, multSize) {
+    const { ctx, font } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.fillText(valor, x, y)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroMixto(state, x, y, valor, multSize, index) {
+    const { ctx, font, scale } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    let valorUnidad = Number(valor.split('.')[0])
+    let valorDecimal = Number(valor.split('.')[1][0])
+    let denominador
+    denominador = scale.divisions
+    ctx.textBaseline = 'middle'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.textAlign = 'right'
+    let enteroTextLength = ctx.measureText(valorUnidad).width
+    let enteroPosX = x - enteroTextLength / 4
+    let centroY = y + font.size * multSize / 2
+    if (valorDecimal > denominador) {
+      ctx.fillText(valorUnidad + 1, x, centroY)
+    } else if (valorDecimal === 0) {
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad, x, centroY)
+      return
+    } else if (valorDecimal === denominador) {
+      let delta = 1
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad + delta, x, centroY)
+      return
+    } else {
+      ctx.fillText(valorUnidad, enteroPosX, centroY)
+    }
+
+    let numberFontSize = Number(font.size * multSize * 0.8)
+    ctx.font = numberFontSize + 'px ' + font.family
+    let denominadorTextLength
+    denominadorTextLength = ctx.measureText(denominador).width
+    ctx.strokeStyle = scale.color
+    ctx.lineWidth = font.size / 8
+    ctx.lineCap = 'round'
+    let deltaYLine = font.size / 16 + 1
+    ctx.beginPath()
+    ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
+    ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
+    ctx.stroke()
+    ctx.closePath()
+    let centroX = x + (denominadorTextLength) / 2
+
+    ctx.textAlign = 'center'
+    //ctx.textBaseline = 'bottom'
+    let deltaYFraccion = numberFontSize / 2
+    if (valorDecimal > denominador) {
+      ctx.fillText(valorDecimal - denominador, centroX, centroY - deltaYFraccion)
+    } else {
+      ctx.fillText(valorDecimal, centroX, centroY - deltaYFraccion)
+    }
+    //ctx.textBaseline = 'top'
+    ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroMixtoDecimal(state, x, y, valor, multSize, index) {
+    const { ctx, font, scale } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    let valorUnidad = Number(valor.split('.')[0])
+    let valorDecimal = Number(valor.split('.')[1][0])
+    let denominador
+    denominador = scale.divisions
+    ctx.textBaseline = 'middle'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.textAlign = 'right'
+    let enteroTextLength = ctx.measureText(valorUnidad).width
+    let enteroPosX = x - enteroTextLength / 4
+    let centroY = y + font.size * multSize / 2
+    if (valorDecimal > denominador) {
+      ctx.fillText(valorUnidad + 1, x, centroY)
+    } else if (valorDecimal === 0) {
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad, x, centroY)
+      return
+    } else if (valorDecimal === denominador) {
+      let delta = 1
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad + delta, x, centroY)
+      return
+    } else {
+      ctx.fillText(valorUnidad, enteroPosX, centroY)
+    }
+
+    let numberFontSize = Number(font.size * multSize * 0.8)
+    ctx.font = numberFontSize + 'px ' + font.family
+    let denominadorTextLength
+    denominadorTextLength = ctx.measureText(denominador).width
+    ctx.strokeStyle = scale.color
+    ctx.lineWidth = font.size / 8
+    ctx.lineCap = 'round'
+    let deltaYLine = font.size / 16 + 1
+    ctx.beginPath()
+    ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
+    ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
+    ctx.stroke()
+    ctx.closePath()
+    let centroX = x + (denominadorTextLength) / 2
+    let deltaYFraccion = numberFontSize / 2
+    ctx.textAlign = 'center'
+    if (valorDecimal > denominador) {
+      ctx.fillText(valorDecimal - denominador, centroX, centroY - deltaYFraccion)
+    } else {
+      ctx.fillText(valorDecimal, centroX, centroY - deltaYFraccion)
+    }
+    ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
+    ctx.restore()
+    ctx.save()
+  }
+
+  function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
+    const { ctx, font, scale } = state
+    ctx.save()
+    ctx.strokeStyle = font.color
+    ctx.fillStyle = font.color
+    let valorUnidad = Number(valor.split('.')[0])
+    let valorDecimal = Number(valor.split('.')[1][0])
+    let valorCentesimal = Number(valor.split('.')[1][1])
+    let numerador = Number(`${valorDecimal}${valorCentesimal}`)
+    let denominador
+    denominador = scale.divisions * 10
+    ctx.textBaseline = 'middle'
+    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.textAlign = 'right'
+    let enteroTextLength = ctx.measureText(valorUnidad).width
+    let enteroPosX = x - enteroTextLength / 4
+    let centroY = y + font.size * multSize / 2
+    if (numerador > denominador) {
+      ctx.fillText(valorUnidad + 1, x, centroY)
+    } else if (numerador === 0) {
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad, x, centroY)
+      return
+    } else if (numerador === denominador) {
+      let delta = 1
+      ctx.textAlign = 'center'
+      ctx.fillText(valorUnidad + delta, x, centroY)
+      return
+    } else {
+      ctx.fillText(valorUnidad, enteroPosX, centroY)
+    }
+
+    let numberFontSize = Number(font.size * multSize * 0.8)
+    ctx.font = numberFontSize + 'px ' + font.family
+    let denominadorTextLength
+    denominadorTextLength = ctx.measureText(denominador).width
+    ctx.strokeStyle = scale.color
+    ctx.lineWidth = font.size / 8
+    ctx.lineCap = 'round'
+    let deltaYLine = font.size / 16 + 1
+    ctx.beginPath()
+    ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
+    ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
+    ctx.stroke()
+    ctx.closePath()
+    let centroX = x + (denominadorTextLength) / 2
+    let deltaYFraccion = numberFontSize / 2
+    ctx.textAlign = 'center'
+    if (numerador > denominador) {
+      ctx.fillText(numerador - denominador, centroX, centroY - deltaYFraccion)
+    } else {
+      ctx.fillText(numerador, centroX, centroY - deltaYFraccion)
+    }
+    ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
     ctx.restore()
     ctx.save()
   }
 }
 
-/*-------------------------------- Begin Eje Principal --------------------------------*/
-
-function ejePrincipal(state, data) {
-  const { scale, typeRect, chart } = state
-  generarEje(state, data.eje)
-  generarEscala(state, data.recta)
-  if (typeRect === 'enteros' || typeRect === 'enteros con decimales' || typeRect === 'decimal' || typeRect === 'mixta' || typeRect === 'mixta decimal') {
-    scale.decimalScale && generarEscalaDec(state, data.recta)
-  }
-  if (chart.values.initValue) {
-    mostrarDatos(state, data.recta)
-  }
-}
-
-function ejeSecundario(state, data) {
-  generarEje(state, data.eje)
-  generarEscala(state, data.recta)
-  mostrarDatosEjeSec(state, data.recta)
-}
-
-/*-------------------------------- End Eje Principal --------------------------------*/
-
-/* -------------------------------- Begin Eje Genérico -------------------------------- */
-function generarEje(state, dataEje) {
-  const { xIni, xFin, centroY } = dataEje
-  const { ctx, chart, scale } = state
-  ctx.save()
-  ctx.lineWidth = chart.axis.width
-  ctx.strokeStyle = chart.axis.color
-  let arrowsLenght = scale.length * 0.7
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
-  if (chart.axis.arrows) {
-    ctx.beginPath()
-    ctx.moveTo(xIni + arrowsLenght, centroY - arrowsLenght)
-    ctx.lineTo(xIni, centroY)
-    ctx.lineTo(xIni + arrowsLenght, centroY + arrowsLenght)
-    ctx.stroke()
-    ctx.beginPath()
-    ctx.moveTo(xFin - arrowsLenght, centroY - arrowsLenght)
-    ctx.lineTo(xFin, centroY)
-    ctx.lineTo(xFin - arrowsLenght, centroY + arrowsLenght)
-    ctx.stroke()
-  }
-  ctx.beginPath()
-  ctx.lineWidth = chart.axis.width
-  ctx.moveTo(xIni, centroY)
-  ctx.lineTo(xFin, centroY)
-  ctx.stroke()
-  //ctx.closePath()
-  ctx.restore()
-  ctx.save()
-}
-
-function generarEscala(state, dataRecta) {
-  const { ctx, scale } = state
-  const { xIni, centroY, segmento, divisiones } = dataRecta
-  ctx.save()
-  let bordersScales = scale.length
-  ctx.strokeStyle = scale.color
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
-  ctx.lineWidth = scale.width
-  for (let i = 0; i <= divisiones; i++) {
-    let xPos = xIni + segmento * i
-    ctx.beginPath()
-    ctx.moveTo(xPos, centroY - bordersScales)
-    ctx.lineTo(xPos, centroY + bordersScales)
-    ctx.stroke()
-    ctx.closePath()
-  }
-  ctx.restore()
-  ctx.save()
-}
-
-function generarEscalaDec(state, dataRecta) {
-  const { xIni, centroY, segmento, divisiones } = dataRecta
-  const { ctx, scale, typeRect } = state
-  ctx.save()
-  ctx.strokeStyle = scale.color
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
-  for (let i = 0; i < divisiones; i++) {
-    ctx.lineWidth = scale.width
-    let bordersScales = scale.length
-    if (typeRect !== 'enteros' || typeRect !== 'mixta') {
-      for (let j = 1; j < 10; j++) {
-        let extraLarge = j === 5 ? bordersScales * 0.2 : 0
-        let xPos = xIni + segmento * i + segmento / 10 * j
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.moveTo(xPos, centroY - bordersScales * 0.7 - extraLarge)
-        ctx.lineTo(xPos, centroY + bordersScales * 0.7 + extraLarge)
-        ctx.stroke()
-        ctx.closePath()
-      }
-    }
-  }
-  ctx.restore()
-  ctx.save()
-}
-/* -------------------------------- End Eje Genérico -------------------------------- */
-
-/*-------------------------------- Eje Secundario --------------------------------*/
-
-
-function mostrarDatos(state, dataRecta) {
-  const { show } = state
-  const { extValues, firstValue, allValues, points, figures, arcs, tramoLLave } = show
-  const { xIni, centroY, segmento, divisiones } = dataRecta
-  let valores = [];
-  for (let i = 0; i <= divisiones; i++) {
-    let xPos = xIni + segmento * i
-    let valor = numeroValidacion(state, i)
-    // Mostrar valores externos
-    if (i === 0 || i === divisiones) {
-      extValues && mostrarValorExterno(state, xPos, centroY, i, valor);
-      (i === 0 && firstValue) && mostrarValorExterno(state, xPos, centroY, i, valor);
-    } else {
-      let arrValoresAll = arrNumerosValidacion(state, allValues.values)
-      allValues.show && mostrarValor(state, xPos, centroY, i, valor, arrValoresAll)
-    }
-    let arrValoresPoints = arrNumerosValidacion(state, points.values)
-    points.show && mostrarPunto(state, dataRecta, xPos, centroY, i, valor, arrValoresPoints)
-    let arrValoresFig = arrNumerosValidacion(state, figures.values)
-    figures.show && mostrarFigura(state, dataRecta, xPos, centroY, i, valor, arrValoresFig)
-    let arrValoresArcInit = arrNumerosValidacion(state, arcs.values.init)
-    let arrValoresArcEnd = arrNumerosValidacion(state, arcs.values.end)
-    arcs.show && mostrarArco(state, dataRecta, xPos, centroY, i, valor, arrValoresArcInit, arrValoresArcEnd, arcs.values.constant)
-    valores.push({ valor, xPos });
-  }
-  if(tramoLLave.mostrar) {
-    mostrarTramoLlave(state, valores, tramoLLave);
-  }
-  if(figures.show) {
-    mostrarImagenesEnPosicion(state, valores, dataRecta);
-  }
-}
-
-/*
-imagenes: [{
-  src:srcFig1.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
-  alto:Number(altoFig1),
-  ubicacion:ubicacionFig1,
-  texto:textoFig1,
-  altoTexto:Number(altoTextoFig1),
-  posicionTexto:posicionTextoFig1,
-  posiciones:posicionesFig1,
-  separacion:Number(separacionRectaFig1)
-},{
-  src:srcFig2.replace('https://contenedoradapt.blob.core.windows.net/recursos/ejercicios/Nivel-4/', '../../../../'),
-  alto:Number(altoFig2),
-  ubicacion:ubicacionFig2,
-  texto:textoFig2,
-  altoTexto:Number(altoTextoFig2),
-  posicionTexto:posicionTextoFig2,
-  posiciones:posicionesFig2,
-  separacion:Number(separacionRectaFig2)
-}]
-*/
-
-function mostrarImagenesEnPosicion(state, valores, dataRecta) {
-  const { ctx, show, scale, font, chart } = state;
-  const { initValue } = chart.values
-  const { figures } = show;
-  const { xIni, xFin, centroY, segmento, escalaValor, divisiones } = dataRecta;
-  Promise.all(figures.imagenes.map(x => x.src !== '' ? cargaImagen(x.src) : null)).then((imagen) => {
-    imagen.forEach((imagen, index) => {
-      figures.imagenes[index].imagenRecta = imagen;
-    });
-    return figures.imagenes;
-  }).then(imagenes => {
-    let xInicio = xIni - segmento;
-    let xFinal = xFin + segmento;
-    let anchoTotalRecta = xFinal - xInicio; // calcula en el canvas cuanto espacio ocupa la recta del canvas
-    let valorInicial = Number(initValue) - escalaValor;
-    let valorFinal = Number(initValue) + escalaValor * (divisiones+1);
-    let dimensionRecta = valorFinal - valorInicial; //calcula el largo de la escala de la recta,
-    imagenes.forEach(img => {
-      
-      const { alto, ubicacion, posiciones, imagenRecta, mostrarNumero, mostrarMarca } = img; //texto no se usa
-      if(imagenRecta === null) {
-        return;
-      }
-      let posicionesImagen = posiciones.split(',');
-      let yImagen = ubicacion === 'arriba' ? 
-        centroY - scale.length * 1.7 - alto: 
-        centroY + scale.length * 1.7;
-      let widthImagen = imagenRecta.width * alto / imagenRecta.height;
-      posicionesImagen.forEach((posicion, index) => {
-        let datosPosicion = valores.find(x => x.valor === posicion);
-        let xCentro;
-        if(datosPosicion) {
-          xCentro = datosPosicion.xPos;
-          let xImagen = xCentro - widthImagen/2;
-          ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
-        } else {
-          xCentro = xInicio + (posicion * anchoTotalRecta / dimensionRecta) - segmento*2;
-          let xImagen = xCentro - widthImagen/2;
-          ctx.drawImage(imagenRecta, xImagen, yImagen, widthImagen, alto);
-        }
-        if(mostrarNumero) { 
-          let yNumero = ubicacion === 'arriba' ? centroY : centroY - (scale.length * 1.7)*2 - font.size;
-          console.log({yNumero, xCentro, posicion});
-          mostrarValor(state, xCentro, yNumero, 0, posicion, [posicion]);
-        }
-        if(mostrarMarca) {
-          ctx.save()
-          let bordersScales = scale.length
-          ctx.strokeStyle = scale.color
-          ctx.lineCap = 'round'
-          ctx.lineJoin = 'round'
-          ctx.lineWidth = scale.width
-          ctx.beginPath()
-          ctx.moveTo(xCentro, centroY - bordersScales)
-          ctx.lineTo(xCentro, centroY + bordersScales)
-          ctx.stroke()
-          ctx.closePath()
-          ctx.restore()
-          ctx.save()
-        }
-      });
-    });
-  }).catch(error => {
-    console.log(error);
-  });
-}
-
-function mostrarTramoLlave(state, valores, tramoLLave) {
-  const { ctx, canvas, scale, font } = state
-  const { inicio, fin, color, alto, texto, forma, altura, mostrarNumero } = tramoLLave;
-  let radio = 15;
-  let datosInicio = valores.find(x => x.valor === inicio);
-  let datosFin = valores.find(x => x.valor === fin);
-  let xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
-  let xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
-  let xMitad = (xInicio + xFin) / 2;
-  let yTramo = mostrarNumero ? canvas.height/2 - scale.length - altura - alto - 20 : canvas.height/2 - scale.length - altura;
-  let yTramoInicio = yTramo + radio;
-  let yTramoFin = yTramo - radio;
-  console.log({yTramo, yTramoFin, yTramoInicio, mostrarNumero, altura, alto})
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  
-  ctx.arc(xInicio+radio, yTramoInicio, radio, Math.PI, 1.5*Math.PI)
-  
-  ctx.lineTo(xMitad-radio, yTramo);
-
-  ctx.arc(xMitad-radio, yTramoFin, radio, 0.5*Math.PI, 0, true);
-  ctx.arc(xMitad+radio, yTramoFin, radio, Math.PI, 0.5 * Math.PI, true);
-  
-  ctx.lineTo(xFin-radio, yTramo);
-
-  ctx.arc(xFin-radio, yTramoInicio, radio, 1.5*Math.PI, 0);  
-  ctx.stroke();
-  
-  ctx.textAlign = "center";
-  ctx.font = `${alto}px ${font.family}`;
-  ctx.fillStyle = font.color;
-  ctx.fillText(texto, xMitad, yTramoFin-5);
-
-  ctx.restore();
-}
-
-function mostrarDatosEjeSec(state, dataRecta) {
-  const { show, scale } = state
-  const { miniScale } = show
-  const { theValue, extValues, allValues, point, figure, arcs } = miniScale
-  const { xIni, centroY, segmento } = dataRecta
-
-  //console.log(miniScale)
-  let centroYNum = centroY + scale.length * 1.7
-  let valor = Number(theValue)
-  for (let i = 0; i <= 10; i++) {
-    let xPos = xIni + segmento * i
-    if (i === 0 || i === 10) {
-      extValues && valorExternoEjeSec(state, xPos, centroYNum, valor, i, 1.7)
-    } else {
-      allValues && valoresEjeSec(state, xPos, centroYNum, valor, i, 1.4)
-      point && puntoEjeSec(state, xPos, centroY, valor, i)
-      figure.show && figuraEjeSec(state, xPos, centroY, valor, i)
-    }
-    if (i < 10) {
-      let desde = arcs.init, hasta = arcs.end
-      arcs.show && arcosEjeSec(state, xPos, centroY, valor, i, desde, hasta, segmento)
-    }
-  }
-
-  function arcosEjeSec(state, x, y, valor, posicion, desde, hasta, segmento) {
-    valor = Number(`${valor.toFixed(2).split('.')[0]}.${valor.toFixed(2).split('.')[1][0]}${posicion}`)
-    let valorDesde = Number(desde)
-    let valorHasta = Number(hasta)
-    if (valor >= valorDesde && valor < valorHasta) {
-      let arcoRadio = segmento / 2
-      dibujarArco(state, x + arcoRadio, y - arcoRadio / 2, arcoRadio, true)
-    }
-  }
-  function figuraEjeSec(state, x, y, valor, posicion) {
-    const { typeRect } = state
-    let figura
-    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-      figura = valor.toFixed(2).split('.')[1][1]
-    }
-    figura = Number(figura)
-    if (figura === posicion) {
-      dibujarRomboEjeSec(state, x, y, false)
-    }
-    function dibujarRomboEjeSec(state, x, y, grande) {
-      const { ctx, scale, font } = state
-      const { figure, allValues } = state.show.miniScale
-      const xPos = x, centroY = y
-      ctx.save()
-      let diamondSize = grande ? font.size * 1.4 : font.size * 1.2
-      let diamondW = diamondSize
-      let diamondH = diamondW * 1.3
-      let yDist = scale.length * 1.5
-      if (figure.show !== 'abajo') {
-        yDist -= (scale.length * 1.5 * 2 + diamondH)
-      } else {
-        if (allValues) {
-          yDist += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? font.size * 2.3 : font.size * 2
-        }
-      }
-      ctx.strokeStyle = scale.color
-      ctx.fillStyle = font.color
-      ctx.fillStyle = '#dbac04'
-      ctx.strokeStyle = '#dbac04'
-      ctx.beginPath()
-      ctx.moveTo(xPos, centroY + yDist)
-      ctx.lineTo(xPos + diamondW / 2, centroY + diamondH / 2 + yDist)
-      ctx.lineTo(xPos, centroY + diamondH + yDist)
-      ctx.lineTo(xPos - diamondW / 2, centroY + diamondH / 2 + yDist)
-      ctx.lineTo(xPos, centroY + yDist)
-      ctx.fill()
-      ctx.stroke()
-      ctx.closePath()
-      ctx.restore()
-      ctx.save()
-    }
-  }
-  function puntoEjeSec(state, x, y, valor, posicion) {
-    const { typeRect } = state
-    let punto
-    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-      punto = valor.toFixed(2).split('.')[1][1]
-    }
-    punto = Number(punto)
-    if (punto === posicion) {
-      dibujarPunto(state, x, y, true)
-    }
-  }
-  function valoresEjeSec(state, x, y, valor, posicion, size) {
-    const { typeRect } = state
-    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-      valor = Number(`${valor.toFixed(2).split('.')[0]}.${valor.toFixed(2).split('.')[1][0]}${posicion}`)
-      valor = valor.toFixed(2)
-      if (typeRect === 'decimal') {
-        numeroCentesimal(state, x, y, valor, size)
-      } else {
-        numeroMixtoCentesimal(state, x, y, valor, size)
-      }
-    }
-
-  }
-  function valorExternoEjeSec(state, x, y, valor, posicion, size) {
-    const { typeRect } = state
-    if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-      if (posicion === 0) {
-        valor -= Number(`0.0${valor.toFixed(2).split('.')[1][1]}`)
-      } else {
-        valor += 0.1 - Number(`0.0${valor.toFixed(2).split('.')[1][1]}`)
-      }
-      valor = valor.toFixed(1)
-      if (typeRect === 'decimal') {
-        numeroDecimal(state, x, y, valor, size)
-      } else {
-        numeroMixtoDecimal(state, x, y, valor, size)
-      }
-    }
-  }
-}
-
-function arrNumerosValidacion(state, arr) {
-  const { typeRect } = state
-  let arrValores = arr
-  switch (typeRect) {
-    case 'enteros':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'enteros con decimales':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'decimal':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'centesimal':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'mixta':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'mixta decimal':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    case 'mixta centesimal':
-      arrValores = arr.split(',') ? arr.split(',') : arr.split('')
-      break;
-    default:
-      break;
-  }
-  return arrValores
-}
-
-function numeroValidacion(state, index) {
-  const { typeRect, scale, chart } = state
-  const { initValue } = chart.values
-  let valor = initValue
-  switch (typeRect) {
-    case 'enteros':
-      valor = eval(valor) + index * scale.value
-      valor = valor.toString()
-      valor = valor.split('.') ? valor.split('.')[0] : valor
-      break;
-    case 'enteros con decimales':
-      valor = eval(valor) + index * scale.value
-      valor = valor.toFixed(2), valor = valor.toString()
-      if (valor.split('.')[1].toString()) {
-        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
-      } else {
-        valor = `${valor.split('.')[0]}.0`
-      }
-      break;
-    case 'decimal':
-      valor = eval(valor) + index * scale.value / 10
-      valor = valor.toString()
-      if (valor.split('.')[1]) {
-        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
-      } else {
-        valor = `${valor.split('.')[0]}.0`
-      }
-      break;
-    case 'centesimal':
-      valor = (eval(valor) + index * scale.value / 100).toFixed(2)
-      valor = valor.toString()
-      valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
-      break;
-    case 'mixta':
-      valor = eval(valor) + index * scale.value / 10
-      valor = valor.toFixed(2), valor = valor.toString()
-      if (valor.split('.')[1]) {
-        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 1)}`
-      } else {
-        valor = `${valor.split('.')[0]}.0`
-      }
-      break;
-    case 'mixta decimal':
-      valor = eval(valor) + index * scale.value / 10
-      valor = valor.toFixed(2), valor = valor.toString()
-      if (valor.split('.')[1]) {
-        valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
-      } else {
-        valor = `${valor.split('.')[0]}.00`
-      }
-      break;
-    case 'mixta centesimal':
-      valor = (eval(valor) + index * scale.value / 100).toFixed(2)
-      valor = valor.toString()
-      valor = `${valor.split('.')[0]}.${valor.split('.')[1].toString().substring(0, 2)}`
-      break;
-  }
-  return valor
-}
-
-/* ------------------------ MOSTRAR DATOS  ------------------------- */
-
-function mostrarValorExterno(state, x, y, index, valor) {
-  const { typeRect, scale } = state
-  y += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? scale.length * 2 : scale.length * 1.7
-  switch (typeRect) {
-    case 'enteros':
-      numeroEntero(state, x, y, valor, 2)
-      break;
-    case 'enteros con decimales':
-      numeroEnteroDecimal(state, x, y, valor, 2)
-      break;
-    case 'decimal':
-      numeroDecimal(state, x, y, valor, 2)
-      break;
-    case 'centesimal':
-      numeroCentesimal(state, x, y, valor, 1.8)
-      break;
-    case 'mixta':
-      numeroMixto(state, x, y, valor, 2, index)
-      break;
-    case 'mixta decimal':
-      numeroMixtoDecimal(state, x, y, valor, 2, index)
-      break;
-    case 'mixta centesimal':
-      numeroMixtoCentesimal(state, x, y, valor, 1.8, index)
-      break;
-  }
-}
-
-function mostrarValor(state, x, y, index, valor, arrValores) {
-  const { typeRect, show, scale } = state
-  y += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? scale.length * 2 : scale.length * 1.7
-  let mostrar = false
-  if (show.allValues.show === 'todos') {
-    mostrar = true
-  } else if (show.allValues.show === 'mostrar') {
-    if (arrValores.includes(valor)) {
-      mostrar = true
-    }
-  } else if (show.allValues.show === 'ocultar') {
-    if (!arrValores.includes(valor)) {
-      mostrar = true
-    }
-  }
-  switch (typeRect) {
-    case 'enteros':
-      mostrar && numeroEntero(state, x, y, valor, 1.5)
-      break;
-    case 'enteros con decimales':
-      mostrar && numeroEnteroDecimal(state, x, y, valor, 1.5)
-      break;
-    case 'decimal':
-      mostrar && numeroDecimal(state, x, y, valor, 1.5)
-      break;
-    case 'centesimal':
-      mostrar && numeroCentesimal(state, x, y, valor, 1.4)
-      break;
-    case 'mixta':
-      mostrar && numeroMixto(state, x, y, valor, 1.5, index)
-      break;
-    case 'mixta decimal':
-      mostrar = false
-      let valAux = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
-      if (show.allValues.show === 'todos') {
-        numeroMixtoDecimal(state, x, y, valor, 1.5, index)
-      } else if (show.allValues.show === 'mostrar') {
-        if (arrValores.includes(valAux)) {
-          numeroMixtoDecimal(state, x, y, valor, 1.5, index)
-        }
-      } else if (show.allValues.show === 'ocultar') {
-        if (!arrValores.includes(valAux)) {
-          numeroMixtoDecimal(state, x, y, valor, 1.5, index)
-        }
-      }
-      break;
-    case 'mixta centesimal':
-      mostrar && numeroMixtoCentesimal(state, x, y, valor, 1.4, index)
-      break;
-  }
-}
-
-function mostrarPunto(state, dataRecta, x, y, index, valor, arrValores) {
-  const { typeRect } = state
-  const { segmento } = dataRecta
-  //valor = valor.toString()
-  if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-    let valorAuxIni = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
-    let valorAuxFin = eval(valor.split('.')[1][0]) === 9 ? `${eval(valor.split('.')[0]) + 1}.0` : `${valor.split('.')[0]}.${eval(valor.split('.')[1][0]) + 1}`
-    if (arrValores[0] !== '') {
-      arrValores.forEach(el => {
-        if (eval(el) !== NaN && el.split('.')[1]) {
-          valor = eval(valor), valorAuxIni = eval(valorAuxIni), valorAuxFin = eval(valorAuxFin)
-          if (eval(el) >= valorAuxIni && eval(el) <= valorAuxFin) {
-            if (eval(el) === valorAuxIni) {
-              dibujarPunto(state, x, y, true)
-            } else {
-              let delta = eval(el.split('.')[1][1]) * segmento / 10
-              let centroX = x + delta
-              dibujarPunto(state, centroX, y, false)
-            }
-          }
-        }
-      })
-    }
-  } else {
-    if (arrValores.includes(valor)) {
-      dibujarPunto(state, x, y, true)
-    }
-  }
-}
-
-function mostrarFigura(state, dataRecta, x, y, index, valor, arrValores) {
-  const { typeRect } = state
-  const { segmento } = dataRecta
-  if (typeRect === 'decimal' || typeRect === 'mixta decimal') {
-    let valorAuxIni = `${valor.split('.')[0]}.${valor.split('.')[1][0]}`
-    let valorAuxFin = eval(valor.split('.')[1][0]) === 9 ? `${eval(valor.split('.')[0]) + 1}.0` : `${valor.split('.')[0]}.${eval(valor.split('.')[1][0]) + 1}`
-    if (arrValores[0] !== '') {
-      arrValores.forEach(el => {
-        if (eval(el) !== NaN && el.split('.')[1]) {
-          valor = eval(valor), valorAuxIni = eval(valorAuxIni), valorAuxFin = eval(valorAuxFin)
-          if (eval(el) >= valorAuxIni && eval(el) <= valorAuxFin) {
-            if (eval(el) === valorAuxIni) {
-              dibujarRombo(state, x, y, valor, true)
-            } else {
-              let delta = eval(el.split('.')[1][1]) * segmento / 10
-              let centroX = x + delta
-              dibujarRombo(state, centroX, y, valor, false)
-            }
-          }
-        }
-      })
-    }
-  } else {
-    if (arrValores.includes(valor)) {
-      dibujarRombo(state, x, y, valor, true)
-    }
-  }
-}
-
-function mostrarArco(state, dataRecta, xPos, centroY, i, valor, desde, hasta, constante) {
-  const { ctx, typeRect, chart, scale } = state
-  const { segmento } = dataRecta
-  let maximoValorEscala = eval(chart.values.initValue) + scale.divisions * scale.value
-  let arcoRadio = segmento / 2
-  let valorDesde = desde[0]
-  let valorHasta = hasta[0]
-  if (valorDesde !== '' & valorHasta !== '') {
-    valorDesde = eval(valorDesde)
-    valorHasta = eval(valorHasta) < maximoValorEscala ? eval(valorHasta) : maximoValorEscala
-    if (typeRect === 'enteros') {
-      valorDesde = valorDesde.toString().split('.') ? eval(valorDesde.toString().split('.')[0]) : valorDesde
-      valorHasta = valorHasta.toString().split('.') ? eval(valorHasta.toString().split('.')[0]) : valorHasta
-    } else if (typeRect === 'mixta decimal') {
-      if (valorDesde.toString().split('.')[1] && valorHasta.toString().split('.')[1]) {
-        maximoValorEscala = eval(chart.values.initValue) + scale.divisions * scale.value / 10
-        valorHasta = eval(valorHasta) < maximoValorEscala ? eval(valorHasta) : maximoValorEscala
-        valorDesde = valorDesde.toString().split('.')[0] ? eval(`${(valorDesde.toString().split('.')[0])}.${(valorDesde.toString().split('.')[1][0])}`) : valorDesde
-        valorHasta = valorHasta.toString().split('.')[0] ? eval(`${(valorHasta.toString().split('.')[0])}.${(valorHasta.toString().split('.')[1][0])}`) : valorHasta
-      }
-    }
-    valor = eval(valor)
-    if (valor >= valorDesde && valor < valorHasta) {
-
-      dibujarArco(state, xPos + arcoRadio, centroY, arcoRadio)
-      if (constante) {
-        ctx.fillStyle = '#A84C4E';
-        ctx.textAlign = "center";
-        ctx.font = '15px Helvetica';
-        ctx.fillText(espacioMiles(String(scale.value), xPos + arcoRadio, centroY - arcoRadio - 10));
-      }
-    }
-  }
-}
-
-/* ------------------------ DIBUJOS ------------------------- */
-
-function dibujarPunto(state, x, y, grande) {
-  const { ctx, scale, chart, font } = state
-  ctx.save()
-  let arcoRadio = grande ? scale.length / 2 : scale.length / 3
-  ctx.fillStyle = font.color
-  ctx.lineWidth = grande ? scale.width * 0.6 : scale.width * 0.5
-  ctx.strokeStyle = chart.axis.color
-  ctx.beginPath()
-  ctx.arc(x, y, arcoRadio, 0, 360 * Math.PI / 180)
-  ctx.fill()
-  ctx.stroke()
-  ctx.closePath()
-  ctx.restore()
-  ctx.save()
-}
-function dibujarRombo(state, x, y, valor, grande) {
-  const { ctx, typeRect, scale, font } = state
-  const { figures, allValues } = state.show
-  const xPos = x, centroY = y
-  ctx.save()
-  let diamondSize = grande ? font.size * 1.4 : font.size * 1.2
-  let diamondW = diamondSize
-  let diamondH = diamondW * 1.3
-  let yDist = scale.length * 1.5
-  if (figures.show !== 'abajo') {
-    yDist -= (scale.length * 1.5 * 2 + diamondH)
-  } else {
-    let incluVal = allValues.show === 'mostrar' && allValues.values.includes((valor).toString())
-    let noIncluVal = allValues.show === 'ocultar' && !allValues.values.includes((valor).toString())
-    if (allValues.show === 'todos' || incluVal || noIncluVal) {
-      yDist += (typeRect === 'mixta' || typeRect === 'mixta decimal' || typeRect === 'mixta centesimal') ? font.size * 2.3 : font.size * 2
-    }
-  }
-  ctx.strokeStyle = scale.color
-  ctx.fillStyle = font.color
-  ctx.fillStyle = '#dbac04'
-  ctx.strokeStyle = '#dbac04'
-  ctx.beginPath()
-  ctx.moveTo(xPos, centroY + yDist)
-  ctx.lineTo(xPos + diamondW / 2, centroY + diamondH / 2 + yDist)
-  ctx.lineTo(xPos, centroY + diamondH + yDist)
-  ctx.lineTo(xPos - diamondW / 2, centroY + diamondH / 2 + yDist)
-  ctx.lineTo(xPos, centroY + yDist)
-  ctx.fill()
-  ctx.stroke()
-  ctx.closePath()
-  ctx.restore()
-  ctx.save()
-}
-function dibujarArco(state, x, y, arcoRadio, mini = false) {
-  const { ctx, font, show } = state
-  let direccion = show.arcs.show === 'derecha' ? true : false
-  if (mini) {
-    direccion = show.miniScale.arcs.show === 'derecha' ? true : false
-  }
-  ctx.save()
-  ctx.beginPath()
-  ctx.strokeStyle = font.color
-  ctx.lineWidth = 2
-  let iniAngulo = 220 * Math.PI / 180
-  let finAngulo = 320 * Math.PI / 180
-  ctx.arc(x, y, arcoRadio, iniAngulo, finAngulo)
-  let xDist, ladoDib
-  ladoDib = -(arcoRadio) * Math.cos(40 * Math.PI / 180)
-  xDist = -arcoRadio * 0.3
-  if (direccion) {
-    xDist *= -1
-    ladoDib *= -1
-  }
-  ctx.moveTo(x + ladoDib, y - (arcoRadio) * Math.sin(40 * Math.PI / 180) - arcoRadio * 0.3)
-  ctx.lineTo(x + ladoDib, y - (arcoRadio) * Math.sin(40 * Math.PI / 180))
-  ctx.lineTo(x + ladoDib - xDist, y - (arcoRadio) * Math.sin(40 * Math.PI / 180))
-  ctx.stroke()
-  ctx.closePath()
-  ctx.restore()
-  ctx.save()
-}
-
-/* ------------------------ NUMEROS ------------------------- */
-function numeroEntero(state, x, y, valor, multSize) {//multsize no se ocupa 
-  const { ctx, font } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'top'
-  ctx.font = font.size + 'px ' + font.family
-  ctx.fillText(espacioMiles(valor), x, y)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroEnteroDecimal(state, x, y, valor, multSize) {
-  const { ctx, font } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'top'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  let unidad, decimal//, centesimal
-  unidad = valor.split('.')[0]
-  if (valor.split('.')[1][0]) {
-    decimal = valor.split('.')[1][0]
-    // if (decimal) {
-    //   centesimal = valor.split('.')[0][1]
-    // }
-  }
-  valor = `${unidad}.${decimal}`
-  ctx.fillText(valor, x, y)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroDecimal(state, x, y, valor, multSize) {
-  const { ctx, font } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'top'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  ctx.fillText(valor, x, y)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroCentesimal(state, x, y, valor, multSize) {
-  const { ctx, font } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'top'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  ctx.fillText(valor, x, y)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroMixto(state, x, y, valor, multSize, index) {
-  const { ctx, font, scale } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  let valorUnidad = Number(valor.split('.')[0])
-  let valorDecimal = Number(valor.split('.')[1][0])
-  let denominador
-  denominador = scale.divisions
-  ctx.textBaseline = 'middle'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  ctx.textAlign = 'right'
-  let enteroTextLength = ctx.measureText(valorUnidad).width
-  let enteroPosX = x - enteroTextLength / 4
-  let centroY = y + font.size * multSize / 2
-  if (valorDecimal > denominador) {
-    ctx.fillText(valorUnidad + 1, x, centroY)
-  } else if (valorDecimal === 0) {
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad, x, centroY)
-    return
-  } else if (valorDecimal === denominador) {
-    let delta = 1
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad + delta, x, centroY)
-    return
-  } else {
-    ctx.fillText(valorUnidad, enteroPosX, centroY)
-  }
-
-  let numberFontSize = Number(font.size * multSize * 0.8)
-  ctx.font = numberFontSize + 'px ' + font.family
-  let denominadorTextLength
-  denominadorTextLength = ctx.measureText(denominador).width
-  ctx.strokeStyle = scale.color
-  ctx.lineWidth = font.size / 8
-  ctx.lineCap = 'round'
-  let deltaYLine = font.size / 16 + 1
-  ctx.beginPath()
-  ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
-  ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
-  ctx.stroke()
-  ctx.closePath()
-  let centroX = x + (denominadorTextLength) / 2
-
-  ctx.textAlign = 'center'
-  //ctx.textBaseline = 'bottom'
-  let deltaYFraccion = numberFontSize / 2
-  if (valorDecimal > denominador) {
-    ctx.fillText(valorDecimal - denominador, centroX, centroY - deltaYFraccion)
-  } else {
-    ctx.fillText(valorDecimal, centroX, centroY - deltaYFraccion)
-  }
-  //ctx.textBaseline = 'top'
-  ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroMixtoDecimal(state, x, y, valor, multSize, index) {
-  const { ctx, font, scale } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  let valorUnidad = Number(valor.split('.')[0])
-  let valorDecimal = Number(valor.split('.')[1][0])
-  let denominador
-  denominador = scale.divisions
-  ctx.textBaseline = 'middle'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  ctx.textAlign = 'right'
-  let enteroTextLength = ctx.measureText(valorUnidad).width
-  let enteroPosX = x - enteroTextLength / 4
-  let centroY = y + font.size * multSize / 2
-  if (valorDecimal > denominador) {
-    ctx.fillText(valorUnidad + 1, x, centroY)
-  } else if (valorDecimal === 0) {
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad, x, centroY)
-    return
-  } else if (valorDecimal === denominador) {
-    let delta = 1
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad + delta, x, centroY)
-    return
-  } else {
-    ctx.fillText(valorUnidad, enteroPosX, centroY)
-  }
-
-  let numberFontSize = Number(font.size * multSize * 0.8)
-  ctx.font = numberFontSize + 'px ' + font.family
-  let denominadorTextLength
-  denominadorTextLength = ctx.measureText(denominador).width
-  ctx.strokeStyle = scale.color
-  ctx.lineWidth = font.size / 8
-  ctx.lineCap = 'round'
-  let deltaYLine = font.size / 16 + 1
-  ctx.beginPath()
-  ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
-  ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
-  ctx.stroke()
-  ctx.closePath()
-  let centroX = x + (denominadorTextLength) / 2
-  let deltaYFraccion = numberFontSize / 2
-  ctx.textAlign = 'center'
-  if (valorDecimal > denominador) {
-    ctx.fillText(valorDecimal - denominador, centroX, centroY - deltaYFraccion)
-  } else {
-    ctx.fillText(valorDecimal, centroX, centroY - deltaYFraccion)
-  }
-  ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
-  ctx.restore()
-  ctx.save()
-}
-
-function numeroMixtoCentesimal(state, x, y, valor, multSize, index) {
-  const { ctx, font, scale } = state
-  ctx.save()
-  ctx.strokeStyle = font.color
-  ctx.fillStyle = font.color
-  let valorUnidad = Number(valor.split('.')[0])
-  let valorDecimal = Number(valor.split('.')[1][0])
-  let valorCentesimal = Number(valor.split('.')[1][1])
-  let numerador = Number(`${valorDecimal}${valorCentesimal}`)
-  let denominador
-  denominador = scale.divisions * 10
-  ctx.textBaseline = 'middle'
-  ctx.font = font.size * multSize + 'px ' + font.family
-  ctx.textAlign = 'right'
-  let enteroTextLength = ctx.measureText(valorUnidad).width
-  let enteroPosX = x - enteroTextLength / 4
-  let centroY = y + font.size * multSize / 2
-  if (numerador > denominador) {
-    ctx.fillText(valorUnidad + 1, x, centroY)
-  } else if (numerador === 0) {
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad, x, centroY)
-    return
-  } else if (numerador === denominador) {
-    let delta = 1
-    ctx.textAlign = 'center'
-    ctx.fillText(valorUnidad + delta, x, centroY)
-    return
-  } else {
-    ctx.fillText(valorUnidad, enteroPosX, centroY)
-  }
-
-  let numberFontSize = Number(font.size * multSize * 0.8)
-  ctx.font = numberFontSize + 'px ' + font.family
-  let denominadorTextLength
-  denominadorTextLength = ctx.measureText(denominador).width
-  ctx.strokeStyle = scale.color
-  ctx.lineWidth = font.size / 8
-  ctx.lineCap = 'round'
-  let deltaYLine = font.size / 16 + 1
-  ctx.beginPath()
-  ctx.moveTo(enteroPosX + 1, centroY - deltaYLine)
-  ctx.lineTo(x + denominadorTextLength + 2, centroY - deltaYLine)
-  ctx.stroke()
-  ctx.closePath()
-  let centroX = x + (denominadorTextLength) / 2
-  let deltaYFraccion = numberFontSize / 2
-  ctx.textAlign = 'center'
-  if (numerador > denominador) {
-    ctx.fillText(numerador - denominador, centroX, centroY - deltaYFraccion)
-  } else {
-    ctx.fillText(numerador, centroX, centroY - deltaYFraccion)
-  }
-  ctx.fillText(denominador, centroX, centroY + deltaYFraccion)
-  ctx.restore()
-  ctx.save()
-}
-//fin reta numerica
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
   var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
   var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
   //× => ALT+0215
-  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
+  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos, _titulo,
     _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
     _altoImgMilesPisoUno, _altoImgCentPisoUno, _altoImgDecPisoUno, _altoImgUniPisoUno,//termino datos piso uno
     _tipoPisoDos, _repeticionPictoricaPisoDos, _mostrarNumeroCompletoDos, _numeroCompletoPisoDos, _umilPisoDos, _centenaPisoDos, _decenaPisoDos, _unidadPisoDos, _altoTextoPisoDos,
     _altoImgMilesPisoDos, _altoImgCentPisoDos, _altoImgDecPisoDos, _altoImgUniPisoDos,//termino datos piso dos
     _tipoPisoTres, _repeticionPictoricaPisoTres, _mostrarNumeroCompletoTres, _numeroCompletoPisoTres, _umilPisoTres, _centenaPisoTres, _decenaPisoTres, _unidadPisoTres, _altoTextoPisoTres,
     _altoImgMilesPisoTres, _altoImgCentPisoTres, _altoImgDecPisoTres, _altoImgUniPisoTres,//termino datos piso tres
-    _dibujaValorPosicional1, _mostrarSignoMasVP1,_altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
-    _dibujaValorPosicional2, _mostrarSignoMasVP2,_altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
+    _dibujaValorPosicional1, _mostrarSignoMasVP1, _altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
+    _dibujaValorPosicional2, _mostrarSignoMasVP2, _altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
     _dibujaTextoResultado, _altoTextoResultado, _resultado,
-    _tipoUmilVP1,_tipoCentenaVP1,_tipoDecenaVP1,_tipoUnidadVP1,_altoumilvp1,_altocentenavp1,_altodecenavp1,_altounidadvp1,
-    _tipoUmilVP2,_tipoCentenaVP2,_tipoDecenaVP2,_tipoUnidadVP2,_altoumilvp2,_altocentenavp2,_altodecenavp2,_altounidadvp2 } = params;
+    _tipoUmilVP1, _tipoCentenaVP1, _tipoDecenaVP1, _tipoUnidadVP1, _altoumilvp1, _altocentenavp1, _altodecenavp1, _altounidadvp1,
+    _tipoUmilVP2, _tipoCentenaVP2, _tipoDecenaVP2, _tipoUnidadVP2, _altoumilvp2, _altocentenavp2, _altodecenavp2, _altounidadvp2 } = params;
 
   var vars = vt ? variables : versions;
   try {
@@ -2081,18 +2061,22 @@ function tablaPosicional(config) {
       mostrarSignoMas: _mostrarSignoMasVP1,
       altoTexto: Number(_altoTextoValorPosicional1), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _tipoUmilVP1 === 'texto' ? _umilVP1 : { 
-          src: _umilVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altoumilvp1) },
-        centena: _tipoCentenaVP1 === 'texto' ? _centenaVP1 : { 
-          src: _centenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altocentenavp1) },
-        decena: _tipoDecenaVP1 === 'texto' ? _decenaVP1 : { 
-          src: _decenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altodecenavp1) },
-        unidad: _tipoUnidadVP1 === 'texto' ? _unidadVP1 : { 
-          src: _unidadVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altounidadvp1) }
+        umil: _tipoUmilVP1 === 'texto' ? _umilVP1 : {
+          src: _umilVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altoumilvp1)
+        },
+        centena: _tipoCentenaVP1 === 'texto' ? _centenaVP1 : {
+          src: _centenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altocentenavp1)
+        },
+        decena: _tipoDecenaVP1 === 'texto' ? _decenaVP1 : {
+          src: _decenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altodecenavp1)
+        },
+        unidad: _tipoUnidadVP1 === 'texto' ? _unidadVP1 : {
+          src: _unidadVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altounidadvp1)
+        }
       }
     }
   }
@@ -2103,18 +2087,23 @@ function tablaPosicional(config) {
       mostrarSignoMas: _mostrarSignoMasVP2,
       altoTexto: Number(_altoTextoValorPosicional2), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _tipoUmilVP2 === 'texto' ? _umilVP2 : { src: 
-          _umilVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altoumilvp2) },
-        centena: _tipoCentenaVP2 === 'texto' ? _centenaVP2 : { 
-          src: _centenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altocentenavp2) },
-        decena: _tipoDecenaVP2 === 'texto' ? _decenaVP2 : { 
-          src: _decenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altodecenavp2) },
-        unidad: _tipoUnidadVP2 === 'texto' ? _unidadVP2 : { 
-          src: _unidadVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
-          alto: Number(_altounidadvp2) }
+        umil: _tipoUmilVP2 === 'texto' ? _umilVP2 : {
+          src:
+            _umilVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altoumilvp2)
+        },
+        centena: _tipoCentenaVP2 === 'texto' ? _centenaVP2 : {
+          src: _centenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altocentenavp2)
+        },
+        decena: _tipoDecenaVP2 === 'texto' ? _decenaVP2 : {
+          src: _decenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altodecenavp2)
+        },
+        unidad: _tipoUnidadVP2 === 'texto' ? _unidadVP2 : {
+          src: _unidadVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+          alto: Number(_altounidadvp2)
+        }
       }
     }
   }
@@ -2129,7 +2118,7 @@ function tablaPosicional(config) {
   console.log(datosEjercicio);
   let recursos = cargaRecursos();
   var ctx, yStart = 0;
-  if(_titulo !== '') {
+  if (_titulo !== '') {
     container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
     container.parentElement.classList.add('text-center');
     var titulo = document.createElement('span');
@@ -2477,21 +2466,21 @@ function tablaPosicional(config) {
       var xFlecha = centroSeccion - (imgFlechaAbajo.width / 2);
       ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
       //texto
-      if(typeof numerosValorPosicional[i - 1] === 'string') {
+      if (typeof numerosValorPosicional[i - 1] === 'string') {
         yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
         ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
       } else {
-        await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
-          var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
-          var xImagenVp = centroSeccion-anchoImgVp/2;
+        await cargaImagen(numerosValorPosicional[i - 1].src).then(function (img) {
+          var anchoImgVp = numerosValorPosicional[i - 1].alto * img.width / img.height;
+          var xImagenVp = centroSeccion - anchoImgVp / 2;
           var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
-          ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i-1].alto);
-        }).catch(function(error){
+          ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i - 1].alto);
+        }).catch(function (error) {
           console.log(error);
         });
       }
       //singo mas
-      if(valorPosicional.mostrarSignoMas === 'si') {
+      if (valorPosicional.mostrarSignoMas === 'si') {
         if (i + 1 !== diviciones + 1) {
           var xMas = centroSeparacion - (imgSignoMas.width / 2);
           var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
@@ -2747,19 +2736,19 @@ function repeticionPic(config) {
     src: '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
-  let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,_agruparRepeticiones,
-    _imagen1,_altoImagen1,_formaRepeticion1,_repeticiones1,_separacion1,_separaciony1,_repBiY1,
-    _imagen2,_altoImagen2,_formaRepeticion2,_repeticiones2,_separacion2,_separaciony2,_repBiY2,
-    _imagen3,_altoImagen3,_formaRepeticion3,_repeticiones3,_separacion3,_separaciony3,_repBiY3,
-    _imagen4,_altoImagen4,_formaRepeticion4,_repeticiones4,_separacion4,_separaciony4,_repBiY4,
-    _imagen5,_altoImagen5,_formaRepeticion5,_repeticiones5,_separacion5,_separaciony5,_repBiY5,
-    _imagen6,_altoImagen6,_formaRepeticion6,_repeticiones6,_separacion6,_separaciony6,_repBiY6,
-    _imagen7,_altoImagen7,_formaRepeticion7,_repeticiones7,_separacion7,_separaciony7,_repBiY7,
-    _imagen8,_altoImagen8,_formaRepeticion8,_repeticiones8,_separacion8,_separaciony8,_repBiY8,
-    _imagen9,_altoImagen9,_formaRepeticion9,_repeticiones9,_separacion9,_separaciony9,_repBiY9,
-    _imagen10,_altoImagen10,_formaRepeticion10,_repeticiones10,_separacion10,_separaciony10,_repBiY10,
-    _imagen11,_altoImagen11,_formaRepeticion11,_repeticiones11,_separacion11,_separaciony11,_repBiY11,
-    _imagen12,_altoImagen12,_formaRepeticion12,_repeticiones12,_separacion12,_separaciony12,_repBiY12, } = params;
+  let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius, _agruparRepeticiones,
+    _imagen1, _altoImagen1, _formaRepeticion1, _repeticiones1, _separacion1, _separaciony1, _repBiY1,
+    _imagen2, _altoImagen2, _formaRepeticion2, _repeticiones2, _separacion2, _separaciony2, _repBiY2,
+    _imagen3, _altoImagen3, _formaRepeticion3, _repeticiones3, _separacion3, _separaciony3, _repBiY3,
+    _imagen4, _altoImagen4, _formaRepeticion4, _repeticiones4, _separacion4, _separaciony4, _repBiY4,
+    _imagen5, _altoImagen5, _formaRepeticion5, _repeticiones5, _separacion5, _separaciony5, _repBiY5,
+    _imagen6, _altoImagen6, _formaRepeticion6, _repeticiones6, _separacion6, _separaciony6, _repBiY6,
+    _imagen7, _altoImagen7, _formaRepeticion7, _repeticiones7, _separacion7, _separaciony7, _repBiY7,
+    _imagen8, _altoImagen8, _formaRepeticion8, _repeticiones8, _separacion8, _separaciony8, _repBiY8,
+    _imagen9, _altoImagen9, _formaRepeticion9, _repeticiones9, _separacion9, _separaciony9, _repBiY9,
+    _imagen10, _altoImagen10, _formaRepeticion10, _repeticiones10, _separacion10, _separaciony10, _repBiY10,
+    _imagen11, _altoImagen11, _formaRepeticion11, _repeticiones11, _separacion11, _separaciony11, _repBiY11,
+    _imagen12, _altoImagen12, _formaRepeticion12, _repeticiones12, _separacion12, _separaciony12, _repBiY12, } = params;
 
   var vars = vt ? variables : versions;
   try {
@@ -2837,7 +2826,7 @@ function repeticionPic(config) {
         posicicionesInicio.push(xStart);
       }
     }
-    if(_agruparRepeticiones!=="") {
+    if (_agruparRepeticiones !== "") {
       dibujaAgrupacionDePictoricos();
     }
     console.log(posicicionesInicio);
@@ -2855,15 +2844,15 @@ function repeticionPic(config) {
 
   function dibujaAgrupacionDePictoricos() {
     let agrupaciones = _agruparRepeticiones.split(';');
-    let yRect = _separacion/2;
+    let yRect = _separacion / 2;
     let heightRect = container.height - _separacion;
-    agrupaciones.forEach(function(agrupacion) {
+    agrupaciones.forEach(function (agrupacion) {
       let puntos = agrupacion.split('-');
       let puntoInicio = Number(puntos[0]);
       let puntoFinal = Number(puntos[1]);
       let color = puntos[2] ? puntos[2] : getColorDeEje(ejeF);
-      let xRect = posicicionesInicio[puntoInicio-1]-(_separacion/2);
-      let widthRect = posicicionesInicio[puntoFinal]-(_separacion/2)-xRect;
+      let xRect = posicicionesInicio[puntoInicio - 1] - (_separacion / 2);
+      let widthRect = posicicionesInicio[puntoFinal] - (_separacion / 2) - xRect;
       ctx.save();
       ctx.strokeStyle = color;
       ctx.strokeRect(xRect, yRect, widthRect, heightRect);
@@ -2872,7 +2861,7 @@ function repeticionPic(config) {
   }
 
   function getColorDeEje(eje) {
-    switch(eje){
+    switch (eje) {
       case '00':
         return '#BC2424';
       case '01':
@@ -3039,15 +3028,15 @@ function repeticionPic(config) {
     console.log(xStart);
     const { imagen, altoImagen, repeticiones, separacion, ejeY } = repeticion;
     var anchoImagen = imagen.width * altoImagen / imagen.height;
-    var altoTotal = altoImagen * ejeY + separacion * (ejeY+1);
-    var yStart = container.height/2-altoTotal/2;
-    for(var i = 0, fila = 1, columna, xImagen, yImagen; i < repeticiones; i++) {
-      columna = Math.floor(i/ejeY);
-      yImagen = yStart + altoImagen*(fila-1) + separacion*fila;
-      xImagen = xStart + anchoImagen*columna + separacion*columna;
+    var altoTotal = altoImagen * ejeY + separacion * (ejeY + 1);
+    var yStart = container.height / 2 - altoTotal / 2;
+    for (var i = 0, fila = 1, columna, xImagen, yImagen; i < repeticiones; i++) {
+      columna = Math.floor(i / ejeY);
+      yImagen = yStart + altoImagen * (fila - 1) + separacion * fila;
+      xImagen = xStart + anchoImagen * columna + separacion * columna;
       console.log(xImagen);
       ctx.drawImage(imagen, xImagen, yImagen, anchoImagen, altoImagen);
-      if(fila === ejeY) {
+      if (fila === ejeY) {
         fila = 1;
       } else {
         fila++;
@@ -3266,10 +3255,10 @@ function repeticionBidimensional(config) {
   let altoCanvas = Number(_altoCanvas)
   container.height = altoCanvas;
   container.width = anchoCanvas;
-  
+
   var ctx = container.getContext('2d');
   var vars = vt ? variables : versions;
-  
+
   datos = datos.map(dato => {//arreglo, imagen, texto
     switch (dato.tipo) {
       case 'arreglo':
@@ -3352,9 +3341,9 @@ function repeticionBidimensional(config) {
         var anchoTotalRep = anchoImagen * repX + separacion * (repX + 1); //ancho total de la repeticion
         var xStart = x + sepElem + separacion;
         var yStart = yStartRepeticiones;
-        if(opcion !== '') {
-          if(tipoOpcion === 'texto') {
-            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion/2), 'center', altoOpcion, colorTextoOpcion);
+        if (opcion !== '') {
+          if (tipoOpcion === 'texto') {
+            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion / 2), 'center', altoOpcion, colorTextoOpcion);
           } else {
             let imgOpcionSrc = opcion.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
             let img = new Image();
@@ -3366,7 +3355,7 @@ function repeticionBidimensional(config) {
               ctx.drawImage(img, xImg, yImg, anchoOpcion, altoOpcion);
             };
             let centro = xStart + (anchoTotalRep / 2) - separacion;
-            let yImg = container.height - altoOpciones - (altoOpcion/2)*.85;
+            let yImg = container.height - altoOpciones - (altoOpcion / 2) * .85;
             img.onload = () => dibujaImagen(img, centro, yImg, altoOpcion);
           }
         }
@@ -3412,18 +3401,18 @@ function multiplicacionPic(config) {
   container.width = Number(_anchoCanvas);
   let separacionImg = Number(_sepImgs);
   var ctx = container.getContext('2d');
-  let repgrupos = _mostrarValores === 'si' ? Number(_repeticiones)+1 : Number(_repeticiones);
+  let repgrupos = _mostrarValores === 'si' ? Number(_repeticiones) + 1 : Number(_repeticiones);
   let separacionElem = Number(_separacion);
 
   var vars = vt ? variables : versions;
 
-  datos = datos.map(function(dato, index) {
+  datos = datos.map(function (dato, index) {
     switch (dato.formaRepeticion) {
       case 'izqDer':
         return {
           formaRepeticion: dato.formaRepeticion,
           src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
-          alto:  Number(dato.alto),
+          alto: Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           numeroX: Number(dato.numeroX),
           tipoValorFinal: dato.tipoValorFinal,
@@ -3435,7 +3424,7 @@ function multiplicacionPic(config) {
         return {
           formaRepeticion: dato.formaRepeticion,
           src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
-          alto:  Number(dato.alto),
+          alto: Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           srcVert: String(regex(dato.srcVert, vars, vt)),
           tipoValorFinal: dato.tipoValorFinal,
@@ -3447,7 +3436,7 @@ function multiplicacionPic(config) {
         return {
           formaRepeticion: dato.formaRepeticion,
           src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
-          alto:  Number(dato.alto),
+          alto: Number(dato.alto),
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           separacionX: Number(dato.separacionX),
           separacionY: Number(dato.separacionY),
@@ -3462,33 +3451,33 @@ function multiplicacionPic(config) {
     }
   });
 
-  Promise.all(datos.map(x => cargaImagen(x.src))).then(function(imagenes){
+  Promise.all(datos.map(x => cargaImagen(x.src))).then(function (imagenes) {
     let altoTotal = separacionElem, anchoElementos = [];
-    for(let [index, imagen] of imagenes.entries()) {
+    for (let [index, imagen] of imagenes.entries()) {
       const { formaRepeticion, alto, cantidad } = datos[index];
       datos[index].imagen = imagen;
       datos[index].ancho = imagen.width * alto / imagen.height;
-      switch(formaRepeticion) {
+      switch (formaRepeticion) {
         case 'izqDer':
           const { numeroX } = datos[index];
-          let filas = cantidad % numeroX === 0 ? cantidad / numeroX : Math.floor(cantidad / numeroX)+1;
-          datos[index].altoRepeticion = alto * filas + separacionImg * (filas+1) + separacionElem;
-          datos[index].anchoRepeticion = datos[index].ancho * numeroX + separacionImg * (numeroX+1) + separacionElem * 2;
+          let filas = cantidad % numeroX === 0 ? cantidad / numeroX : Math.floor(cantidad / numeroX) + 1;
+          datos[index].altoRepeticion = alto * filas + separacionImg * (filas + 1) + separacionElem;
+          datos[index].anchoRepeticion = datos[index].ancho * numeroX + separacionImg * (numeroX + 1) + separacionElem * 2;
           altoTotal += datos[index].altoRepeticion;
           break;
         case 'horVert':
-          datos[index].altoRepeticion = cantidad <= 4 ? 
-            alto + separacionImg * 2 + separacionElem : 
+          datos[index].altoRepeticion = cantidad <= 4 ?
+            alto + separacionImg * 2 + separacionElem :
             alto + separacionImg * 2 + (cantidad - 4) * datos[index].ancho + (cantidad - 4) * separacionImg + separacionElem;
-          datos[index].anchoRepeticion = cantidad > 4 ? 
+          datos[index].anchoRepeticion = cantidad > 4 ?
             datos[index].alto + separacionElem * 2 :
-            datos[index].ancho * cantidad + separacionImg * (cantidad+1) + separacionElem * 2;
+            datos[index].ancho * cantidad + separacionImg * (cantidad + 1) + separacionElem * 2;
           altoTotal += datos[index].altoRepeticion;
           break;
         case 'diagonal':
           const { separacionX, separacionY } = datos[index];
-          datos[index].altoRepeticion = alto + separacionY * (cantidad-1) + separacionImg * 2 + separacionElem;
-          datos[index].anchoRepeticion = datos[index].ancho + separacionX * (cantidad-1) + separacionImg * 2 + separacionElem * 2;
+          datos[index].altoRepeticion = alto + separacionY * (cantidad - 1) + separacionImg * 2 + separacionElem;
+          datos[index].anchoRepeticion = datos[index].ancho + separacionX * (cantidad - 1) + separacionImg * 2 + separacionElem * 2;
           altoTotal += datos[index].altoRepeticion;
           break;
         default:
@@ -3498,95 +3487,95 @@ function multiplicacionPic(config) {
       anchoElementos.push(datos[index].anchoRepeticion);
     }
     return { repeticiones: datos, altoTotal, anchoMaximo: Math.max(...anchoElementos) };
-  }).then(async function(datos){
+  }).then(async function (datos) {
     const { repeticiones, altoTotal, anchoMaximo } = datos;
     let anchoSeccion = container.width / repgrupos;
-    for(var i = 0, centro; i < repgrupos; i++) {
-      let yStart = container.height/2 - altoTotal/2;
-      centro = (i+1) * anchoSeccion - (anchoSeccion/2);
-      if(_mostrarValores === 'si' && (i+1) === repgrupos) {
+    for (var i = 0, centro; i < repgrupos; i++) {
+      let yStart = container.height / 2 - altoTotal / 2;
+      centro = (i + 1) * anchoSeccion - (anchoSeccion / 2);
+      if (_mostrarValores === 'si' && (i + 1) === repgrupos) {
         let centroY = yStart;
         let imgFlechas = await cargaImagen('../../../../imagenes_front/simbolos/igual.svg');
-        for(let repeticion of repeticiones) {
-          centroY += repeticion.altoRepeticion/2;
-          let xImg = centro - (anchoSeccion/2);
-          let yImg = centroY - (50/2);
+        for (let repeticion of repeticiones) {
+          centroY += repeticion.altoRepeticion / 2;
+          let xImg = centro - (anchoSeccion / 2);
+          let yImg = centroY - (50 / 2);
           ctx.drawImage(imgFlechas, xImg, yImg, 50, 50);
-          switch(repeticion.tipoValorFinal) {
+          switch (repeticion.tipoValorFinal) {
             case 'texto':
-              ctx.textAlign = "center"; 
-              ctx.font = repeticion.altoValorFinal+"px Helvetica"
-              let yTexto = centroY + repeticion.altoValorFinal/2;
+              ctx.textAlign = "center";
+              ctx.font = repeticion.altoValorFinal + "px Helvetica"
+              let yTexto = centroY + repeticion.altoValorFinal / 2;
               ctx.fillText(repeticion.valorFinal, centro, yTexto);
               break;
             case 'imagen':
               let imagenValor = await cargaImagen(repeticion.valorFinal);
               let anchoImagen = imagenValor.width * repeticion.altoValorFinal / imagenValor.height;
-              xImg = centro - (anchoImagen/2);
-              yImg = centroY - (repeticion.altoValorFinal/2);
+              xImg = centro - (anchoImagen / 2);
+              yImg = centroY - (repeticion.altoValorFinal / 2);
               ctx.drawImage(imagenValor, xImg, yImg, anchoImagen, repeticion.altoValorFinal);
               break;
-            default: 
+            default:
               console.log('degault');
               break;
           }
-          centroY += repeticion.altoRepeticion/2;
+          centroY += repeticion.altoRepeticion / 2;
         }
       } else {
-        if(_separar === 'si') {
-          let xRect = centro - (anchoMaximo/2)+separacionElem;
+        if (_separar === 'si') {
+          let xRect = centro - (anchoMaximo / 2) + separacionElem;
           let yRect = yStart + separacionElem;
           ctx.strokeStyle = "#808080";
-          ctx.strokeRect(xRect, yRect, anchoMaximo-(separacionElem*2), altoTotal-(separacionElem*2));
+          ctx.strokeRect(xRect, yRect, anchoMaximo - (separacionElem * 2), altoTotal - (separacionElem * 2));
         }
-        for(let repeticion of repeticiones) {
-          let xStart = centro - repeticion.anchoRepeticion/2;
-          switch(repeticion.formaRepeticion) {
+        for (let repeticion of repeticiones) {
+          let xStart = centro - repeticion.anchoRepeticion / 2;
+          switch (repeticion.formaRepeticion) {
             case 'izqDer':
               let fila = 0, columna = 0;
-              for(let r = 0, xImg, yImg; r < repeticion.cantidad; r++) {
-                xImg = xStart + separacionElem + separacionImg * (fila+1) + repeticion.ancho * fila;
-                yImg = yStart + separacionElem + separacionImg * (columna+1) + repeticion.alto * columna;
+              for (let r = 0, xImg, yImg; r < repeticion.cantidad; r++) {
+                xImg = xStart + separacionElem + separacionImg * (fila + 1) + repeticion.ancho * fila;
+                yImg = yStart + separacionElem + separacionImg * (columna + 1) + repeticion.alto * columna;
                 ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
-                if(fila+1 === repeticion.numeroX) {
+                if (fila + 1 === repeticion.numeroX) {
                   fila = 0;
                   columna++;
                 } else {
                   fila++;
                 }
-                if(r+1 === repeticion.cantidad) {
-                  let filas = repeticion.cantidad % repeticion.numeroX === 0 ? repeticion.cantidad / repeticion.numeroX : Math.floor(repeticion.cantidad / repeticion.numeroX)+1;
-                  yStart += repeticion.alto * filas + separacionImg * (filas+1) + separacionElem;
+                if (r + 1 === repeticion.cantidad) {
+                  let filas = repeticion.cantidad % repeticion.numeroX === 0 ? repeticion.cantidad / repeticion.numeroX : Math.floor(repeticion.cantidad / repeticion.numeroX) + 1;
+                  yStart += repeticion.alto * filas + separacionImg * (filas + 1) + separacionElem;
                 }
               }
               break;
             case 'horVert':
               let limite = 4;
               let imagen = await cargaImagen(repeticion.srcVert);
-              for(let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
-                if(hv < limite) {
-                  xImg = xStart + separacionElem + separacionImg * (hv+1) + repeticion.ancho * hv;
+              for (let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
+                if (hv < limite) {
+                  xImg = xStart + separacionElem + separacionImg * (hv + 1) + repeticion.ancho * hv;
                   yImg = yStart + separacionElem + separacionImg;
                   ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
                 } else {
                   xImg = xStart + separacionElem;
-                  yImg = yStart + separacionElem + repeticion.alto + separacionImg * (hv-limite+2) + repeticion.ancho * (hv-limite);
+                  yImg = yStart + separacionElem + repeticion.alto + separacionImg * (hv - limite + 2) + repeticion.ancho * (hv - limite);
                   ctx.drawImage(imagen, xImg, yImg, repeticion.alto, repeticion.ancho);
                 }
-                if(hv+1 === repeticion.cantidad) {
-                  yStart += repeticion.cantidad <= 4 ? 
-                    repeticion.alto + separacionImg * 2 + separacionElem : 
+                if (hv + 1 === repeticion.cantidad) {
+                  yStart += repeticion.cantidad <= 4 ?
+                    repeticion.alto + separacionImg * 2 + separacionElem :
                     repeticion.alto + separacionImg * 2 + (repeticion.cantidad - 4) * repeticion.ancho + (repeticion.cantidad - 4) * separacionImg + separacionElem;
                 }
               }
               break;
             case 'diagonal':
-              for(let d = 0, xImg, yImg; d < repeticion.cantidad; d++) {
+              for (let d = 0, xImg, yImg; d < repeticion.cantidad; d++) {
                 xImg = xStart + separacionElem + separacionImg + repeticion.separacionX * d;
                 yImg = yStart + separacionElem + separacionImg + repeticion.separacionY * d;
                 ctx.drawImage(repeticion.imagen, xImg, yImg, repeticion.ancho, repeticion.alto);
-                if(d+1 === repeticion.cantidad) {
-                  yStart += repeticion.alto + repeticion.separacionY * (repeticion.cantidad-1) + separacionImg * 2 + separacionElem;
+                if (d + 1 === repeticion.cantidad) {
+                  yStart += repeticion.alto + repeticion.separacionY * (repeticion.cantidad - 1) + separacionImg * 2 + separacionElem;
                 }
               }
               break;
@@ -3594,10 +3583,10 @@ function multiplicacionPic(config) {
               console.log('degault');
               break;
           }
-        }    
+        }
       }
     }
-  }).catch(function(error) {
+  }).catch(function (error) {
     console.log(error);
   });
 }

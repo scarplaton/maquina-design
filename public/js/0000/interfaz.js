@@ -290,7 +290,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
 		} else {
-			$('section.contenido').find('input.inputTexto-incorrecto[type=text]').val('');
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
