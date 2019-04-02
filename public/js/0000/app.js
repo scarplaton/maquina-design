@@ -3495,18 +3495,29 @@ function multiplicacionPic(config) {
       centro = (i + 1) * anchoSeccion - (anchoSeccion / 2);
       if (_mostrarValores === 'si' && (i + 1) === repgrupos) {
         let centroY = yStart;
-        let imgFlechas = await cargaImagen('../../../../imagenes_front/simbolos/igual.svg');
+        ctx.save();//dibuja llave de agrupacion de pictoriocos
+        ctx.beginPath();
+        ctx.arc(centro-(anchoMaximo/2), yStart+separacionImg+separacionElem+20, 20, 1.5*Math.PI, 0, false);
+        ctx.lineTo(centro-(anchoMaximo/2)+20, yStart+(altoTotal/2)-20);
+        ctx.arc(centro-(anchoMaximo/2)+40, yStart+(altoTotal/2)-20, 20, Math.PI, .5*Math.PI, true)
+        ctx.arc(centro-(anchoMaximo/2)+40, yStart+(altoTotal/2)+20, 20, 1.5*Math.PI, Math.PI, true)
+        ctx.lineTo(centro-(anchoMaximo/2)+20, yStart+altoTotal-40);
+        ctx.arc(centro-(anchoMaximo/2), yStart+altoTotal-separacionImg-separacionElem-20, 20, 0, .5*Math.PI, false);
+        ctx.strokeStyle = "#808080";
+        ctx.stroke();
+        ctx.restore();//fin llave de agrupacion de pictoriocos
         for (let repeticion of repeticiones) {
           centroY += repeticion.altoRepeticion / 2;
-          let xImg = centro - (anchoSeccion / 2);
-          let yImg = centroY - (50 / 2);
-          ctx.drawImage(imgFlechas, xImg, yImg, 50, 50);
+          let xImg, yImg;
           switch (repeticion.tipoValorFinal) {
             case 'texto':
+              ctx.save();
               ctx.textAlign = "center";
               ctx.font = repeticion.altoValorFinal + "px Helvetica"
+              ctx.fillStyle = repeticion.colorValorFinal;
               let yTexto = centroY + repeticion.altoValorFinal / 2;
               ctx.fillText(repeticion.valorFinal, centro, yTexto);
+              ctx.restore();
               break;
             case 'imagen':
               let imagenValor = await cargaImagen(repeticion.valorFinal);
