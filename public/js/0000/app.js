@@ -128,7 +128,8 @@ const FUNCIONES = [
       { id: 'Valor Posicional', action: valorPosicional },
       { id: 'Repetición Pictóricos', action: repeticionPic },
       { id: 'Repeticion Bidimensional', action: repeticionBidimensional },
-      { id: 'Multiplicacion Pictoricos', action: multiplicacionPic }
+      { id: 'Multiplicacion Pictoricos', action: multiplicacionPic },
+      { id: 'Abaco', action:abaco }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -3598,6 +3599,112 @@ function multiplicacionPic(config) {
       }
     }
   }).catch(function (error) {
+    console.log(error);
+  });
+}
+
+function abaco(config) {
+  const { container, params, variables, versions, vt } = config;
+  const { datos, _altoCanvas, _anchoCanvas } = params;
+  let srcImagenAbaco = "../../../../imagenes_front/abaco/Abaco.svg";
+  let srcImagenFicha = "../../../../imagenes_front/abaco/Ficha_Abaco.svg";
+  let altoCanvas = Number(_altoCanvas), anchoCanvas = Number(_anchoCanvas);
+  container.height = altoCanvas;
+  container.width = anchoCanvas;
+  let ctx = container.getContext('2d');
+
+  var vars = vt ? variables : versions;
+
+  let datosfn = datos.map(obj => {
+    switch(obj.tipo) {
+      case 'abaco':
+        return {
+          tipo: obj.tipo,
+          altoImg: Number(obj.altoImg),
+          unidad: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[2] : regex(obj.unidad, vars, vt),
+          decena: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[1] : regex(obj.decena, vars, vt),
+          centena: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[0] : regex(obj.centena, vars, vt),
+          numComp: regex(obj.numComp, vars, vt),
+          esAgrupado: obj.esAgrupado === 'si' ? true : false,
+          grupos: obj.grupos,
+          numerosArriba: obj.numerosArriba === 'si' ? true : false,
+          agruparCanje: obj.agruparCanje === 'si' ? true : false
+        };
+      case 'imagen':
+        return {
+          tipo: obj.tipo,
+          src: obj.src,
+          altoImg: obj.altoImg,
+          texto1: regex(obj.texto1, vars, vt),
+          texto2: regex(obj.texto2, vars, vt),
+          texto3: regex(obj.texto3, vars, vt),
+          texto4: regex(obj.texto4, vars, vt),
+          yTexto1: Number(obj.yTexto1),
+          yTexto2: Number(obj.yTexto2),
+          yTexto3: Number(obj.yTexto3),
+          yTexto4: Number(obj.yTexto4),
+          altoTexto: Number(obj.altoTexto),
+          colorTexto: obj.colorTexto
+        };
+      case 'texto':
+        return {
+          tipo: obj.tipo,
+          texto1: regex(obj.texto1, vars, vt),
+          texto2: regex(obj.texto2, vars, vt),
+          texto3: regex(obj.texto3, vars, vt),
+          texto4: regex(obj.texto4, vars, vt),
+          yTexto1: Number(obj.yTexto1),
+          yTexto2: Number(obj.yTexto2),
+          yTexto3: Number(obj.yTexto3),
+          yTexto4: Number(obj.yTexto4),
+          altoTexto: Number(obj.altoTexto),
+          colorTexto: obj.colorTexto
+        };
+    }
+  });
+
+  Promise.all([
+    cargaImagen(srcImagenAbaco),
+    cargaImagen(srcImagenFicha),
+    ...datosfn.map(x => x.tipo === 'imagen' ? cargaImagen(x.src) : null)
+  ]).then(function(imagenes){
+    console.log(datosfn);
+    let anchoDivicion = _anchoCanvas / datos.length;
+    let imagenAbaco = imagenes[0];
+    let imagenFicha = imagenes[1];
+    for(let i=2; i<imagenes.length; i++) {
+      console.log(datos[i-2]);
+      if(datosfn[i-2].tipo === 'imagen') {
+        datosfn[i-2].imagen = imagenes[i];
+      }
+    }
+    
+    for(let j = 0, centroX; j < datosfn.length; j++) {
+      centroX = (j * anchoDivicion) + (anchoDivicion / 2);
+      
+      switch(datosfn[j].tipo) {
+        case 'abaco':
+          let anchoImg = imagenAbaco.width * datosfn[j].altoImg / imagenAbaco.height;
+          
+          let xImg = centroX - (anchoImg/2);
+          let yImg = altoCanvas/2 - datosfn[j].altoImg/2;
+          console.log(xImg, yImg, anchoImg, datosfn[j].altoImg);
+
+          ctx.drawImage(imagenAbaco, xImg, yImg, anchoImg, datosfn[j].altoImg);
+          break;
+        case 'imagen':
+          //let { imagen,altoImg,texto1,texto2,texto3,texto4,yTexto1,yTexto2,yTexto3,yTexto4,altoTexto,colorTexto } = datos[i];
+          
+          break;
+        case 'texto':
+          //let { texto1,texto2,texto3,texto4,yTexto1,yTexto2,yTexto3,yTexto4,altoTexto,colorTexto } = datos[i];
+          break;
+        default:
+          console.log('default');
+          break;
+      }
+    }
+  }).catch(function(error){
     console.log(error);
   });
 }
