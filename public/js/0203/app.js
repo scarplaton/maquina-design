@@ -2955,7 +2955,6 @@ function repeticionBidimensional(config) {
   const { container, params, variables, versions, vt } = config;
   console.log(params);
   const { _separacion, _altoOpciones, _anchoCanvas, _altoCanvas, errFrec, feed } = params;
-  console.log('err => ', errFrec, 'feed => ', feed);
   let { datos } = params;
   let sepElem = Number(_separacion);
   let altoOpciones = Number(_altoOpciones);
@@ -2963,12 +2962,12 @@ function repeticionBidimensional(config) {
   let altoCanvas = Number(_altoCanvas)
   container.height = altoCanvas;
   container.width = anchoCanvas;
-  
+
   var ctx = container.getContext('2d');
   var vars = vt ? variables : versions;
-  
+
   datos = datos.map(dato => {//arreglo, imagen, texto
-    switch(dato.tipo) {
+    switch (dato.tipo) {
       case 'arreglo':
         return {
           src: String(regex(dato.src, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
@@ -2980,6 +2979,9 @@ function repeticionBidimensional(config) {
           altoImagen: Number(dato.altoImagen),
           anchoImagen: Number(dato.anchoImagen),
           separacion: Number(dato.separacion),
+          altoOpcion: Number(dato.altoOpcion),
+          tipoOpcion: dato.tipoOpcion,
+          colorTextoOpcion: dato.colorTextoOpcion,
           tipo: dato.tipo
         };
       case 'imagen':
@@ -3041,13 +3043,29 @@ function repeticionBidimensional(config) {
       } else if (tipo === 'arreglo') {
         let altoTextoOpcion = (errFrec || feed) ? 45 : 30;
         let altoTextoLaterales = (errFrec || feed) ? 40 : 18;
-        const { repX, repY, textoEjeX, textoEjeY, opcion } = datos[i];
+        const { repX, repY, textoEjeX, textoEjeY, opcion, altoOpcion, tipoOpcion, colorTextoOpcion } = datos[i];
         var altoTotalRep = altoImagen * repY + separacion * (repY + 1); //alto total de la repeticion
         var anchoTotalRep = anchoImagen * repX + separacion * (repX + 1); //ancho total de la repeticion
         var xStart = x + sepElem + separacion;
         var yStart = yStartRepeticiones;
-
-        opcion !== '' && mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones, 'center', altoTextoOpcion, '#000000');
+        if (opcion !== '') {
+          if (tipoOpcion === 'texto') {
+            mostrarTexto(opcion, xStart + (anchoTotalRep / 2) - separacion, container.height - altoOpciones + (altoOpcion / 2), 'center', altoOpcion, colorTextoOpcion);
+          } else {
+            let imgOpcionSrc = opcion.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            let img = new Image();
+            img.src = imgOpcionSrc;
+            const dibujaImagen = (img, centro, yImg, altoOpcion) => {
+              console.log(img, centro, yImg, altoOpcion);
+              let anchoOpcion = img.width * altoOpcion / img.height;
+              let xImg = centro - (anchoOpcion / 2);
+              ctx.drawImage(img, xImg, yImg, anchoOpcion, altoOpcion);
+            };
+            let centro = xStart + (anchoTotalRep / 2) - separacion;
+            let yImg = container.height - altoOpciones - (altoOpcion / 2) * .85;
+            img.onload = () => dibujaImagen(img, centro, yImg, altoOpcion);
+          }
+        }
         textoEjeX !== '' && mostrarTexto(textoEjeX, xStart + (anchoTotalRep / 2) - separacion, yStart, 'center', altoTextoLaterales, '#000000');
         textoEjeY !== '' && mostrarTexto(textoEjeY, xStart - separacion, yStart + (altoTotalRep / 2), 'right', altoTextoLaterales, '#000000');
         for (var filas = 0, yImagen; filas < repY; filas++) {
@@ -3074,7 +3092,7 @@ function repeticionBidimensional(config) {
     function mostrarTexto(texto, x, y, aling, fontsize, color) {
       ctx.font = `${fontsize}px opensansregularfont`;
       ctx.textAlign = aling;
-      ctx.fillStyle = color;
+      ctx.fillStyle = color ? color : '#000000';
       ctx.fillText(texto, x, y);
     }
   }).catch(function (error) {

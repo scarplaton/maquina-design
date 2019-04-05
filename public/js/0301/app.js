@@ -362,152 +362,187 @@ function insertarInput(config) {
 	}
 }
 function insertarTabla(config) {
-	const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal } = params, vars = vt ? variables : versions
-	if (container) {
-		let r = `<table class="tabla ${cssclases}"><tbody>`;
-		for(var row = 0; row < table.length; row++) {
-			if(lineasHorizontales === '') {
-				r += '<tr>';
-			} else {
-				r += String(lineasHorizontales).split(',').includes(String(row+1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
-			}
-			for(var col = 0; col < table[row].length; col++) {
-				r+= '<td>';
-				switch(table[row][col].type) {
-					case 'text':
-						var tachado = table[row][col].value.tachar === 'si' ? 
-							//`style="background: linear-gradient(to left top, transparent 47.75%, #ff0000, #ff0000, transparent 52.25%);"` : '';
-							`class="strikethrough"` : '';
-						if(encabezado==='arriba' && row === 0) {
-							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
-						} else if(encabezado==='izquierda' && col === 0) {
-							r+= `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
-						} else {
-							r+= `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
-						}
-						break;
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
+  var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
+  function debeMarcarse(tr, td) {
+    var encontrado = false;
+    marcasEnTd.forEach(function (marca) {
+      if (marca[0] == (tr + 1) && marca[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
+  if (container) {
+    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
+    if (anchoCols) {
+      var anchoColumnas = String(anchoCols).split(',');
+      anchoColumnas.forEach(function (ancho) {
+        r += `<col width="${ancho}%"/>`;
+      });
+    }
+    for (var row = 0; row < table.length; row++) {
+      if (lineasHorizontales === '') {
+        r += '<tr>';
+      } else {
+        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
+      }
+      for (var col = 0; col < table[row].length; col++) {
+        if (destacado === '') {
+          r += '<td>';
+        } else {
+          if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
+        switch (table[row][col].type) {
+          case 'text':
+            var tachado = table[row][col].value.tachar === 'si' ?
+              `class="strikethrough"` : '';
+            if (encabezado === 'arriba' && row === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else if (encabezado === 'izquierda' && col === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else {
+              r += `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
+            }
+            break;
           case 'image':
-            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
-						r+= `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						break;
-					case 'input':
-						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						switch(tipoInput) {
-							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						break;
-					case 'text-input':
-						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var p = regex(text, vars, vt);
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						var input;
-						switch(tipoInput) {
-							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						r+= `<p>${p.replace('{input}', input)}</p>`;
-						break;
-					case 'text-image':
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+            break;
+          case 'input':
+            var { tipoInput, maxLength, placeholder, anchoInput,
+              error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            switch (tipoInput) {
+              case 'text':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            break;
+          case 'text-input':
+            var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var p = regex(text, vars, vt);
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            var input;
+            switch (tipoInput) {
+              case 'text':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            r += `<p>${p.replace('{input}', input)}</p>`;
+            break;
+          case 'text-image':
             var p = regex(table[row][col].value.text, vars, vt);
-            var relativePath =  table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
-						var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						
-						p = `<p>${p.replace('{imagen}', img)}</p>`
-						r += regexFunctions(p)
-						break;
-				}
-				r+= '</td>';
-			}
-			r += '</tr>'
-		}
-		r += '</tbody></table>';
-		container.classList.add("table-responsive");
-		container.innerHTML = r;
-	}
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+
+            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
+            r += regexFunctions(p)
+            break;
+        }
+        r += '</td>';
+      }
+      r += '</tr>'
+    }
+    r += '</tbody></table>';
+    container.classList.add("table-responsive");
+    container.innerHTML = r;
+    if (tituloTabla !== '') {
+      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+      var titulo = document.createElement('span');
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
+      titulo.style.fontSize = '18px';
+      titulo.style.fontWeight = '600';
+      titulo.style.color = 'black';
+      container.parentNode.insertBefore(titulo, container);
+    }
+  }
 }
 
 function rectNumFn(config) {
