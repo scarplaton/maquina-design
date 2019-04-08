@@ -3621,10 +3621,10 @@ function abaco(config) {
         return {
           tipo: obj.tipo,
           altoImg: Number(obj.altoImg),
-          unidad: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[2] : regex(obj.unidad, vars, vt),
-          decena: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[1] : regex(obj.decena, vars, vt),
-          centena: obj.numComp !== '' ? regex(obj.numComp, vars, vt)[0] : regex(obj.centena, vars, vt),
-          numComp: regex(obj.numComp, vars, vt),
+          unidad: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[2]) : Number(regex(obj.unidad, vars, vt))+8,
+          decena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[1]) : Number(regex(obj.decena, vars, vt))+9,
+          centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt))+7 ,
+          numComp: Number(regex(obj.numComp, vars, vt)),
           esAgrupado: obj.esAgrupado === 'si' ? true : false,
           grupos: obj.grupos,
           numerosArriba: obj.numerosArriba === 'si' ? true : false,
@@ -3666,38 +3666,104 @@ function abaco(config) {
   Promise.all([
     cargaImagen(srcImagenAbaco),
     cargaImagen(srcImagenFicha),
+    cargaFuente('larkneuethin', '../../../../fonts/LarkeNeueThin.ttf'),
     ...datosfn.map(x => x.tipo === 'imagen' ? cargaImagen(x.src) : null)
   ]).then(function(imagenes){
-    console.log(datosfn);
     let anchoDivicion = _anchoCanvas / datos.length;
     let imagenAbaco = imagenes[0];
     let imagenFicha = imagenes[1];
-    for(let i=2; i<imagenes.length; i++) {
-      console.log(datos[i-2]);
-      if(datosfn[i-2].tipo === 'imagen') {
-        datosfn[i-2].imagen = imagenes[i];
+    for(let i=3; i<imagenes.length; i++) {
+      if(datosfn[i-3].tipo === 'imagen') {
+        datosfn[i-3].imagen = imagenes[i];
       }
     }
     
-    for(let j = 0, centroX; j < datosfn.length; j++) {
+    for(let j = 0, centroX, anchoImg, xImg, yImg; j < datosfn.length; j++) {
       centroX = (j * anchoDivicion) + (anchoDivicion / 2);
-      
       switch(datosfn[j].tipo) {
         case 'abaco':
-          let anchoImg = imagenAbaco.width * datosfn[j].altoImg / imagenAbaco.height;
-          
-          let xImg = centroX - (anchoImg/2);
-          let yImg = altoCanvas/2 - datosfn[j].altoImg/2;
-          console.log(xImg, yImg, anchoImg, datosfn[j].altoImg);
-
+          anchoImg = imagenAbaco.width * datosfn[j].altoImg / imagenAbaco.height;
+          xImg = centroX - (anchoImg/2);
+          yImg = altoCanvas/2 - datosfn[j].altoImg/2;
           ctx.drawImage(imagenAbaco, xImg, yImg, anchoImg, datosfn[j].altoImg);
+          
+          let xCentena = centroX - anchoImg/2 + anchoImg*.135;
+          let xDecena = centroX;
+          let xUnidad = centroX + anchoImg/2 - anchoImg*.135;
+
+          if(datosfn[j].numerosArriba) {
+            let yTextoArriba =  altoCanvas/2 - datosfn[j].altoImg/2 - 5;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.font = '15px larkneuethin';
+            ctx.fillStyle = '#000000';
+            ctx.fillText(datosfn[j].unidad, xUnidad, yTextoArriba);
+            ctx.fillText(datosfn[j].decena, xDecena, yTextoArriba);
+            ctx.fillText(datosfn[j].centena, xCentena, yTextoArriba);
+            ctx.restore();
+          } else {
+            let yInicio = altoCanvas/2 + datosfn[j].altoImg/2 - datosfn[j].altoImg*.125;
+            let altoImgFicha = datosfn[j].altoImg * .05;
+            let anchoImgFicha = imagenFicha.width * altoImgFicha / imagenFicha.height;
+            if(datosfn[j].esAgrupado) {
+              console.log('es agrupado... nada que hacer');
+            } else {
+              for(let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
+                yUnidad = yInicio - altoImgFicha - altoImgFicha*u;
+                ctx.drawImage(imagenFicha, xUnidad-anchoImgFicha/2, yUnidad, anchoImgFicha, altoImgFicha);
+              }
+              for(let d = 0, yDecena; d < datosfn[j].decena; d++) {
+                yDecena = yInicio - altoImgFicha - altoImgFicha*d;
+                ctx.drawImage(imagenFicha, xDecena-anchoImgFicha/2, yDecena, anchoImgFicha, altoImgFicha);
+              }
+              for(let c = 0, yCentena; c < datosfn[j].centena; c++) {
+                yCentena = yInicio - altoImgFicha - altoImgFicha*c;
+                ctx.drawImage(imagenFicha, xCentena-anchoImgFicha/2, yCentena, anchoImgFicha, altoImgFicha);
+              }
+            }
+          }
           break;
         case 'imagen':
-          //let { imagen,altoImg,texto1,texto2,texto3,texto4,yTexto1,yTexto2,yTexto3,yTexto4,altoTexto,colorTexto } = datos[i];
-          
+          anchoImg = datosfn[j].imagen.width * datosfn[j].altoImg / datosfn[j].imagen.height;
+          xImg = centroX - (anchoImg/2);
+          yImg = altoCanvas/2 - datosfn[j].altoImg/2;
+          ctx.drawImage(datosfn[j].imagen, xImg, yImg, anchoImg, datosfn[j].altoImg);
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.font = '15px larkneuethin';
+          ctx.fillStyle = '#000000';
+          if(datosfn[j].texto1) {
+            ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
+          }
+          if(datosfn[j].texto2) {
+            ctx.fillText(datosfn[j].texto2, centroX, datosfn[j].yTexto2);
+          }
+          if(datosfn[j].texto3) {
+            ctx.fillText(datosfn[j].texto3, centroX, datosfn[j].yTexto3);
+          }
+          if(datosfn[j].texto4) {
+            ctx.fillText(datosfn[j].texto4, centroX, datosfn[j].yTexto4);
+          }
+          ctx.save();
           break;
         case 'texto':
-          //let { texto1,texto2,texto3,texto4,yTexto1,yTexto2,yTexto3,yTexto4,altoTexto,colorTexto } = datos[i];
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.font = '15px larkneuethin';
+          ctx.fillStyle = '#000';
+          if(datosfn[j].texto1) {
+            ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
+          }
+          if(datosfn[j].texto2) {
+            ctx.fillText(datosfn[j].texto2, centroX, datosfn[j].yTexto2);
+          }
+          if(datosfn[j].texto3) {
+            ctx.fillText(datosfn[j].texto3, centroX, datosfn[j].yTexto3);
+          }
+          if(datosfn[j].texto4) {
+            ctx.fillText(datosfn[j].texto4, centroX, datosfn[j].yTexto4);
+          }
+          ctx.save();
           break;
         default:
           console.log('default');
