@@ -67,7 +67,16 @@ function cargaFuente(nombre, src) {
     var font = new FontFace(nombre, `url('${src}')`, {});
     font.load().then(function (loadedFont) {
       document.fonts.add(loadedFont);
-      resolve(nombre);
+      loadedFont.load();
+      loadedFont.loaded.then(()=>{
+        console.log('fuente ', nombre, ' cargada');
+      }).catch(error => {
+        console.log('errror al cargar imagen => ', error);
+      });
+      document.fonts.ready.then((fontFaceSet) => {
+        console.log(fontFaceSet.size, 'FontFaces loaded.');
+        resolve(nombre);
+      })
     }).catch(function (error) {
       reject(error);
     });
@@ -577,9 +586,10 @@ function insertarTabla(config) {
   }
 }
 
-function rectNumFn(config) {
+async function rectNumFn(config) {
   const { container, params, variables, versions, vt } = config
-
+  let rectFontType = 'OpenSansRegular';
+  await cargaFuente(rectFontType, '../../../../fonts/OpenSans-Regular-webfont.woff');
   const {
     // General
     rectType, decimalScale, height, width, /*background,*/
@@ -998,7 +1008,7 @@ function rectNumFn(config) {
       ctx.fillStyle = mainTitle.color
       ctx.textAlign = mainTitle.alignX
       ctx.textBaseline = mainTitle.alignY
-      ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + mainTitle.font.family
+      ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + rectFontType;
       ctx.fillText(mainTitle.title, 0, 0)
       ctx.restore()
       ctx.save()
@@ -1242,7 +1252,7 @@ function rectNumFn(config) {
     ctx.stroke();
 
     ctx.textAlign = "center";
-    ctx.font = `${alto}px ${font.family}`;
+    ctx.font = `${alto}px ${rectFontType}`;
     ctx.fillStyle = font.color;
     ctx.fillText(texto, xMitad, yTramoFin - 5);
 
@@ -1627,7 +1637,7 @@ function rectNumFn(config) {
         if (constante) {
           ctx.fillStyle = '#A84C4E';
           ctx.textAlign = "center";
-          ctx.font = '15px Helvetica';
+          ctx.font = '15px ' + rectFontType;
           ctx.fillText(scale.value, xPos + arcoRadio, centroY - arcoRadio - 10);
         }
       }
@@ -1722,8 +1732,9 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size + 'px ' + font.family
+    ctx.font = font.size + 'px ' + rectFontType
     ctx.fillText(espacioMiles(valor), x, y)
+    console.log('texto escrito');
     ctx.restore()
     ctx.save()
   }
@@ -1735,7 +1746,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     let unidad, decimal//, centesimal
     unidad = valor.split('.')[0]
     if (valor.split('.')[1][0]) {
@@ -1757,7 +1768,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.fillText(valor, x, y)
     ctx.restore()
     ctx.save()
@@ -1770,7 +1781,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.fillText(valor, x, y)
     ctx.restore()
     ctx.save()
@@ -1786,7 +1797,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1807,7 +1818,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color
@@ -1845,7 +1856,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1866,7 +1877,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color
@@ -1903,7 +1914,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions * 10
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1924,7 +1935,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color

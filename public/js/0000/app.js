@@ -67,7 +67,16 @@ function cargaFuente(nombre, src) {
     var font = new FontFace(nombre, `url('${src}')`, {});
     font.load().then(function (loadedFont) {
       document.fonts.add(loadedFont);
-      resolve(nombre);
+      loadedFont.load();
+      loadedFont.loaded.then(()=>{
+        console.log('fuente ', nombre, ' cargada');
+      }).catch(error => {
+        console.log('errror al cargar imagen => ', error);
+      });
+      document.fonts.ready.then((fontFaceSet) => {
+        console.log(fontFaceSet.size, 'FontFaces loaded.');
+        resolve(nombre);
+      })
     }).catch(function (error) {
       reject(error);
     });
@@ -579,9 +588,10 @@ function insertarTabla(config) {
   }
 }
 //inicio rect num
-function rectNumFn(config) {
+async function rectNumFn(config) {
   const { container, params, variables, versions, vt } = config
-
+  let rectFontType = 'OpenSansRegular';
+  await cargaFuente(rectFontType, '../../../../fonts/OpenSans-Regular-webfont.woff');
   const {
     // General
     rectType, decimalScale, height, width, /*background,*/
@@ -1000,7 +1010,7 @@ function rectNumFn(config) {
       ctx.fillStyle = mainTitle.color
       ctx.textAlign = mainTitle.alignX
       ctx.textBaseline = mainTitle.alignY
-      ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + mainTitle.font.family
+      ctx.font = mainTitle.font.weight + ' ' + mainTitle.font.size + 'px ' + rectFontType;
       ctx.fillText(mainTitle.title, 0, 0)
       ctx.restore()
       ctx.save()
@@ -1244,7 +1254,7 @@ function rectNumFn(config) {
     ctx.stroke();
 
     ctx.textAlign = "center";
-    ctx.font = `${alto}px ${font.family}`;
+    ctx.font = `${alto}px ${rectFontType}`;
     ctx.fillStyle = font.color;
     ctx.fillText(texto, xMitad, yTramoFin - 5);
 
@@ -1629,7 +1639,7 @@ function rectNumFn(config) {
         if (constante) {
           ctx.fillStyle = '#A84C4E';
           ctx.textAlign = "center";
-          ctx.font = '15px Helvetica';
+          ctx.font = '15px ' + rectFontType;
           ctx.fillText(scale.value, xPos + arcoRadio, centroY - arcoRadio - 10);
         }
       }
@@ -1724,8 +1734,9 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size + 'px ' + font.family
+    ctx.font = font.size + 'px ' + rectFontType
     ctx.fillText(espacioMiles(valor), x, y)
+    console.log('texto escrito');
     ctx.restore()
     ctx.save()
   }
@@ -1737,7 +1748,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     let unidad, decimal//, centesimal
     unidad = valor.split('.')[0]
     if (valor.split('.')[1][0]) {
@@ -1759,7 +1770,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.fillText(valor, x, y)
     ctx.restore()
     ctx.save()
@@ -1772,7 +1783,7 @@ function rectNumFn(config) {
     ctx.fillStyle = font.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'top'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.fillText(valor, x, y)
     ctx.restore()
     ctx.save()
@@ -1788,7 +1799,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1809,7 +1820,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color
@@ -1847,7 +1858,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1868,7 +1879,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color
@@ -1905,7 +1916,7 @@ function rectNumFn(config) {
     let denominador
     denominador = scale.divisions * 10
     ctx.textBaseline = 'middle'
-    ctx.font = font.size * multSize + 'px ' + font.family
+    ctx.font = font.size * multSize + 'px ' + rectFontType
     ctx.textAlign = 'right'
     let enteroTextLength = ctx.measureText(valorUnidad).width
     let enteroPosX = x - enteroTextLength / 4
@@ -1926,7 +1937,7 @@ function rectNumFn(config) {
     }
 
     let numberFontSize = Number(font.size * multSize * 0.8)
-    ctx.font = numberFontSize + 'px ' + font.family
+    ctx.font = numberFontSize + 'px ' + rectFontType
     let denominadorTextLength
     denominadorTextLength = ctx.measureText(denominador).width
     ctx.strokeStyle = scale.color
@@ -2735,7 +2746,10 @@ function repeticionPic(config) {
   }, {
     name: 'signo suma',
     src: '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
-  }];
+  }, {
+    name: 'signo distinto',
+    src: '../../../../imagenes_front/simbolos/Numeracion_Distinto.svg'
+ }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius, _agruparRepeticiones,
     _imagen1, _altoImagen1, _formaRepeticion1, _repeticiones1, _separacion1, _separaciony1, _repBiY1,
@@ -3621,12 +3635,13 @@ function abaco(config) {
         return {
           tipo: obj.tipo,
           altoImg: Number(obj.altoImg),
-          unidad: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[2]) : Number(regex(obj.unidad, vars, vt))+8,
-          decena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[1]) : Number(regex(obj.decena, vars, vt))+9,
-          centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt))+7 ,
+          unidad: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[2]) : Number(regex(obj.unidad, vars, vt)),
+          decena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[1]) : Number(regex(obj.decena, vars, vt)),
+          centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt)),
           numComp: Number(regex(obj.numComp, vars, vt)),
           esAgrupado: obj.esAgrupado === 'si' ? true : false,
-          grupos: obj.grupos,
+          grupos: Number(obj.grupos),
+          agrupar: obj.agrupar === 'si' ? true : false,
           numerosArriba: obj.numerosArriba === 'si' ? true : false,
           agruparCanje: obj.agruparCanje === 'si' ? true : false
         };
@@ -3666,7 +3681,7 @@ function abaco(config) {
   Promise.all([
     cargaImagen(srcImagenAbaco),
     cargaImagen(srcImagenFicha),
-    cargaFuente('larkneuethin', '../../../../fonts/LarkeNeueThin.ttf'),
+    cargaFuente('larkneuethin', 'https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/LarkeNeueThin.ttf'),
     ...datosfn.map(x => x.tipo === 'imagen' ? cargaImagen(x.src) : null)
   ]).then(function(imagenes){
     let anchoDivicion = _anchoCanvas / datos.length;
@@ -3695,7 +3710,7 @@ function abaco(config) {
             let yTextoArriba =  altoCanvas/2 - datosfn[j].altoImg/2 - 5;
             ctx.save();
             ctx.textAlign = 'center';
-            ctx.font = '15px larkneuethin';
+            ctx.font = `15px larkneuethin`;
             ctx.fillStyle = '#000000';
             ctx.fillText(datosfn[j].unidad, xUnidad, yTextoArriba);
             ctx.fillText(datosfn[j].decena, xDecena, yTextoArriba);
@@ -3706,7 +3721,119 @@ function abaco(config) {
             let altoImgFicha = datosfn[j].altoImg * .05;
             let anchoImgFicha = imagenFicha.width * altoImgFicha / imagenFicha.height;
             if(datosfn[j].esAgrupado) {
-              console.log('es agrupado... nada que hacer');
+              let espacioFichas = datosfn[j].altoImg - datosfn[j].altoImg*.125
+              let altoDiviciones = espacioFichas / datosfn[j].grupos;
+              let contadorUnidades = 0, contadorDecenas = 0, yDecimaUnidad = 0, yDecimaCentena = 0;
+              for(let grupo = 0, centroGrupo, yStartUnidades, yStartDecenas, yStartCentenas; grupo < datosfn[j].grupos; grupo++) {
+                //centroGrupo = yInicio - altoDiviciones - altoDiviciones*grupo + altoDiviciones/2;
+                centroGrupo = yImg + altoDiviciones*grupo + altoDiviciones/2;
+                yStartUnidades = centroGrupo - (datosfn[j].unidad * altoImgFicha)/2;
+                yStartDecenas = centroGrupo - (datosfn[j].decena * altoImgFicha)/2;
+                yStartCentenas = centroGrupo - (datosfn[j].centena * altoImgFicha)/2
+
+                for(let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
+                  yUnidad = yStartUnidades + altoImgFicha*u;
+                  ctx.drawImage(imagenFicha, xUnidad-anchoImgFicha/2, yUnidad, anchoImgFicha, altoImgFicha);
+                  contadorUnidades++;
+                  if(contadorUnidades === 10) {
+                    yDecimaUnidad = yUnidad+altoImgFicha;
+                  }
+                }
+                for(let d = 0, yDecena; d < datosfn[j].decena; d++) {
+                  yDecena = yStartDecenas + altoImgFicha*d;
+                  ctx.drawImage(imagenFicha, xDecena-anchoImgFicha/2, yDecena, anchoImgFicha, altoImgFicha);
+                  contadorDecenas++;
+                  if(contadorDecenas === 10) {
+                    yDecimaCentena = yDecena+altoImgFicha;
+                  }
+                }
+                for(let c = 0, yCentena; c < datosfn[j].centena; c++) {
+                  yCentena = yStartCentenas + altoImgFicha*c;
+                  ctx.drawImage(imagenFicha, xCentena-anchoImgFicha/2, yCentena, anchoImgFicha, altoImgFicha);
+                }
+                
+                if(datosfn[j].agrupar) {
+                  let maxHeight = Math.max((datosfn[j].unidad * altoImgFicha),(datosfn[j].decena * altoImgFicha),(datosfn[j].centena * altoImgFicha))
+                  ctx.save();
+                  ctx.strokeStyle = "#ff0000";
+                  ctx.beginPath();
+                  ctx.rect(xImg+5, centroGrupo-maxHeight/2, anchoImg-10, maxHeight);
+                  ctx.stroke();
+                  ctx.restore();
+                }
+              }
+              if(datosfn[j].agruparCanje) {
+                if(datosfn[j].unidad * datosfn[j].grupos >= 10) { 
+                  let yInicio = yImg + (altoDiviciones/2) - datosfn[j].unidad*(altoImgFicha/2);
+                  let yFin = yDecimaUnidad - yInicio;
+                  
+                  ctx.save();
+                  ctx.strokeStyle = "#ff0000";
+                  ctx.beginPath();
+                  ctx.rect(xUnidad-anchoImgFicha/2-5, yInicio, anchoImgFicha+10, yFin);
+                  ctx.stroke();
+
+                  //dibuja arco por sobre el abaco
+                  let rArc = (xUnidad-xDecena)/2;
+                  let xArc = xDecena + rArc;
+                  let yArc = yImg+rArc*0.8;
+                  ctx.beginPath();
+                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.stroke();
+                  //dibuja linea hacia arriba de la flecha
+                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
+                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                  let xPuntoInicial = xArc - difX;
+                  let yPuntoInicial = yArc - difY;
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.stroke();
+                  //dibuja linea hacia la derecha de la flecha
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.stroke();
+                  ctx.restore();
+
+                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                }
+                if(datosfn[j].unidad * datosfn[j].grupos >= 10) { 
+                  let yInicio = yImg + (altoDiviciones/2) - datosfn[j].decena*(altoImgFicha/2);
+                  let yFin = yDecimaCentena - yInicio;
+                  
+                  ctx.save();
+                  ctx.strokeStyle = "#ff0000";
+                  ctx.beginPath();
+                  ctx.rect(xDecena-anchoImgFicha/2-5, yInicio, anchoImgFicha+10, yFin);
+                  ctx.stroke();
+
+                  let rArc = (xDecena-xCentena)/2;
+                  let xArc = xCentena + rArc;
+                  let yArc = yImg+rArc*0.8;
+                  ctx.beginPath();
+                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.stroke();
+                  
+                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
+                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                  let xPuntoInicial = xArc - difX;
+                  let yPuntoInicial = yArc - difY;
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.stroke();
+                  ctx.restore();
+
+                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                }                
+              }
+              
             } else {
               for(let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
                 yUnidad = yInicio - altoImgFicha - altoImgFicha*u;
@@ -3720,6 +3847,75 @@ function abaco(config) {
                 yCentena = yInicio - altoImgFicha - altoImgFicha*c;
                 ctx.drawImage(imagenFicha, xCentena-anchoImgFicha/2, yCentena, anchoImgFicha, altoImgFicha);
               }
+              if(datosfn[j].agruparCanje) {
+                let yUltimaUnidad = yInicio - datosfn[j].unidad*altoImgFicha;
+                let yUltimaDecena = yInicio - datosfn[j].decena*altoImgFicha;
+                if(datosfn[j].unidad >= 10) {
+                  //dibuja rectangulo de agrupacion de 10
+                  ctx.save();
+                  ctx.strokeStyle = "#ff0000";
+                  ctx.beginPath();
+                  ctx.rect(xUnidad-anchoImgFicha/2-5, yUltimaUnidad, anchoImgFicha+10, altoImgFicha*10);
+                  ctx.stroke();
+                  //dibuja arco por sobre el abaco
+                  let rArc = (xUnidad-xDecena)/2;
+                  let xArc = xDecena + rArc;
+                  let yArc = yImg+rArc*0.8;
+                  ctx.beginPath();
+                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.stroke();
+                  //dibuja linea hacia arriba de la flecha
+                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
+                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                  let xPuntoInicial = xArc - difX;
+                  let yPuntoInicial = yArc - difY;
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.stroke();
+                  //dibuja linea hacia la derecha de la flecha
+                  ctx.beginPath();
+                  ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.stroke();
+                  ctx.restore();
+
+                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                }
+                if(datosfn[j].decena >= 10) {
+                  if(datosfn[j].unidad >= 10) {
+                    ctx.save();
+                    ctx.strokeStyle = "#ff0000";
+                    ctx.beginPath();
+                    ctx.rect(xDecena-anchoImgFicha/2-5, yUltimaDecena, anchoImgFicha+10, altoImgFicha*10);
+                    ctx.stroke();
+  
+                    let rArc = (xDecena-xCentena)/2;
+                    let xArc = xCentena + rArc;
+                    let yArc = yImg+rArc*0.8;
+                    ctx.beginPath();
+                    ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                    ctx.stroke();
+                    
+                    let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
+                    let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                    let xPuntoInicial = xArc - difX;
+                    let yPuntoInicial = yArc - difY;
+                    ctx.beginPath();
+                    ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                    ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                    ctx.stroke();
+  
+                    ctx.beginPath();
+                    ctx.moveTo(xPuntoInicial, yPuntoInicial);
+                    ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                    ctx.stroke();
+                    ctx.restore();
+  
+                    ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                  }
+                }
+              }
             }
           }
           break;
@@ -3730,8 +3926,8 @@ function abaco(config) {
           ctx.drawImage(datosfn[j].imagen, xImg, yImg, anchoImg, datosfn[j].altoImg);
           ctx.save();
           ctx.textAlign = 'center';
-          ctx.font = '15px larkneuethin';
-          ctx.fillStyle = '#000000';
+          ctx.font = `${datosfn[j].altoTexto}px larkneuethin`;
+          ctx.fillStyle = datosfn[j].colorTexto;
           if(datosfn[j].texto1) {
             ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
           }
@@ -3749,8 +3945,8 @@ function abaco(config) {
         case 'texto':
           ctx.save();
           ctx.textAlign = 'center';
-          ctx.font = '15px larkneuethin';
-          ctx.fillStyle = '#000';
+          ctx.font = `${datosfn[j].altoTexto}px larkneuethin`;
+          ctx.fillStyle = datosfn[j].colorTexto;
           if(datosfn[j].texto1) {
             ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
           }
