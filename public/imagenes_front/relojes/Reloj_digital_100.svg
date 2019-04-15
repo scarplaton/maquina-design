@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="380" viewBox="0 0 450 380">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #00aaad;
+        stroke: #00ceb5;
+        stroke-width: 5px;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-7 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2, .cls-3, .cls-4, .cls-6 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        stroke: #00aaad;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 4px;
+      }
+
+      .cls-3, .cls-4, .cls-7 {
+        stroke: #f59487;
+      }
+
+      .cls-4 {
+        stroke-width: 2px;
+      }
+
+      .cls-5 {
+        fill: #f59487;
+      }
+
+      .cls-7 {
+        fill: none;
+        stroke-width: 1px;
+      }
+    </style>
+  </defs>
+  <title>Reloj_digital_100</title>
+  <g id="Analogo">
+    <g>
+      <g>
+        <g id="Reloj">
+          <rect class="cls-1" x="3.06" y="43.06" width="443.88" height="272.77" rx="36.02" ry="36.02"/>
+          <rect class="cls-2" x="16.33" y="57.38" width="416.16" height="197.35" rx="30.53" ry="30.53"/>
+          <polyline class="cls-1" points="103.37 316.13 81.31 337 376.44 337 351.4 316.13"/>
+        </g>
+        <g id="Alarma">
+          <circle class="cls-3" cx="225.11" cy="281.55" r="15.5"/>
+          <line class="cls-4" x1="225.11" y1="270.82" x2="225.11" y2="283.94"/>
+          <line class="cls-4" x1="225.06" y1="283.44" x2="232.26" y2="286.92"/>
+          <path class="cls-4" d="M214.56,267.46l-.23.11a9.08,9.08,0,0,0-4.76,5.47l-.09.28a1.2,1.2,0,0,1-1.68.12h0a1.2,1.2,0,0,1-.12-1.68l0-.12a9.08,9.08,0,0,1,4.67-5.55l.37-.18a1.2,1.2,0,0,1,1.68-.12h0A1.2,1.2,0,0,1,214.56,267.46Z"/>
+          <path class="cls-4" d="M240.62,273.35l-.07-.25a9.08,9.08,0,0,0-4.59-5.61l-.26-.13a1.2,1.2,0,0,1,.16-1.68h0a1.2,1.2,0,0,1,1.68.16l.11.05a9.08,9.08,0,0,1,4.69,5.54l.12.4a1.2,1.2,0,0,1-.16,1.68h0A1.2,1.2,0,0,1,240.62,273.35Z"/>
+        </g>
+        <g id="Clima">
+          <circle class="cls-5" cx="389.26" cy="280.66" r="8.05"/>
+          <rect class="cls-5" x="388.36" y="261.88" width="1.19" height="10.14" rx="0.36" ry="0.36"/>
+          <rect class="cls-5" x="398.5" y="265.45" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(308.18 -202.97) rotate(45)"/>
+          <rect class="cls-5" x="402.37" y="276.48" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(684.52 -121.42) rotate(90)"/>
+          <rect class="cls-5" x="388.36" y="289.3" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(777.92 588.74) rotate(180)"/>
+          <rect class="cls-5" x="397.9" y="285.73" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(885.9 214.63) rotate(135)"/>
+          <rect class="cls-5" x="378.23" y="266.05" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(-80.75 347.28) rotate(-45)"/>
+          <rect class="cls-5" x="374.95" y="276.48" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(93.99 657.1) rotate(-90)"/>
+          <rect class="cls-5" x="378.82" y="285.13" width="1.19" height="10.14" rx="0.36" ry="0.36" transform="translate(442.51 763.69) rotate(-135)"/>
+        </g>
+        <g id="Sonido">
+          <ellipse class="cls-5" cx="65.67" cy="282.15" rx="8.68" ry="16.69"/>
+          <path class="cls-5" d="M54.32,276.14H61a0,0,0,0,1,0,0v13.36a0,0,0,0,1,0,0H54.32a4,4,0,0,1-4-4v-5.34A4,4,0,0,1,54.32,276.14Z"/>
+          <ellipse class="cls-6" cx="69.01" cy="281.99" rx="4.01" ry="12.84"/>
+          <circle class="cls-5" cx="65" cy="282.82" r="2.67"/>
+          <path class="cls-7" d="M83.4,265.45h0a32,32,0,0,1,.14,33.16l-.14.23"/>
+          <path class="cls-7" d="M79.23,269h0c6.23,7.8,6.28,17.62.14,25.46l-.14.17"/>
+          <path class="cls-7" d="M77.44,276.19h0a10.43,10.43,0,0,1,.14,13l-.14.09"/>
+        </g>
+      </g>
+      <text></text>
+    </g>
+  </g>
+</svg>

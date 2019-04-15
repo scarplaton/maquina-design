@@ -111,11 +111,9 @@ const FUNCIONES = [
 		{ id:'Insertar Texto', action:insertarTexto }, 
 		{ id:'Insertar Input', action:insertarInput },
 		{ id:'Insertar Tabla', action:insertarTabla },
-		{ id:'Insertar Input Fraccion', action:insertarInputFraccion },
 		{ id:'Insertar Imagen', action:insertarImagen }
 	]},{ name:'Datos', tag:'datos', fns:[ 
 	]},{ name:'Numeracion', tag:'numeracion', fns:[
-		{ id:'Recta 2', action:recta },
 		{ id:'Tabla Posicional', action:tablaPosicional },
 		{ id:'Valor Posicional', action:valorPosicional },
 		{ id:'Repetición Pictóricos', action:repeticionPic }
@@ -155,66 +153,79 @@ function print() { //Dibujar ejercicios
 }
 
 function dibujaHtml() {
-	// INICIO ENUNCIADO
-	var contenidoDiv = document.getElementById('enunciado');
-	var contenidoHtml = '';
-	contenidoBody['e'].forEach((m, i) => {
-		contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
-		} else {
-			contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
-		}
-		contenidoHtml += '</div>'
-	});
-	contenidoDiv.innerHTML = contenidoHtml;
-	// INICIO RESPUESTA
-	var respuestaDiv = document.getElementById('respuesta');
-	var respuestaHtml = '';
-	var canvasSeleccionables = contenidoBody['r'].filter(function(item) {
-		return item.tag != 'general'
-	});
-	if(canvasSeleccionables.length === 3 || canvasSeleccionables.length === 4) {
-		canvasSeleccionables = shuffle(canvasSeleccionables, 5);
-		canvasSeleccionables.forEach(function(item, index){
-			var dataContent = { 
-				feedback: regex(item.params.feed, versionBody.vars, false),
-				respuesta: `Opción ${index+1}`, 
-				errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-			};
-			respuestaHtml += `<div class="col-md-5 col-sm-6 col-xs-12">
-	<div class="radio-div" onclick="seleccionaImagenRadio(event)">
-		<canvas class="img-fluid" id="container-r${item.position}"></canvas>
-		<input id="rbtn${index+1}" name="answer" value="Opcion ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-		<label for="rbtn${index+1}">Opción ${index+1}</label>
-	</div>
-</div>`;
-		});
-	} else {
-		contenidoBody['r'].forEach(function(item, index){
-			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
-			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid" id="container-${'r'}${index}" style="background:${item.params.background}"></canvas>`
-			} else {
-				respuestaHtml += `<div id="container-${'r'}${index}" class="general"></div>`
-			}
-			respuestaHtml += '</div>'
-		});
-	}
-	respuestaDiv.innerHTML = respuestaHtml;
-	// INICIO GLOSA
-	var glosaDiv = document.getElementById('glosa');
-	var glosaHtml = '';
-	contenidoBody['g'].forEach((m, i) => {
-		glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
-		} else {
-			glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
-		}
-		glosaHtml += '</div>'
-	});
-	glosaDiv.innerHTML = glosaHtml;
+  // INICIO ENUNCIADO
+  var contenidoDiv = document.getElementById('enunciado');
+  var contenidoHtml = '';
+  contenidoBody['e'].forEach((m, i) => {
+    contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
+    } else {
+      contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
+    }
+    contenidoHtml += '</div>'
+  });
+  contenidoDiv.innerHTML = contenidoHtml;
+  // INICIO RESPUESTA
+  var respuestaDiv = document.getElementById('respuesta');
+  var respuestaHtml = '';
+
+  var contenidoRespuestas = contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+    if (item.tag != 'general') {
+      return true;
+    } else {
+      return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+    }
+  });
+  if (contenidoRespuestas.length > 0) {
+    contenidoRespuestas = shuffle(contenidoBody['r']);
+    contenidoRespuestas.forEach(function (item, index) {
+      console.log(item);
+      var dataContent = {
+        feedback: regex(item.params.feed, versionBody.vars, false),
+        respuesta: `Opción ${index + 1}`,
+        errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+      };
+      let textoOpcion = item.params.textoOpcion ? regex(item.params.textoOpcion, versionBody.vars, false) : `Opción ${index + 1}`
+      respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
+          <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
+            <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
+						${
+        item.tag != 'general' ?
+          `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+          `<div id="container-r${index}" class="general"></div>`
+        }
+					</div>
+				</div>`;
+    });
+  } else {
+    contenidoBody['r'].forEach(function (item, index) {
+      console.log(item);
+      respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
+      if (item.tag != 'general') {
+        respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
+      } else {
+        respuestaHtml += `<div id="container-r${index}" class="general"></div>`
+      }
+      respuestaHtml += '</div>'
+    });
+  }
+
+  respuestaDiv.innerHTML = respuestaHtml;
+  // INICIO GLOSA
+  var glosaDiv = document.getElementById('glosa');
+  var glosaHtml = '';
+  contenidoBody['g'].forEach((m, i) => {
+    glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
+    } else {
+      glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
+    }
+    glosaHtml += '</div>'
+  });
+  glosaDiv.innerHTML = glosaHtml;
 }
 
 function insertarTexto(config) {
@@ -306,13 +317,13 @@ function insertarInput(config) {
 				container.innerHTML = '';
 				switch (tipoInput) {
 					case 'texto':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
 						break;
 					case 'numero':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
 						break;
 					case 'alfanumerico':
-						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+						container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
 						break;
 				}
 				break;
@@ -350,582 +361,187 @@ function insertarInput(config) {
 	}
 }
 function insertarTabla(config) {
-	const { container, params, variables, versions, vt } = config, { table, encabezado } = params, vars = vt ? variables : versions
-	if (container) {
-		let r = '<table class="tabla"><tbody>';
-		for(var row = 0; row < table.length; row++) {
-			r += '<tr>';
-			for(var col = 0; col < table[row].length; col++) {
-				r+= '<td>';
-				switch(table[row][col].type) {
-					case 'text':
-						if(encabezado==='arriba' && row === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
-						} else if(encabezado==='izquierda' && col === 0) {
-							r+= `<p><b>${regex(table[row][col].value.text, vars, vt)}</b></p>`;
-						} else {
-							r+= `<p>${regex(table[row][col].value.text, vars, vt)}</p>`;
-						}
-						break;
-					case 'image':
-						r+= `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						break;
-					case 'input':
-						var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						switch(tipoInput) {
-							case 'text':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								r+= `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						break;
-					case 'text-input':
-						var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
-							feed0, feed1, feed2, feed3, feed4, defaultFeed,
-							value1, value2, value3, value4 } = table[row][col].value;
-						var p = regex(text, vars, vt);
-						var feedGenerico = regex(feed0, vars, vt);
-						var answers = [{
-							respuesta: regex(value1, vars, vt),
-							feedback: regex(feed1, vars, vt),
-							errFrec: null
-						}];
-						if(value2 !== '') {
-							answers[1] = {
-								respuesta: regex(value2, vars, vt),
-								feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error2 : error0
-							}
-						}
-						if(value3 !== '') {
-							answers[2] = {
-								respuesta: regex(value3, vars, vt),
-								feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error3 : error0
-							}
-						}
-						if(value4 !== '') {
-							answers[3] = {
-								respuesta: regex(value4, vars, vt),
-								feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-								errFrec: error0 === '' ? error4 : error0
-							}
-						}
-						var dataContent = {
-							tipoInput,
-							answers,
-							feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-							errFrecDefecto: error0 === '' ? defaultError : error0
-						};
-						var input;
-						switch(tipoInput) {
-							case 'text':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
-								break;
-							case 'numero':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
-								break;
-							case 'alfanumerico':
-								input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="Respuesta" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
-								break;
-						}
-						r+= `<p>${p.replace('{input}', input)}</p>`;
-						break;
-					case 'text-image':
-						var p = regex(table[row][col].value.text, vars, vt);
-						var img = `<img src=${regex(table[row][col].value.url, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
-						r+= `<p>${p.replace('{imagen}', img)}</p>`
-						break;
-				}
-				r+= '</td>';
-			}
-			r += '</tr>'
-		}
-		r += '</tbody></table>';
-		container.innerHTML = r
-	}
-}
-function insertarInputFraccion(config) {
-	const { container, params, variables, versions, vt } = config;
-	var inputFraccion = '', vars;
-	try {
-		vars = vt ? variables : versions;
-		var feedbackGood = regex(params.feedbackGood, vars, vt);
-		var feedbackBad = regex(params.feedbackBad, vars, vt);
-		var disabled = params.disabled==='si' ? 'disabled': '';
-		var entero = regex('$'.concat(params.entero), vars, vt);
-		var numerador = regex('$'.concat(params.numerador), vars, vt);
-		var denominador = regex('$'.concat(params.denominador), vars, vt);
-		inputFraccion = '<table><tbody><tr><td rowspan="2">';
-		inputFraccion += `<input type="text" id="entero" name="answer" class="input-numerador" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${entero}'}" ${disabled} ${params.disabled==='si' && `value="${entero}"`} />`;
-		inputFraccion += '</td><td style="border-bottom: 2px solid black;">'
-		inputFraccion += `<input type="text" id="numerador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${numerador}'}" ${disabled} ${params.disabled==='si' && `value="${numerador}"`}"/>`
-		inputFraccion += '</td></tr><tr><td>'
-		inputFraccion += `<input type="text" id="denominador" name="answer" class="input-num-y-den" data-content="{'feedbackGood':'${feedbackGood}','feedbackBad':'${feedbackBad}','esCorrecta': '${denominador}'}" ${disabled} ${params.disabled==='si' && `value="${denominador}"`}/>`
-		inputFraccion += '</td></tr></tbody></table>';
-	} catch(e) {
-		console.log(e);
-	}
-	container.innerHTML = inputFraccion;
-}
+  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
+  var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
+  function debeMarcarse(tr, td) {
+    var encontrado = false;
+    marcasEnTd.forEach(function (marca) {
+      if (marca[0] == (tr + 1) && marca[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
+  if (container) {
+    let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
+    if (anchoCols) {
+      var anchoColumnas = String(anchoCols).split(',');
+      anchoColumnas.forEach(function (ancho) {
+        r += `<col width="${ancho}%"/>`;
+      });
+    }
+    for (var row = 0; row < table.length; row++) {
+      if (lineasHorizontales === '') {
+        r += '<tr>';
+      } else {
+        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
+      }
+      for (var col = 0; col < table[row].length; col++) {
+        if (destacado === '') {
+          r += '<td>';
+        } else {
+          if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
+        switch (table[row][col].type) {
+          case 'text':
+            var tachado = table[row][col].value.tachar === 'si' ?
+              `class="strikethrough"` : '';
+            if (encabezado === 'arriba' && row === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else if (encabezado === 'izquierda' && col === 0) {
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+            } else {
+              r += `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
+            }
+            break;
+          case 'image':
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+            break;
+          case 'input':
+            var { tipoInput, maxLength, placeholder, anchoInput,
+              error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            switch (tipoInput) {
+              case 'text':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            break;
+          case 'text-input':
+            var { text, tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+              feed0, feed1, feed2, feed3, feed4, defaultFeed,
+              value1, value2, value3, value4 } = table[row][col].value;
+            var p = regex(text, vars, vt);
+            var feedGenerico = regex(feed0, vars, vt);
+            var answers = [{
+              respuesta: regex(value1, vars, vt),
+              feedback: regex(feed1, vars, vt),
+              errFrec: null
+            }];
+            if (value2 !== '') {
+              answers[1] = {
+                respuesta: regex(value2, vars, vt),
+                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error2 : error0
+              }
+            }
+            if (value3 !== '') {
+              answers[2] = {
+                respuesta: regex(value3, vars, vt),
+                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error3 : error0
+              }
+            }
+            if (value4 !== '') {
+              answers[3] = {
+                respuesta: regex(value4, vars, vt),
+                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                errFrec: error0 === '' ? error4 : error0
+              }
+            }
+            var dataContent = {
+              tipoInput,
+              answers,
+              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              errFrecDefecto: error0 === '' ? defaultError : error0
+            };
+            var input;
+            switch (tipoInput) {
+              case 'text':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                break;
+              case 'numero':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                break;
+              case 'alfanumerico':
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                break;
+            }
+            r += `<p>${p.replace('{input}', input)}</p>`;
+            break;
+          case 'text-image':
+            var p = regex(table[row][col].value.text, vars, vt);
+            var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+            var img = `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
 
-function recta(config) {
-	const { container, params, variables, versions, vt } = config
-		const {
-		  _altoCanvas,
-		  _anchoCanvas,
-		  _anchoReacta,
-		  _largoLineasFlechas,
-		  _posiciones,
-		  _marcarPosiciones,
-		  _altoPosiciones,
-		  _ponerObjeto,
-		  _posicionObjeto,
-		  _tipoObjeto,
-		  _leyenda,
-		  _proporcion,
-		  _limite,
-		  _dibujaFlechas,
-		  _escalaFlechas,
-		  _dibujaFlechasHasta,
-		  _dibujaRango,
-		  _rangoCorchete,
-		  _textoRango,
-		  _fraccion
-		} = params;
-		var conoImgSrc = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/cono/Cono.png';
-		var xFinal = _anchoCanvas-(_anchoReacta/2);
-		var xInicial = _anchoReacta/2;
-		var inicialFinalY = _altoCanvas/2;
-		container.height = _altoCanvas;
-		container.width = _anchoCanvas;
-  
-		var ctx = container.getContext('2d');
-		
-		dibujaRectaPrincipal();
-		marcarPosiciones();
-		_ponerObjeto === 'si' && dibujaObjetoEnPosicion();
-		_leyenda === 'si' && dibujaLeyenda();
-		_dibujaFlechas === 'si' && dibujaFlechasCamino();
-		dibujaNumeros();
-		dibujaElementoRepetitivo();
-		_dibujaRango === 'si' && dibujaRango();
-		_fraccion !== '' && dibujaFraccion2();
-  
-	  function dibujaRectaPrincipal() {
-		ctx.beginPath();
-		ctx.moveTo(xInicial,inicialFinalY);
-  
-		dibujaFlechas(xInicial,inicialFinalY,true);
-  
-		ctx.moveTo(xInicial, inicialFinalY);
-		ctx.lineTo(xFinal, inicialFinalY);
-  
-		dibujaFlechas(xFinal,inicialFinalY,false);
-  
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
-		ctx.lineWidth = _anchoReacta;
-		ctx.stroke();
-		ctx.closePath();
-	  }
-  
-	  function dibujaFlechas(x,y,primera) {
-		if(primera) {
-		  ctx.lineTo(x+_largoLineasFlechas*Math.cos(Math.PI/4), y-_largoLineasFlechas*Math.sin(Math.PI/4));
-		  ctx.moveTo(x,inicialFinalY);
-		  ctx.lineTo(x+_largoLineasFlechas*Math.cos(Math.PI/4), y-_largoLineasFlechas*Math.sin(Math.PI/4*-1));
-		} else {
-		  ctx.lineTo(x-_largoLineasFlechas*Math.cos(Math.PI/4*-1), y-_largoLineasFlechas*Math.sin(Math.PI/4*-1));
-		  ctx.moveTo(x, inicialFinalY);
-		  ctx.lineTo(x-_largoLineasFlechas*Math.cos(Math.PI/4*-1), y-_largoLineasFlechas*Math.sin(Math.PI/4));
-		}
-	  }
-  
-	  function marcarPosiciones() {
-		var divicion = _anchoCanvas / _posiciones;
-		switch(_marcarPosiciones) {
-		  case 'todas':
-			for(var i = 1; i < _posiciones; i++) {
-			  ctx.beginPath();
-			  ctx.moveTo(i*divicion,inicialFinalY-(_altoPosiciones/2));
-			  ctx.lineTo(i*divicion,inicialFinalY+(_altoPosiciones/2));
-			  ctx.stroke();
-			  ctx.closePath();
-			}
-			break;
-		  case 'inicial y final':
-			ctx.beginPath();
-			ctx.moveTo(divicion,inicialFinalY-(_altoPosiciones/2));
-			ctx.lineTo(divicion,inicialFinalY+(_altoPosiciones/2));
-			ctx.stroke();
-			ctx.closePath();
-			ctx.beginPath();
-			ctx.moveTo(_anchoCanvas-divicion,inicialFinalY-(_altoPosiciones/2));
-			ctx.lineTo(_anchoCanvas-divicion,inicialFinalY+(_altoPosiciones/2));
-			ctx.stroke();
-			ctx.closePath();
-			break;
-		  case 'proporcional':
-			try {
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var espacio = largoRecta/(limite/proporcion);
-			  
-			  for(var i = 0, separacion = 0; i < (limite/proporcion)+1; i++) {
-				ctx.beginPath();
-				var startEndX = (i*espacio)+divicion;
-				if(Number.isInteger(separacion)) {
-				  var startY = inicialFinalY-(Number(_altoPosiciones)+3/2);
-				  var endY = inicialFinalY+(Number(_altoPosiciones)+3/2);
-				  ctx.moveTo(startEndX,startY);
-				  ctx.lineTo(startEndX,endY);
-				} else {
-				  ctx.moveTo(startEndX,inicialFinalY-(Number(_altoPosiciones)/2));
-				  ctx.lineTo(startEndX,inicialFinalY+(Number(_altoPosiciones)/2));
-				}
-				ctx.stroke();
-				ctx.closePath();
-				separacion=separacion+proporcion;
-			  }
-			} catch(e) {
-			  console.log(e);
-			}
-			break;
-		}
-	  }
-  
-	  function dibujaObjetoEnPosicion() {
-		var divicion = _anchoCanvas / _posiciones;
-		var posiciones = String(Number(regex(_posicionObjeto, vt?variables:versions, vt))).split(',');
-		switch(_tipoObjeto) {
-		  case 'cono':
-			  posiciones.forEach(function(posicion) {
-				var x = Number.parseFloat(posicion)
-				if(x) {
-				  var posicionX = ((_anchoCanvas - (divicion * 2)) * (1/x)) + divicion; 
-				  ctx.beginPath();
-				  ctx.moveTo(posicionX,inicialFinalY-(_altoPosiciones/2));
-				  ctx.lineTo(posicionX,inicialFinalY+(_altoPosiciones/2));
-				  ctx.stroke();
-				  ctx.closePath();
-				  var img = new Image();
-				  img.src = conoImgSrc;
-				  img.onload = function() {
-					var imgX = posicionX-(img.width/2);
-					var imgY = inicialFinalY-(_altoPosiciones/2)-img.height-20;
-					ctx.drawImage(img, imgX, imgY);
-				  }
-				  dibujaFraccion(posicionX);
-				}
-			  });
-			break;
-		}
-	  }
-  
-	  function dibujaFraccion(posicionX) {
-		var denominador = Number(regex(_posicionObjeto, vt?variables:versions, vt));
-		var numerador = 1;
-		var textHeightFraccion = 20;
-		ctx.font = `${textHeightFraccion}px Arial`;
-		ctx.fillStyle = 'black';
-		var anchoNumerador = ctx.measureText(String(numerador)).width;
-		var anchoDenominador = ctx.measureText(String(denominador)).width;
-		
-		var numeradorX = posicionX-(anchoNumerador/2);
-		var numeradorY = inicialFinalY+(_altoPosiciones/2)+20+textHeightFraccion;
-		ctx.fillText(String(numerador), numeradorX, numeradorY);
-  
-		ctx.beginPath();
-		var lineaX = posicionX-10;
-		var lineaY =inicialFinalY+(_altoPosiciones/2)+20+(textHeightFraccion + 5)
-		ctx.moveTo(lineaX, lineaY);
-		ctx.lineTo(lineaX+20, lineaY);
-		ctx.lineWidth = 2;
-		ctx.stroke();
-		ctx.closePath();
-  
-		var denominadorX = posicionX-(anchoDenominador/2);
-		var denominadorY = inicialFinalY+(_altoPosiciones/2)+25+(textHeightFraccion*2);
-		ctx.fillText(String(denominador), denominadorX, denominadorY);
-	  }
-  
-	  function dibujaFraccion2() {
-		switch(_escalaFlechas) {
-		  case 'principal':
-			break;
-		  case 'secundaria':
-			try {
-			  var numeros = String(regex(_fraccion, vt?variables:versions, vt)).split(',');
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var largo = regex(_rangoCorchete, vt?variables:versions, vt);
-			  largo = eval(largo);
-			  var espacios = limite/proporcion;
-			  var largoSeparacion = largoRecta/espacios;
-			 
-			  if(numeros.length === 2) {
-  
-			  } else if (numeros.length === 3) {
-				var entero = Number(numeros[0]),
-				numerador = Number(numeros[1]),
-				denominador = Number(numeros[2]);
-				
-				var espacioFraccion = denominador * entero + numerador;
-				var x = largoSeparacion * espacioFraccion + divicion;
-				var y = inicialFinalY + Number(_altoPosiciones);
-				
-				ctx.fillStyle = 'black';
-				ctx.font = '25px Arial';
-				var enteroWidth = ctx.measureText(String(entero)).width;
-  
-				ctx.font = '15px Arial';
-				var numeradorWidth = ctx.measureText(String(numerador)).width;
-				var denominadorWidth = ctx.measureText(String(denominador)).width;
-				
-				var widthFraccion = enteroWidth + 25;//20 linea de separacion y 5 entre entero y la linea
-				var enteroX = x-(widthFraccion/2);
-				ctx.font = '25px Arial';
-				ctx.fillText(String(entero), enteroX, y+40);
-				
-				ctx.font = '20px Arial';
-				var numeradorX = x+(widthFraccion/2)-numeradorWidth-8;
-				ctx.fillText(String(numerador), numeradorX, y+28);
-  
-				var inicioDivicionX = x-(widthFraccion/2)+enteroWidth+5;
-				ctx.beginPath();
-				ctx.moveTo(inicioDivicionX, y+32);
-				ctx.lineTo(inicioDivicionX+20, y+32);
-				ctx.stroke();
-				ctx.closePath();
-  
-				var denominadorX = x+(widthFraccion/2)-denominadorWidth-8;
-				ctx.fillText(String(denominador), denominadorX, y+51);
-			  }
-			}catch(e){
-			  console.log(e);
-			}
-			break;
-		}
-	  }
-  
-	  function dibujaLeyenda() {
-		var divicion = _anchoCanvas / _posiciones;
-		ctx.font = `${15}px Arial`;
-		ctx.fillStyle = 'black';
-		var anchoTexto = ctx.measureText('Borde de').width;
-		var textoX = divicion-(anchoTexto/2);
-		var textoY = inicialFinalY-(_altoPosiciones/2)-40;
-		ctx.fillText('Borde de', textoX, textoY);
-		
-		anchoTexto = ctx.measureText('la cancha').width;
-		textoX = divicion-(anchoTexto/2);
-		textoY = inicialFinalY-(_altoPosiciones/2)-25;
-		ctx.fillText('la cancha', textoX, textoY);
-  
-		anchoTexto = ctx.measureText('1m').width;
-		textoX = _anchoCanvas-divicion-(anchoTexto/2);
-		textoY = inicialFinalY+(_altoPosiciones/2)+30;
-		ctx.fillText('1m', textoX, textoY);
-	  }
-  
-	  function dibujaFlechasCamino() {
-		switch(_escalaFlechas) {
-		  case 'principal':
-			break;
-		  case 'secundaria':
-			try {
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var espacios = limite/proporcion;
-			  var largoSeparacion = largoRecta/espacios;
-			  var cantidadFlechas = regex(_dibujaFlechasHasta, vt?variables:versions, vt);
-			  
-			  for(var i = 0; i < Number(cantidadFlechas); i++) {
-				ctx.lineWidth = 2;
-				ctx.beginPath();
-				var centroX = (i*largoSeparacion)+divicion+(largoSeparacion/2),
-				  centroY = inicialFinalY,
-				  startAngle = Math.PI * 1.2,
-				  endAngle = Math.PI * 1.8,
-				  r = largoSeparacion/2;
-				ctx.arc(centroX, centroY, r, startAngle, endAngle, false);
-				ctx.stroke();
-				var sx = Math.cos(endAngle)*r+centroX,
-				  sy = Math.sin(endAngle)*r+centroY;
-				ctx.lineTo(sx, sy-10);
-				ctx.moveTo(sx, sy);
-				ctx.lineTo(sx-10, sy);
-				ctx.stroke();
-				ctx.closePath();
-			  }
-			}catch(e){
-			  console.log(e);
-			}
-			break;
-		}
-	  }
-  
-	  function dibujaNumeros() {
-		var divicion = _anchoCanvas / _posiciones;
-		switch(_marcarPosiciones) {
-		  case 'todas':
-			break;
-		  case 'inicial y final':
-			break;
-		  case 'proporcional':
-			try {
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var espacio = largoRecta/(limite/proporcion);
-			  ctx.font = `${15}px Arial`;
-			  ctx.fillStyle = 'black';
-			  for(var i = 0, separacion = 0; i < (limite/proporcion)+1; i++) {
-				ctx.beginPath();
-				var x = (i*espacio)+divicion;
-				if(Number.isInteger(separacion)) {
-				  var endY = inicialFinalY+(Number(_altoPosiciones)+40/2);
-				  var width = ctx.measureText(String(separacion)).width;
-				  ctx.fillText(String(separacion), x-(width/2), endY);
-				} 
-				ctx.stroke();
-				ctx.closePath();
-				separacion=separacion+proporcion;
-			  }
-			} catch(e) {
-			  console.log(e);
-			}
-			break;
-		}
-	  }
-  
-	  function dibujaElementoRepetitivo() {
-		switch(_escalaFlechas) {
-		  case 'principal':
-			break;
-		  case 'secundaria':
-			try {
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var espacios = limite/proporcion;
-			  var largoSeparacion = largoRecta/espacios;
-			  var cantidadFlechas = regex(_dibujaFlechasHasta, vt?variables:versions, vt);
-			  var img = new Image();
-			  img.src = conoImgSrc;
-			  img.onload = function() {
-				for(var i = 1; i < Number(cantidadFlechas)+1; i++) {
-				  var imgX = (i*largoSeparacion)+divicion-(img.width/2);
-				  var imgY = inicialFinalY-(largoSeparacion/2)-10-img.height;
-				  ctx.drawImage(img, imgX, imgY);
-				}
-			  }
-			}catch(e){
-			  console.log(e);
-			}
-		  break;
-		}
-	  }
-  
-	  function dibujaRango() {
-		switch(_escalaFlechas) {
-		  case 'principal':
-			break;
-		  case 'secundaria':
-			try {
-			  var divicion = _anchoCanvas / _posiciones;
-			  var largoRecta = _anchoCanvas - (divicion * 2);
-			  var proporcion = regex(_proporcion, vt?variables:versions, vt);
-			  proporcion = eval(proporcion);
-			  var limite = regex(_limite, vt?variables:versions, vt);
-			  limite = eval(limite);
-			  var largo = regex(_rangoCorchete, vt?variables:versions, vt);
-			  largo = eval(largo);
-			  var espacios = limite/proporcion;
-			  var largoSeparacion = largoRecta/espacios;
-			  var inicioFinalRango = inicialFinalY+50;
-			  ctx.beginPath();
-			  ctx.arc(divicion+10, inicioFinalRango-10, 10, Math.PI * 0.5, Math.PI);
-			  ctx.moveTo(divicion+10, inicioFinalRango);
-			  var terminoX = (largoSeparacion*Number(largo))+divicion;
-			  ctx.lineTo((terminoX/2)-10+(divicion/2), inicioFinalRango);
-			  ctx.arc((terminoX/2)-10+(divicion/2), inicioFinalRango+10, 10, Math.PI * 1.5, Math.PI * 2);
-			  ctx.arc((terminoX/2)+10+(divicion/2), inicioFinalRango+10, 10, Math.PI, Math.PI * 1.5);
-			  ctx.moveTo((terminoX/2)+10+(divicion/2), inicioFinalRango);
-			  ctx.lineTo(terminoX-10, inicioFinalRango);
-			  ctx.arc(terminoX-10, inicioFinalRango-10, 10, Math.PI * 0.5, 0, true);
-			  ctx.stroke();
-			  ctx.closePath();
-			  var texto = regex(_textoRango, vt?variables:versions, vt);
-			  var anchoTexto = ctx.measureText(texto).width;
-			  var textoX = (terminoX+divicion-anchoTexto)/2;
-			  var textoY = inicioFinalRango+30;
-			  ctx.fillText(texto, textoX, textoY);
-			}catch(e){
-			  console.log(e);
-			}
-			break;
-		}
-	  }
+            p = `<p>${p.replace(/\{imagen\}/g, img)}</p>`
+            r += regexFunctions(p)
+            break;
+        }
+        r += '</td>';
+      }
+      r += '</tr>'
+    }
+    r += '</tbody></table>';
+    container.classList.add("table-responsive");
+    container.innerHTML = r;
+    if (tituloTabla !== '') {
+      container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+      var titulo = document.createElement('span');
+      titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
+      titulo.style.fontSize = '18px';
+      titulo.style.fontWeight = '600';
+      titulo.style.color = 'black';
+      container.parentNode.insertBefore(titulo, container);
+    }
+  }
 }
 
 function igualPerimetro(config) {
@@ -980,34 +596,42 @@ function igualPerimetro(config) {
 
 function tablaPosicional(config) {
   const { container, params, variables, versions, vt } = config;
-  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/fonts/LarkeNeueThin.ttf';
-  //× => ALT+158
-  var {_width,_tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,
-_tipoPisoUno,_repeticionPictoricaPisoUno,_umilPisoUno,_centenaPisoUno,_decenaPisoUno,_unidadPisoUno,_altoTextoPisoUno, /*numerico , imagenes, repeticion*/
-_tipoPisoDos,_repeticionPictoricaPisoDos,_umilPisoDos,_centenaPisoDos,_decenaPisoDos,_unidadPisoDos,_altoTextoPisoDos,
-_tipoPisoTres,_repeticionPictoricaPisoTres,_umilPisoTres,_centenaPisoTres,_decenaPisoTres,_unidadPisoTres,_altoTextoPisoTres,
-_dibujaValorPosicional1,_altoTextoValorPosicional1,_umilVP1,_centenaVP1,_decenaVP1,_unidadVP1,
-_dibujaValorPosicional2,_altoTextoValorPosicional2,_umilVP2,_centenaVP2,_decenaVP2,_unidadVP2,
-_dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
+  //× => ALT+0215
+  var { _width, _tipoTabla, /*puede ser 'centenas' o 'miles'*/_pisosTabla, /*pueden ser 'uno', 'dos', 'tres'*/_separacionElementos,_titulo,
+    _tipoPisoUno, _repeticionPictoricaPisoUno, _mostrarNumeroCompletoUno, _numeroCompletoPisoUno, _umilPisoUno, _centenaPisoUno, _decenaPisoUno, _unidadPisoUno, _altoTextoPisoUno, /*numerico , imagenes, repeticion*/
+    _altoImgMilesPisoUno, _altoImgCentPisoUno, _altoImgDecPisoUno, _altoImgUniPisoUno,//termino datos piso uno
+    _tipoPisoDos, _repeticionPictoricaPisoDos, _mostrarNumeroCompletoDos, _numeroCompletoPisoDos, _umilPisoDos, _centenaPisoDos, _decenaPisoDos, _unidadPisoDos, _altoTextoPisoDos,
+    _altoImgMilesPisoDos, _altoImgCentPisoDos, _altoImgDecPisoDos, _altoImgUniPisoDos,//termino datos piso dos
+    _tipoPisoTres, _repeticionPictoricaPisoTres, _mostrarNumeroCompletoTres, _numeroCompletoPisoTres, _umilPisoTres, _centenaPisoTres, _decenaPisoTres, _unidadPisoTres, _altoTextoPisoTres,
+    _altoImgMilesPisoTres, _altoImgCentPisoTres, _altoImgDecPisoTres, _altoImgUniPisoTres,//termino datos piso tres
+    _dibujaValorPosicional1, _mostrarSignoMasVP1,_altoTextoValorPosicional1, _umilVP1, _centenaVP1, _decenaVP1, _unidadVP1,
+    _dibujaValorPosicional2, _mostrarSignoMasVP2,_altoTextoValorPosicional2, _umilVP2, _centenaVP2, _decenaVP2, _unidadVP2,
+    _dibujaTextoResultado, _altoTextoResultado, _resultado,
+    _tipoUmilVP1,_tipoCentenaVP1,_tipoDecenaVP1,_tipoUnidadVP1,_altoumilvp1,_altocentenavp1,_altodecenavp1,_altounidadvp1,
+    _tipoUmilVP2,_tipoCentenaVP2,_tipoDecenaVP2,_tipoUnidadVP2,_altoumilvp2,_altocentenavp2,_altodecenavp2,_altounidadvp2 } = params;
 
   var vars = vt ? variables : versions;
   try {
-    _umilPisoUno = regex(_umilPisoUno, vars, vt);
-    _centenaPisoUno = regex(_centenaPisoUno, vars, vt);
-    _decenaPisoUno = regex(_decenaPisoUno, vars, vt);
-    _unidadPisoUno = regex(_unidadPisoUno, vars, vt);
+    var numeroCompletoPisoUno = _mostrarNumeroCompletoUno === 'si' ? regex(_numeroCompletoPisoUno, vars, vt) : '';
+    _umilPisoUno = _mostrarNumeroCompletoUno === 'si' ? numeroCompletoPisoUno[0] : regex(_umilPisoUno, vars, vt);
+    _centenaPisoUno = _mostrarNumeroCompletoUno === 'si' ? numeroCompletoPisoUno[1] : regex(_centenaPisoUno, vars, vt);
+    _decenaPisoUno = _mostrarNumeroCompletoUno === 'si' ? numeroCompletoPisoUno[2] : regex(_decenaPisoUno, vars, vt);
+    _unidadPisoUno = _mostrarNumeroCompletoUno === 'si' ? numeroCompletoPisoUno[3] : regex(_unidadPisoUno, vars, vt);
 
-    _umilPisoDos = regex(_umilPisoDos, vars, vt);
-    _centenaPisoDos = regex(_centenaPisoDos, vars, vt);
-    _decenaPisoDos = regex(_decenaPisoDos, vars, vt);
-    _unidadPisoDos = regex(_unidadPisoDos, vars, vt);
+    var numeroCompletoPisoDos = _mostrarNumeroCompletoDos === 'si' ? regex(_numeroCompletoPisoDos, vars, vt) : '';
+    _umilPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[0] : regex(_umilPisoDos, vars, vt);
+    _centenaPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[1] : regex(_centenaPisoDos, vars, vt);
+    _decenaPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[2] : regex(_decenaPisoDos, vars, vt);
+    _unidadPisoDos = _mostrarNumeroCompletoDos === 'si' ? numeroCompletoPisoDos[3] : regex(_unidadPisoDos, vars, vt);
 
-    _umilPisoTres = regex(_umilPisoTres, vars, vt);
-    _centenaPisoTres = regex(_centenaPisoTres, vars, vt);
-    _decenaPisoTres = regex(_decenaPisoTres, vars, vt);
-    _unidadPisoTres = regex(_unidadPisoTres, vars, vt);
+    var numeroCompletoPisoTres = _mostrarNumeroCompletoTres === 'si' ? regex(_numeroCompletoPisoTres, vars, vt) : '';
+    _umilPisoTres = _mostrarNumeroCompletoTres === 'si' ? numeroCompletoPisoTres[0] : regex(_umilPisoTres, vars, vt);
+    _centenaPisoTres = _mostrarNumeroCompletoTres === 'si' ? numeroCompletoPisoTres[1] : regex(_centenaPisoTres, vars, vt);
+    _decenaPisoTres = _mostrarNumeroCompletoTres === 'si' ? numeroCompletoPisoTres[2] : regex(_decenaPisoTres, vars, vt);
+    _unidadPisoTres = _mostrarNumeroCompletoTres === 'si' ? numeroCompletoPisoTres[3] : regex(_unidadPisoTres, vars, vt);
 
     _umilVP1 = regex(_umilVP1, vars, vt);
     _centenaVP1 = regex(_centenaVP1, vars, vt);
@@ -1020,7 +644,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     _unidadVP2 = regex(_unidadVP2, vars, vt);
 
     _resultado = regex(_resultado, vars, vt);
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
   let datosEjercicio = {};
@@ -1029,35 +653,47 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     tipoTabla: _tipoTabla,
     pisosTabla: Number(_pisosTabla)
   }
-  datosEjercicio.tabla.detallePisos = [{
-    tipo: _tipoPisoUno, //tipo piso uno
+  datosEjercicio.tabla.detallePisos = [{//tipo piso uno
+    tipo: _tipoPisoUno,
     tipoRepeticion: _repeticionPictoricaPisoUno,
     umil: _umilPisoUno,
     centena: _centenaPisoUno,
     decena: _decenaPisoUno,
     unidad: _unidadPisoUno,
-    altoTexto: _altoTextoPisoUno
+    altoTexto: _altoTextoPisoUno,
+    umilAltoImg: _altoImgMilesPisoUno,
+    decAltoImg: _altoImgDecPisoUno,
+    centAltoImg: _altoImgCentPisoUno,
+    uniAltoImg: _altoImgUniPisoUno
   }]
   if (datosEjercicio.tabla.configuracion.pisosTabla > 1) {
-    datosEjercicio.tabla.detallePisos[1] = {
+    datosEjercicio.tabla.detallePisos[1] = {//tipo piso dos
       tipo: _tipoPisoDos,
       tipoRepeticion: _repeticionPictoricaPisoDos,
       umil: _umilPisoDos,
       centena: _centenaPisoDos,
       decena: _decenaPisoDos,
       unidad: _unidadPisoDos,
-      altoTexto: _altoTextoPisoDos
+      altoTexto: _altoTextoPisoDos,
+      umilAltoImg: _altoImgMilesPisoDos,
+      decAltoImg: _altoImgDecPisoDos,
+      centAltoImg: _altoImgCentPisoDos,
+      uniAltoImg: _altoImgUniPisoDos
     }
   }
   if (datosEjercicio.tabla.configuracion.pisosTabla > 2) {
-    datosEjercicio.tabla.detallePisos[2] = {
+    datosEjercicio.tabla.detallePisos[2] = {//tipo piso tres
       tipo: _tipoPisoTres,
       tipoRepeticion: _repeticionPictoricaPisoTres,
       umil: _umilPisoTres,
       centena: _centenaPisoTres,
       decena: _decenaPisoTres,
       unidad: _unidadPisoTres,
-      altoTexto: _altoTextoPisoTres
+      altoTexto: _altoTextoPisoTres,
+      umilAltoImg: _altoImgMilesPisoTres,
+      decAltoImg: _altoImgDecPisoTres,
+      centAltoImg: _altoImgCentPisoTres,
+      uniAltoImg: _altoImgUniPisoTres
     }
   }
   datosEjercicio.valoresPosicionales = [];
@@ -1065,12 +701,21 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   if (_dibujaValorPosicional1 === 'si') {
     datosEjercicio.valoresPosicionales[0] = {
       mostrar: _dibujaValorPosicional1,
+      mostrarSignoMas: _mostrarSignoMasVP1,
       altoTexto: Number(_altoTextoValorPosicional1), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP1,
-        centena: _centenaVP1,
-        decena: _decenaVP1,
-        unidad: _unidadVP1
+        umil: _tipoUmilVP1 === 'texto' ? _umilVP1 : { 
+          src: _umilVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp1) },
+        centena: _tipoCentenaVP1 === 'texto' ? _centenaVP1 : { 
+          src: _centenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp1) },
+        decena: _tipoDecenaVP1 === 'texto' ? _decenaVP1 : { 
+          src: _decenaVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp1) },
+        unidad: _tipoUnidadVP1 === 'texto' ? _unidadVP1 : { 
+          src: _unidadVP1.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp1) }
       }
     }
   }
@@ -1078,12 +723,21 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   if (_dibujaValorPosicional2 === 'si') {
     datosEjercicio.valoresPosicionales[1] = {
       mostrar: _dibujaValorPosicional2,
+      mostrarSignoMas: _mostrarSignoMasVP2,
       altoTexto: Number(_altoTextoValorPosicional2), //alto del texto de los valores posicionales
       numeros: {//numeros que se muestran debajo de la tabla en forma de suma
-        umil: _umilVP2,
-        centena: _centenaVP2,
-        decena: _decenaVP2,
-        unidad: _unidadVP2
+        umil: _tipoUmilVP2 === 'texto' ? _umilVP2 : { src: 
+          _umilVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altoumilvp2) },
+        centena: _tipoCentenaVP2 === 'texto' ? _centenaVP2 : { 
+          src: _centenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altocentenavp2) },
+        decena: _tipoDecenaVP2 === 'texto' ? _decenaVP2 : { 
+          src: _decenaVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altodecenavp2) },
+        unidad: _tipoUnidadVP2 === 'texto' ? _unidadVP2 : { 
+          src: _unidadVP2.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), 
+          alto: Number(_altounidadvp2) }
       }
     }
   }
@@ -1095,9 +749,19 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   }
 
   _separacionElementos = Number(_separacionElementos);
-
+  console.log(datosEjercicio);
   let recursos = cargaRecursos();
   var ctx, yStart = 0;
+  if(_titulo !== '') {
+    container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+    container.parentElement.classList.add('text-center');
+    var titulo = document.createElement('span');
+    titulo.innerText = regexFunctions(regex(_titulo, vars, vt));
+    titulo.style.fontSize = '18px';
+    titulo.style.fontWeight = '600';
+    titulo.style.color = 'black';
+    container.parentNode.insertBefore(titulo, container);
+  }
   Promise.all(recursos).then(function ([imgTabla, imgFlechaAbajo, imgSignoMas]) {
     var { altoCanvas, altoImagen } = calculaAltoCanvas(imgTabla.width, imgTabla.height, imgFlechaAbajo.height);
     container.width = Number(_width);
@@ -1130,10 +794,10 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     var altoCuadro = porcion * 2;
     var separaciones = tipoTabla === 'centenas' ? 3 : 4;
     var anchoSeparacion = container.width / separaciones;
-    
+
 
     for (var fila = 0; fila < detallePisos.length; fila++) {
-      const { tipo, tipoRepeticion, umil, centena, decena, unidad, altoTexto } = detallePisos[fila];
+      const { tipo, tipoRepeticion, umil, centena, decena, unidad, altoTexto, umilAltoImg, centAltoImg, decAltoImg, uniAltoImg } = detallePisos[fila];
       var numeros = tipoTabla === 'centenas' ? [centena, decena, unidad] : [umil, centena, decena, unidad];
       numeros.forEach(function (numero, columna) {
         switch (tipo) {
@@ -1144,7 +808,27 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
             dibujaImagen(numero, fila, columna, tipoRepeticion);
             break;
           case 'repeticion':
-            dibujaRepeticion(numero, fila, columna, tipoRepeticion);
+            var altoImagenDeRepeticion;
+            if (tipoTabla === 'miles') {
+              if (columna === 0) {
+                altoImagenDeRepeticion = umilAltoImg;
+              } else if (columna === 1) {
+                altoImagenDeRepeticion = centAltoImg;
+              } else if (columna === 2) {
+                altoImagenDeRepeticion = decAltoImg;
+              } else if (columna === 3) {
+                altoImagenDeRepeticion = uniAltoImg;
+              }
+            } else {
+              if (columna === 0) {
+                altoImagenDeRepeticion = centAltoImg;
+              } else if (columna === 1) {
+                altoImagenDeRepeticion = decAltoImg;
+              } else if (columna === 2) {
+                altoImagenDeRepeticion = uniAltoImg;
+              }
+            }
+            dibujaRepeticion(numero, fila, columna, tipoRepeticion, altoImagenDeRepeticion);
             break;
           default:
             console.log('opcion aun no soportada');
@@ -1165,7 +849,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
 
     function dibujaImagen(numero, fila, columna, tipoRepeticion) {
       if (tipoRepeticion === 'pelotas') {
-        var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
+        var src = `../../../../imagenes_front/pelotas_repeticiones/Arreglo${numero}.svg`;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1175,7 +859,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
-        var src = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/' + img;
+        var src = '../../../../imagenes_front/tablas_posicionales/' + img;
         cargaImagen(src).then(image => {
           var xImg = (anchoSeparacion * columna) + (anchoSeparacion / 2) - (altoCuadro * 0.85 / 2);
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
@@ -1186,14 +870,14 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       }
     }
 
-    function dibujaRepeticion(numero, fila, columna, tipoRepeticion) {
+    function dibujaRepeticion(numero, fila, columna, tipoRepeticion, altoImgRep) {
       var ruta, src;
       ruta = tipoTabla === 'centenas' ? 5 - columna : 4 - columna; // busca que imagen ocupar
       if (tipoRepeticion === 'bloques') {
-        src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
+        src = `../../../../imagenes_front/bloques_multibase/bloque-${ruta}.svg`;
       } else if (tipoRepeticion === 'monedas y billetes') {
         var ceros = ruta === 1 ? '' : ruta === 2 ? '0' : ruta === 3 ? '00' : '000';
-        src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1${ceros}.svg`;
+        src = `../../../../imagenes_front/monedas_billetes/1${ceros}.svg`;
       }
       cargaImagen(src).then(image => {
         var cx = (anchoSeparacion * columna) + (anchoSeparacion / 2);
@@ -1202,23 +886,23 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
           switch (ruta) {
             case 4:
               if (tipoRepeticion === 'bloques') {
-                dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+                dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               } else if (tipoRepeticion === 'monedas y billetes') {
                 dibujaRepeticionDadoBilletes(numero, anchoSeparacion, altoCuadro, image, cx, cy);
               }
               break;
             case 3:
-              dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+              dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               break;
             case 2:
               if (tipoRepeticion === 'bloques') {
-                dibujaRepeticionHorizontalVertical(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+                dibujaRepeticionHorizontal(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               } else if (tipoRepeticion === 'monedas y billetes') {
-                dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+                dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               }
               break;
             case 1:
-              dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy);
+              dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               break;
             default:
               console.log('aun no se pinta ' + ruta);
@@ -1266,8 +950,8 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
             ctx.drawImage(image, x2, y2, widthImg, altoImg);
             break;
           case '5':
-            var x1 = cx - separacion / 2 - widthImg, 
-            x2 = cx + separacion / 2;
+            var x1 = cx - separacion / 2 - widthImg,
+              x2 = cx + separacion / 2;
             var y1 = cy - container / 2,
               y2 = cy + container / 2 - altoImg,
               y3 = cy - altoImg / 2,
@@ -1297,37 +981,21 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
         }
       }
 
-      function dibujaRepeticionHorizontalVertical(numero, anchoSeparacion, altoCuadro, image, cx, cy) {
-        var container = altoCuadro * 0.9;
-        var altoImg = container / 2;
+      function dibujaRepeticionHorizontal(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep) {
+        var altoImg = altoImgRep;
         var anchoImg = image.width * altoImg / image.height;
-        var separacion = ((container * 0.9) / 2) * 0.3;
-        var xStart = cx - ((numero * anchoImg) + ((numero - 1) * separacion)) / 2;
-        if (numero <= 6) {
-          xStart = cx - ((numero * anchoImg) + ((numero - 1) * separacion)) / 2;
-        } else {
-          xStart = cx - ((6 * anchoImg) + (5 * separacion)) / 2;
-        }
-        var yStart = cy - (container / 2);
+        var separacion = 10;
+        var xStart = cx - ((numero * anchoImg) + (separacion * (numero - 1))) / 2
+        var yStart = cy - (altoImg / 2)
         for (var i = 0, x, y; i < numero; i++) {
-          if (i <= 5) {
-            x = xStart + (anchoImg * i) + (separacion * i);
-            y = yStart;
-            ctx.drawImage(image, x, y, anchoImg, altoImg);
-          } else {
-            x = cx - (altoImg / 2)
-            y = yStart + altoImg + anchoImg + separacion * (i - 6) + anchoImg * (i - 5);
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(-Math.PI / 2);
-            ctx.drawImage(image, 0, 0, anchoImg, altoImg);
-            ctx.restore();
-          }
+          x = xStart + (anchoImg * i) + (separacion * i);
+          y = yStart;
+          ctx.drawImage(image, x, y, anchoImg, altoImg);
         }
       }
 
-      function dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy) {
-        var altoImg = ((altoCuadro * 0.85) / 3) * 0.9;
+      function dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep) {
+        var altoImg = altoImgRep;
         var anchoImg = image.width * altoImg / image.height;
         var separacion = ((altoCuadro * 0.85) / 3) * 0.1;
         switch (numero) {
@@ -1418,13 +1086,13 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
     }
   }
 
-  function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
+  async function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
     ctx.font = `${valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
     ctx.fillStyle = '#F58220';
     ctx.textAlign = 'center';
     var { umil, centena, decena, unidad } = valorPosicional.numeros;
     var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
-
+    //console.log(numerosValorPosicional);
     for (var i = 1, centroSeccion, centroSeparacion, yTexto; i < diviciones + 1; i++) {
       centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones / 2);
       centroSeparacion = anchoSeparaciones * i;
@@ -1432,13 +1100,26 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
       var xFlecha = centroSeccion - (imgFlechaAbajo.width / 2);
       ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
       //texto
-      yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
-      ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      if(typeof numerosValorPosicional[i - 1] === 'string') {
+        yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
+        ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
+      } else {
+        await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
+          var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
+          var xImagenVp = centroSeccion-anchoImgVp/2;
+          var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
+          ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i-1].alto);
+        }).catch(function(error){
+          console.log(error);
+        });
+      }
       //singo mas
-      if (i + 1 !== diviciones + 1) {
-        var xMas = centroSeparacion - (imgSignoMas.width / 2);
-        var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
-        ctx.drawImage(imgSignoMas, xMas, yMas);
+      if(valorPosicional.mostrarSignoMas === 'si') {
+        if (i + 1 !== diviciones + 1) {
+          var xMas = centroSeparacion - (imgSignoMas.width / 2);
+          var yMas = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto / 2) - (imgSignoMas.height / 2)
+          ctx.drawImage(imgSignoMas, xMas, yMas);
+        }
       }
     }
     return yTexto + _separacionElementos;
@@ -1460,7 +1141,7 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   function cargaRecursos() {
     var columnas = datosEjercicio.tabla.configuracion.tipoTabla === 'miles' ? '4' : '3';
     var pisos = datosEjercicio.tabla.configuracion.pisosTabla;
-    var srcTabla = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
+    var srcTabla = `../../../../imagenes_front/tablas_posicionales/Tabla${columnas}x${pisos}.svg`
     let recursos = [
       cargaImagen(srcTabla),
       cargaImagen(imgSrcFlechaAbajo),
@@ -1496,13 +1177,12 @@ _dibujaTextoResultado,_altoTextoResultado,_resultado} = params;
   }
 }
 
-
 function valorPosicional(config) {
   const { container, params, variables, versions, vt } = config;
   var { _tipo,_texto,_numeroPalabras,_marca,_separacionNumeros,_miles,_centenas,_decenas,_unidades,_altoTexo,_margenTopBottom } = params;
-  var imgSrcFlechaAbajo = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/flecha_fija.svg';
-  var imgSrcSignoMas = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/tablas_posicionales/num_sig_mas.svg';
-  var srcFuente = 'https://contenedoradapt.adaptativamente.cl/frontejercicios/fonts/LarkeNeueThin.ttf';
+  var imgSrcFlechaAbajo = '../../../../imagenes_front/tablas_posicionales/flecha_fija.svg';
+  var imgSrcSignoMas = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg';
+  var srcFuente = '../../../../fonts/LarkeNeueThin.ttf';
 
   var vars = vt ? variables : versions;
 
@@ -1641,37 +1321,37 @@ function repeticionPic(config) {
 
 	var imagenes = [{
 		name: 'bloque mil',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-4.svg'
+		src: '../../../../imagenes_front/bloques_multibase/bloque-4.svg'
 	},{
 		name: 'bloque cien',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-3.svg'
+		src: '../../../../imagenes_front/bloques_multibase/bloque-3.svg'
 	}, {
 		name: 'bloque diez',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-2.svg'
+		src: '../../../../imagenes_front/bloques_multibase/bloque-2.svg'
 	},{
 		name: 'bloque uno',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/bloques_multibase/bloque-1.svg'
+		src: '../../../../imagenes_front/bloques_multibase/bloque-1.svg'
 	},{
 		name: 'billete mil',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1000.svg'
+		src: '../../../../imagenes_front/monedas_billetes/1000.svg'
 	},{
 		name: 'moneda cien',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/100.svg'
+		src: '../../../../imagenes_front/monedas_billetes/100.svg'
 	},{
 		name: 'moneda diez',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/10.svg'
+		src: '../../../../imagenes_front/monedas_billetes/10.svg'
 	},{
 		name: 'moneda uno',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/1.svg'
+		src: '../../../../imagenes_front/monedas_billetes/1.svg'
 	},{
 		name: 'moneda quinientos',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/500.svg'
+		src: '../../../../imagenes_front/monedas_billetes/500.svg'
 	},{
 		name: 'moneda cincuenta',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/50.svg'
+		src: '../../../../imagenes_front/monedas_billetes/50.svg'
 	},{
 		name: 'moneda cinco',
-		src: 'https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/monedas_billetes/5.svg'
+		src: '../../../../imagenes_front/monedas_billetes/5.svg'
 	}];
 
 	let {_pictoricos, _separacion, heightCanvas, widthCanvas, 

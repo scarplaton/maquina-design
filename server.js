@@ -20,9 +20,35 @@ app.get('/prueba', (request, response) => {
 });
 
 app.get('/archivos', (request, response) => {
-  fs.readdir(publicPath, (err, files) => {
-    response.send(files);
-  })
+  let archivos = [];
+  const ejerciciosPath = path.join(publicPath, 'EJERCICIOS');
+  const oaFolders = fs.readdirSync(ejerciciosPath);//lee carpetas de oas
+  for(var oa = 0; oa < oaFolders.length; oa++) {
+    let ieFolderPath = path.join(ejerciciosPath, oaFolders[oa]);
+    const ieFolders = fs.readdirSync(ieFolderPath);//lee carpetas de ies
+    for(var ie = 0; ie < ieFolders.length; ie++) {
+      let ejercicioFoldersPath = path.join(ieFolderPath, ieFolders[ie]);
+      const ejercicioFolders = fs.readdirSync(ejercicioFoldersPath);
+      for(var archivoEjercicio = 0; archivoEjercicio < ejercicioFolders.length; archivoEjercicio++) {
+        let htmlsPath = path.join(ejercicioFoldersPath, ejercicioFolders[archivoEjercicio]);
+        let datos = fs.readdirSync(htmlsPath).map(x => [
+          ejercicioFolders[archivoEjercicio],
+          oaFolders[oa],
+          ieFolders[ie],
+          path.join(ejercicioFoldersPath, ejercicioFolders[archivoEjercicio], x)
+                  .replace('C:\\Users\\agapox\\Documents\\GitHub\\maquina-design\\public\\', '')
+                  .replace(/\\/g, '/')
+        ]);
+        archivos = archivos.concat(datos);
+      }
+    }
+  }
+  response.send({
+    draw: 1,
+    recordsTotal: archivos.length,
+    recordsFiltered: archivos.length,
+    data: archivos
+  });
 });
 
 app.listen(port, () => {

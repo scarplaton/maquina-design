@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="../../../../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../../../css/0101/app.css">
+	<title>00008_3513</title>
+	<!-- MATHJAX NO IMPORTADO -->
+	<script>document.domain = "adaptativamente.cl";</script>
+</head>
+<body id="040101010200008" data-content="{'e':[{'id':'-LSUUIKje0k3RKilC8Em','date':'4/1/2019 9:43:01','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;En el número <ins>$w</ins> $x$y$z  la cantidad que representa el dígito subrayado es :&nbsp;</p>\n','date':'4/1/2019 9:43:02','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LUqaJ0G3xEHLuBwD52E','date':'20/2/2019 17:12:27','name':'Insertar Input','params':{'active':2,'col':'12','colmd':'3','colsm':'6','defaultError':'','defaultFeed':'','error0':'2','error2':'','error3':'','error4':'','feed0':'$w está ubicado en la posición de las unidades de mil.','feed1':'¡Muy bien!','feed2':'','feed3':'','feed4':'','inputSize':'4','inputType':'radio','maxLength':'4','tipoInput':'numero','value1':'$r','value2':'$q','value3':'$m','value4':'$n'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LT2rVQMclLU7XT0rGZy','date':'20-02-2019 09:53:11','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>El número <ins>$w</ins> $x$y$z está subrayado en $w, que se ubica en  la posición de las unidades de mil, entonces su valor posicional es <br>$w 000.&nbsp;</p>\n','date':'20-02-2019 09:53:12','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}},{'id':'-LT30nM33L9VSkxuFzI4','date':'19-02-2019 10:45:59','name':'Valor Posicional','params':{'_altoTexo':'40','_centenas':'x','_decenas':'y','_marca':'U de Mil','_margenTopBottom':'20','_miles':'w','_numeroPalabras':'q','_separacionNumeros':'2','_tipo':'Numero','_unidades':'z','active':0},'position':1,'tag':'numeracion','width':{'md':12,'sm':12,'xs':12}},{'id':'-LT2rmakdNdtBCtWgNIL','date':'4/1/2019 9:48:53','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;Por lo tanto, la cantidad que representa es $r.&nbsp;</p>\n','date':'4/1/2019 9:48:54','padding':'10px 10px 0px'},'position':2,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':3513,'vars':[{'rank':0,'val':'treinta','var':'m'},{'rank':0,'val':'trescientos ','var':'n'},{'rank':0,'val':30,'var':'p'},{'rank':0,'val':'tres','var':'q'},{'rank':0,'val':'tres mil ','var':'r'},{'rank':0,'val':3000,'var':'s'},{'rank':0,'val':300,'var':'t'},{'rank':9,'val':3,'var':'w'},{'rank':10,'val':2,'var':'x'},{'rank':10,'val':7,'var':'y'},{'rank':10,'val':4,'var':'z'}]}">
+	<header class="barraprogreso">
+			<div class="container-fluid">
+				<div class="row justify-content-center no-gutters align-items-center">
+					<div class="col-11 lineasbarra">
+						<hr class="sidelinebar d-none d-sm-block">
+						<svg xmlns="http://www.w3.org/2000/svg" id="progressbar" version="1.1" class="mx-sm-auto d-sm-block"></svg>
+						<hr class="sidelinebar d-none d-sm-block">
+					</div>
+					<div class="col-1 d-sm-none">
+						<!--<svg id="botonSalir" class="float-right" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="bottom" title="Salir de la misión">
+							<path d="M0 0h24v24H0z" fill="none"/><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+						</svg>-->
+					</div>
+				</div>
+			</div>
+	</header>
+	<section class="contenido">
+			<div class="container-fluid">
+				<div id="enunciado" class="row"></div>
+				<div id="respuesta" class="row justify-content-center"></div>
+			</div>
+	</section>
+	<footer class="fixed-bottom pie">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnConsulta" class="btn btn-block bton bton-5 bton-5a icon-consulta" onclick="pressConsulta()">
+								<span>CONSULTA</span>
+							</button>
+							<img id="imgfeedback" class="img-fluid d-none" alt="IMG" />
+						</div>
+						<div class="col-4 col-md-6"></div>
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled>
+								<span>RESPONDER</span>
+							</button> 
+						</div>
+				</div>
+			</div>
+	</footer>
+	<div class="modal fade" id="modalFeedback" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content" style="border-radius: 10px!important">
+						<div id="feedback" class="modal-body" style="padding: 10px 0;">
+							<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="col-12">
+												
+										</div>
+										<div class="col-4 offset-8">
+											<button id="btnCloseModal" type="button" class="btnCerrarFeed">
+												<div></div>
+											</button>
+										</div>
+									</div>
+							</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<div class="modal fade" id="modalGlosa" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered dimensionGlosa" role="document">
+				<div id="contenidoGlosa" class="modal-content glosaEjercicio">
+						<div class="modal-body modalBody">
+								<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="offset-2 col-10 tituloGlosa">
+											<span>Solución</span>
+										</div>
+										<div class="col-2 d-none d-sm-block">
+											<img class="img-fluid" src="../../../../imagenes_front/patos/togaSuki.svg">
+										</div>
+										<div class="col-12 col-sm-10" id="glosa">
+										</div>
+									</div>
+									<div class="row no-gutters">
+										<div class="offset-8 col-4 offset-sm-9 col-sm-3 offset-md-10 col-md-2">
+											<button id="btnCloseGlosa" type="button" class="btn btn-primary" onclick="cerrarFeedGlosa()">Aceptar</button>
+										</div>
+									</div>
+								</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<input id="hiddenIntento" type="hidden" value="hiddenIntento"/>
+	<script src="../../../../js/jquery-3.3.1.slim.min.js"></script>
+	<script src="../../../../js/bootstrap.min.js"></script>
+	<script src="../../../../js/0101/app.js"></script>
+	<script src="../../../../js/0101/interfaz.js"></script>
+	<script src="../../../../js/0101/jsEjercicios.js"></script>
+</body>
+</html>

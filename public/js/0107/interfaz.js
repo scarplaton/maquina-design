@@ -10,6 +10,7 @@ errFre = '',
 feed = '', 
 check = false;
 var _TIPO_INPUT_ = '';
+var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
 const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
@@ -18,17 +19,24 @@ const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
 
-var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
-	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
-var tmpTotal = localStorage.getItem('tmpTotal') ?
-	Number(localStorage.getItem('tmpTotal')) : 5;
+if(hiddenBarraDatos) {
+	var datosBarraDeProgreso = JSON.parse(hiddenBarraDatos.value);
+	tmpProgreso = datosBarraDeProgreso.tmpProgreso ? 
+		datosBarraDeProgreso.tmpProgreso : [];
+	tmpTotal = datosBarraDeProgreso.tmpTotal ?
+		Number(datosBarraDeProgreso.tmpTotal) : 0;
+} else {
+	tmpProgreso = localStorage.getItem('tmpProgreso') ? 
+		JSON.parse(localStorage.getItem('tmpProgreso')) : [];
+	tmpTotal = localStorage.getItem('tmpTotal') ?
+		Number(localStorage.getItem('tmpTotal')) : 0;
+}
 
+barraDeProgreso();
 $(document).ready(function(){
-	$('[data-toggle="tooltip"]').tooltip();
-	barraDeProgreso();
-	$( window ).resize(function() {
-		barraDeProgreso();
-	});
+	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+		e.preventDefault();
+ 	});
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -51,6 +59,12 @@ function validaRespuesta() { //Validar respuesta
 		} else {//si hay mas de un input de texto
 			for(var input of inputs) {
 				evaluaInputTexto(input);
+				if(errFre !== null) {
+					input.classList.add('inputTexto-incorrecto');
+					break;
+				} else {
+					input.classList.add('inputTexto-correcto');
+				}
 			}
 		}
 	}
@@ -111,43 +125,82 @@ function answer() {
 }
 
 function barraDeProgreso() {
+	var anchoBarra = 250;//254 para el espacio del margen
   $("#progressbar").empty();
-  var svg = document.getElementById('progressbar');
-  var separacion = (1000 - 46 * tmpTotal) / tmpTotal;
+	var svg = document.getElementById('progressbar');
+	var separacion = anchoBarra / (tmpTotal+1);
+	
+	var bordeBarra = crearElemento('rect', {
+		x: 2,
+		y: 2,
+		width: anchoBarra,
+		height: 32,
+		fill: 'none',
+		stroke: '#CCCBCB',
+		strokeWidth: '1',
+		rx: 5,
+		ry: 5
+	});
+	svg.appendChild(bordeBarra);
+
+	var anchoLinea = Number(anchoBarra-(separacion*2));
+	var lineaBarra = crearElemento('rect', {
+		x: separacion,
+		y: 17,
+		width: anchoLinea,
+		height: 2,
+		fill: '#E7E5E5',
+		rx: 2,
+		ry: 2
+	}); 
+	svg.appendChild(lineaBarra);
 
   for (var i = 0; i < tmpTotal; i++) {
-    var xRect = i * separacion + i * 46 + 5; //calcula centro x para rectangulo
-
-    var cxCircle = i * separacion + i * 46 + separacion + 23; //calcula x de inicio para recta
-
+		var colorCirculo, rCircle;
+		if(tmpProgreso.length > i) {
+			rCircle = 4;
+			if(tmpProgreso[i].correcto) {
+				colorCirculo = tmpProgreso[i].NUMEROINTENTOS === 1 ? '#00AC4D' : '#E2C04D';
+			} else {
+				colorCirculo = '#E24B4A';
+			}
+		} else if(tmpProgreso.length === i) {
+			rCircle = 8;
+			colorCirculo = '#1280B1';
+		} else {
+			rCircle = 4;
+			colorCirculo = '#CCCBCB';
+		}
+		var cxCircle = separacion * (i+1) + 2;
     var circle = crearElemento('circle', {
       cx: cxCircle,
-      cy: 25,
-      r: 23,
-      fill: 'black',
+      cy: 18,
+      r: rCircle,
+      fill: colorCirculo,
       stroke: 'none'
     });
-    var rect = crearElemento('rect', {
-      x: xRect,
-      y: 13.5,
-      width: separacion - 10,
-      height: 27,
-      fill: 'black',
-      stroke: 'none'
-    });
-    svg.appendChild(circle);
-    svg.appendChild(rect);
+		svg.appendChild(circle);
+		if(tmpProgreso.length === i) {
+			var textPosicion = crearElemento('text', {
+				x: cxCircle,
+				y: 22,
+				fontFamily: 'sans-serif',
+				fontSize: '11px',
+				textAnchor: 'middle',
+				fill: 'white'
+			});
+			textPosicion.textContent = tmpProgreso.length+1;
+			svg.appendChild(textPosicion);
+		}
   }
 
   function crearElemento(nombre, atributos) {
     var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
-
     for (var p in atributos) {
       element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
         return "-" + m.toLowerCase();
       }), atributos[p]);
     }
-
     return element;
   }
 } 
@@ -170,11 +223,11 @@ function muestraFeedback(esCorrecta, feedback) {
 		$('section.contenido').find('input').prop('disabled', true);
 		if(esCorrecta) {
 			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrCorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrCorrecta[rando]}`;
 			feedbackCorrecta(src);
 		} else {
 			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrIncorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrIncorrecta[rando]}`;
 			feedbackIncorrecta(src);
 		}
 	}
@@ -231,9 +284,15 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	//limpia inputs
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+		} else {
+			$('section.contenido').find('input.inputTexto-incorrecto[type=text]').val('');
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
 	$('section.contenido').find('input').prop('disabled', false);
 }
@@ -301,8 +360,8 @@ function cambiaRadioImagen(e) {
 	e.target.parentElement.classList.add("radio-div_selected");
 	btnRespuesta.disabled = false;
 }
-function seleccionaImagenRadio(e) {
-	e.target.parentElement.getElementsByTagName('label')[0].click();
+function seleccionaImagenRadio(e, labelId) {
+	document.getElementById(labelId).click();
 }
 function cambiaInputTexto(e) {
 	var theEvent = e || window.event;
@@ -395,132 +454,80 @@ CODIGO DE GABY PARA VERIFICAR PALABRAS
 */
 
 let palabras= {
-    "0": ["", "", "", "", ""], //unidad, prefijo unidad, decena, centena
-    "1": ["uno", "on", "diez", "cien"],
-    "2": ["dos", "do", "veinte", "doscientos"],
-    "3": ["tres", "tre", "treinta", "trescientos"],
-    "4": ["cuatro", "cator", "cuarenta", "cuatrocientos"],
-    "5": ["cinco", "quin", "cincuenta", "quinientos"],
-    "6": ["seis", "", "sesenta", "seiscientos"],
-    "7": ["siete", "", "setenta", "setecientos"],
-    "8": ["ocho", "", "ochenta", "ochocientos"],
-    "9": ["nueve", "", "noventa", "novecientos"]
+	"0": ["", "", "", "", ""], //unidad, prefijo unidad, decena, centena
+	"1": ["uno", "on", "diez", "cien"],
+	"2": ["dos", "do", "veinte", "doscientos"],
+	"3": ["tres", "tre", "treinta", "trescientos"],
+	"4": ["cuatro", "cator", "cuarenta", "cuatrocientos"],
+	"5": ["cinco", "quin", "cincuenta", "quinientos"],
+	"6": ["seis", "", "sesenta", "seiscientos"],
+	"7": ["siete", "", "setenta", "setecientos"],
+	"8": ["ocho", "", "ochenta", "ochocientos"],
+	"9": ["nueve", "", "noventa", "novecientos"]
 };
 let regularExpression = {
-    "0": ["", "", "", "", ""], 
-    "1": ["uno", "on", "die[sz]", "[csz]ien"],
-    "2": ["do[sz]", "do", "[vb]einte", "do[csz]{1,2}iento[sz]"],
-    "3": ["tre[sz]", "tre", "treinta", "tre[szc]{1,2}iento[sz]"],
-    "4": ["[ckq]uatro", "[ckq]ator", "[ckq]uarenta", "[ckq]uatro[szc]{1,2}iento[sz]"],
-    "5": ["[csz]in[ck]o", "(quin|kin)", "[csz]in[cqk]uenta", "(quin|kin)iento[sz]"],
-    "6": ["[scz]ei[sz]", "", "[scz]e[scz]enta", "[scz]ei[scz]{1,2}iento[sz]"],
-    "7": ["[scz]iete", "", "[scz]etenta", "[scz]ete[szc]{1,2}iento[sz]"],
-    "8": ["o[sc]ho", "", "o[sc]henta", "o[sc]ho[scz]{1,2}iento[sz]"],
-    "9": ["nue[vb]e", "", "no[vb]enta", "no[vb]e[scz]{1,2}iento[sz]"]
+	"0": ["", "", "", "", ""], 
+	"1": ["uno", "on", "die[sz]", "[csz]ien"],
+	"2": ["do[sz]", "do", "[vb]einte", "do[csz]{1,2}iento[sz]"],
+	"3": ["tre[sz]", "tre", "treinta", "tre[szc]{1,2}iento[sz]"],
+	"4": ["[ckq]uatro", "[ckq]ator", "[ckq]uarenta", "[ckq]uatro[szc]{1,2}iento[sz]"],
+	"5": ["[csz]in[ck]o", "(quin|kin)", "[csz]in[cqk]uenta", "(quin|kin)iento[sz]"],
+	"6": ["[scz]ei[sz]", "", "[scz]e[scz]enta", "[scz]ei[scz]{1,2}iento[sz]"],
+	"7": ["[scz]iete", "", "[scz]etenta", "[scz]ete[szc]{1,2}iento[sz]"],
+	"8": ["o[sc]ho", "", "o[sc]henta", "o[sc]ho[scz]{1,2}iento[sz]"],
+	"9": ["nue[vb]e", "", "no[vb]enta", "no[vb]e[scz]{1,2}iento[sz]"]
 };
-function createWord(numberArr){
-    numberArr = numberArr.reverse();
-    let umil = numberArr[3]
-    let centena = numberArr[2]
-    let decena = numberArr[1]
-    let unidad = numberArr[0]
-    let word = '';
-    if(unidad>0){
-        //uno, dos, tres...
-        if (decena == 0) {
-            word = palabras[unidad][0];
-        }
-        else if (decena == 1) {
-            //once doce, trece, catorce, quince
-            if(unidad>0 && unidad<6){
-                word = palabras[unidad][1] + "ce"
-            }
-            // dieciseis, diecisiete, dieciocho, diecinueve
-            else if(unidad>=6){
-                word = "dieci"+palabras[unidad][0]
-            }
-        }
-        //veinituno, veintidos, veintitres....
-        else if(decena == 2){
-            word = "veinti"+palabras[unidad][0];
-        } 
-        // treinta y uno, cuarenta y dos, cincuenta y tres...
-        else if(decena>2) {
-            word = palabras[decena][2]+ " y "+palabras[unidad][0]
-        }
-    }
-    else if(unidad==0){
-        //veinte, treinta, cuarenta...
-        if (decena>0){
-            word = palabras[decena][2]
-        }
-    }
-    //cien, doscientos, trescientos...
-    if(centena>0) {
-        if(centena==1){
-            if(decena==0 && unidad==0) word = palabras[centena][3] + " " +word;
-            if(decena!=0 || unidad!=0) word = "ciento "+ word
-        }
-        else if(centena>1){
-            word = palabras[centena][3] + " " + word;
-        }
-    }
-    //mil, dos mil, tres mil
-    if(umil==1) word = "mil "+ word;
-    else if(umil>1) word = palabras[umil][0]+ " mil "+ word;
-    return word;
-}
 function checkWord(_word, numberArr){
-    let umil = numberArr[0]
-    let centena = numberArr[1]
-    let decena = numberArr[2]
-    let unidad = numberArr[3]
-    let word = _word.toLowerCase().trim();
-    let rgx = ''
-    if (unidad > 0) {
-        //uno, dos, tres...
-        if (decena == 0) {
-            rgx = regularExpression[unidad][0];
-        } else if (decena == 1) {
-            //once doce, trece, catorce, quince
-            if (unidad > 0 && unidad < 6) {
-                rgx = regularExpression[unidad][1] + "[scz]e"
-            }
-            // dieciseis, diecisiete, dieciocho, diecinueve
-            else if (unidad >= 6) {
-                rgx = "die[csz]i" + regularExpression[unidad][0]
-            }
-        }
-        //veinituno, veintidos, veintitres....
-        else if (decena == 2) {
-            rgx = "[vb]einti" + regularExpression[unidad][0];
-        }
-        // treinta y uno, cuarenta y dos, cincuenta y tres...
-        else if (decena > 2) {
-            rgx = regularExpression[decena][2] + " y " + regularExpression[unidad][0]
-        }
-    } else if (unidad == 0) {
-        //veinte, treinta, cuarenta...
-        if (decena > 0) {
-            rgx = regularExpression[decena][2]
-        }
-    }
-    //cien, doscientos, trescientos...
-    if (centena > 0) {
-        if (centena == 1) {
-            if (decena == 0 && unidad == 0) rgx = regularExpression[centena][3] + " " + rgx;
-            if (decena != 0 || unidad != 0) rgx = "[szc]iento " + rgx
-        } else if (centena > 1) {
-            rgx = regularExpression[centena][3] + " " + rgx;
-        }
-    }
-    //mil, dos mil, tres mil
-    if (umil == 1) rgx = "mil " + rgx;
-    else if (umil > 1) rgx = regularExpression[umil][0] + " mil " + rgx;
+	let umil = numberArr[0]
+	let centena = numberArr[1]
+	let decena = numberArr[2]
+	let unidad = numberArr[3]
+	let word = _word.toLowerCase().trim();
+	let rgx = ''
+	if (unidad > 0) {
+			//uno, dos, tres...
+			if (decena == 0) {
+					rgx = regularExpression[unidad][0];
+			} else if (decena == 1) {
+					//once doce, trece, catorce, quince
+					if (unidad > 0 && unidad < 6) {
+							rgx = regularExpression[unidad][1] + "[scz]e"
+					}
+					// dieciseis, diecisiete, dieciocho, diecinueve
+					else if (unidad >= 6) {
+							rgx = "die[csz]i" + regularExpression[unidad][0]
+					}
+			}
+			//veinituno, veintidos, veintitres....
+			else if (decena == 2) {
+					rgx = "[vb]einti" + regularExpression[unidad][0];
+			}
+			// treinta y uno, cuarenta y dos, cincuenta y tres...
+			else if (decena > 2) {
+					rgx = regularExpression[decena][2] + " y " + regularExpression[unidad][0]
+			}
+	} else if (unidad == 0) {
+			//veinte, treinta, cuarenta...
+			if (decena > 0) {
+					rgx = regularExpression[decena][2]
+			}
+	}
+	//cien, doscientos, trescientos...
+	if (centena > 0) {
+			if (centena == 1) {
+					if (decena == 0 && unidad == 0) rgx = regularExpression[centena][3] + " " + rgx;
+					if (decena != 0 || unidad != 0) rgx = "[szc]iento " + rgx
+			} else if (centena > 1) {
+					rgx = regularExpression[centena][3] + " " + rgx;
+			}
+	}
+	//mil, dos mil, tres mil
+	if (umil == 1) rgx = "mil " + rgx;
+	else if (umil > 1) rgx = regularExpression[umil][0] + " mil " + rgx;
 
-    rgx = rgx.trim();
-    rgx = rgx.replace(/^/, '^')
-    rgx = rgx + '$'
-    let newRgx = new RegExp(rgx);
-    return newRgx.test(word)
+	rgx = rgx.trim();
+	rgx = rgx.replace(/^/, '^')
+	rgx = rgx + '$'
+	let newRgx = new RegExp(rgx);
+	return newRgx.test(word)
 }

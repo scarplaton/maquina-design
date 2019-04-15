@@ -47,12 +47,12 @@ table {
 
 @font-face {
   font-family: 'varela';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/VarelaRound-Regular-webfont.woff');
+  src: url('../../fonts/VarelaRound-Regular-webfont.woff');
 }
 
 @font-face {
   font-family: 'opensans';
-  src: url('https://desarrolloadaptatin.blob.core.windows.net:443/frontejercicios/fonts/OpenSans-Regular-webfont.woff');
+  src: url('../../fonts/OpenSans-Regular-webfont.woff');
 }
 
 @media only screen and (min-width: 1367px) {
@@ -123,7 +123,7 @@ table {
 
   .icon-consulta span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     margin: 0 auto;
     height: 100%;
     width: auto;
@@ -131,7 +131,7 @@ table {
 
   .icon-responder span {
     display: block;
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     margin: 0 auto;
     height: 85%;
     width: auto;
@@ -232,7 +232,7 @@ table {
   }
 
   button:not(:disabled).icon-consulta:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/open-book.svg");
+    content: url("../../imagenes_front/botones_ejercicios/open-book.svg");
     width: 42px;
     margin-left: auto;
     margin-right: auto;
@@ -241,7 +241,7 @@ table {
   }
 
   button:not(:disabled).icon-responder:before {
-    content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+    content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
     width: 36px;
     margin-left: auto;
     margin-right: auto;
@@ -273,8 +273,24 @@ table {
 }
 
 #progressbar {
-  width: 100%;
-  height: auto;
+  width: 254px;
+  height: 40px;
+  margin-top: 5px;
+}
+
+.lineasbarra {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+
+hr.sidelinebar {
+  height: 1px;
+  border: 0;
+  color: #E7E5E5;
+  background-color: #E7E5E5;
+  width: calc(100% / 2 - 164px);
+  margin-top: 18px;
 }
 
 #botonSalir {
@@ -396,7 +412,7 @@ table {
 }
 
 .btnCerrarFeed div {
-  content: url("https://desarrolloadaptatin.blob.core.windows.net/prueba/diseno_prototipo/svg/flecha-der.svg");
+  content: url("../../imagenes_front/botones_ejercicios/flecha-der.svg");
   height: 80%;
   width: auto;
   margin: 0 auto;
@@ -663,7 +679,7 @@ table {
 .radio-div label {
   cursor: pointer;
   color: #3c3c3c;
-  font-size: 16px;
+  font-size: 18px;
   margin-bottom: 0;
   display: block;
 }
@@ -691,3 +707,22 @@ table {
   margin-top: 0;
 }
 
+.strikethrough {
+  position: relative;
+}
+
+.strikethrough:before {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 50%;
+  right: 0;
+  border-top: 1px solid;
+  border-color: red;
+   
+  -webkit-transform:rotate(-30deg);
+  -moz-transform:rotate(-30deg);
+  -ms-transform:rotate(-30deg);
+  -o-transform:rotate(-30deg);
+  transform:rotate(-30deg);
+}

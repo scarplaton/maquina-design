@@ -10,6 +10,7 @@ errFre = '',
 feed = '', 
 check = false;
 var _TIPO_INPUT_ = '';
+var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
 const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
@@ -18,17 +19,24 @@ const feedIncorrectas = ['¡Atención!','¡Pon Atención!','Cuidado'];
 var btnRespuesta =  document.getElementById('btnResponder');
 btnRespuesta.setAttribute("onClick", "answer();");
 
-var tmpProgreso = localStorage.getItem('tmpProgreso') ? 
-	JSON.parse(localStorage.getItem('tmpProgreso')) : [];
-var tmpTotal = localStorage.getItem('tmpTotal') ?
-	Number(localStorage.getItem('tmpTotal')) : 5;
+if(hiddenBarraDatos) {
+	var datosBarraDeProgreso = JSON.parse(hiddenBarraDatos.value);
+	tmpProgreso = datosBarraDeProgreso.tmpProgreso ? 
+		datosBarraDeProgreso.tmpProgreso : [];
+	tmpTotal = datosBarraDeProgreso.tmpTotal ?
+		Number(datosBarraDeProgreso.tmpTotal) : 0;
+} else {
+	tmpProgreso = localStorage.getItem('tmpProgreso') ? 
+		JSON.parse(localStorage.getItem('tmpProgreso')) : [];
+	tmpTotal = localStorage.getItem('tmpTotal') ?
+		Number(localStorage.getItem('tmpTotal')) : 0;
+}
 
+barraDeProgreso();
 $(document).ready(function(){
-	$('[data-toggle="tooltip"]').tooltip();
-	barraDeProgreso();
-	$( window ).resize(function() {
-		barraDeProgreso();
-	});
+	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+		e.preventDefault();
+ 	});
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {
@@ -50,9 +58,56 @@ function validaRespuesta() { //Validar respuesta
 			evaluaInputTexto(inputs[0]);
 		} else {//si hay mas de un input de texto
 			for(var input of inputs) {
+				coloreaInputTexto(input);
+			}
+			for(var input of inputs) {
 				evaluaInputTexto(input);
+				if(errFre !== null) {
+					break;
+				}
 			}
 		}
+	}
+}
+
+function coloreaInputTexto(inputElement) {
+	var content = JSON.parse(inputElement.getAttribute('data-content'));
+	var match = false;
+	switch(content.tipoInput){
+		case 'numero':
+			var resp = inputElement.value.replace(/\s/g, '');
+			for(var answer of content.answers) {
+				if(resp === answer.respuesta) {
+					if(answer.errFrec !== null) {
+						inputElement.classList.add('inputTexto-incorrecto');
+					} else {
+						inputElement.classList.add('inputTexto-correcto');
+					}
+					match = true;
+					break;
+				}
+			}
+			break;
+		case 'texto':
+			var resp = inputElement.value;
+			for(var answer of content.answers) {
+				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
+				if(checkWord(resp, numberArr)) {
+					if(answer.errFrec !== null) {
+						inputElement.classList.add('inputTexto-incorrecto');
+					} else {
+						inputElement.classList.add('inputTexto-correcto');
+					}
+					match = true;
+					break;
+				}
+			}
+			break;
+	}
+	if(!match) {
+		feed = content.feedbackDefecto;
+		errFre = content.errFrecDefecto;
+		inputElement.classList.add('inputTexto-incorrecto');
 	}
 }
 
@@ -111,43 +166,82 @@ function answer() {
 }
 
 function barraDeProgreso() {
+	var anchoBarra = 250;//254 para el espacio del margen
   $("#progressbar").empty();
-  var svg = document.getElementById('progressbar');
-  var separacion = (1000 - 46 * tmpTotal) / tmpTotal;
+	var svg = document.getElementById('progressbar');
+	var separacion = anchoBarra / (tmpTotal+1);
+	
+	var bordeBarra = crearElemento('rect', {
+		x: 2,
+		y: 2,
+		width: anchoBarra,
+		height: 32,
+		fill: 'none',
+		stroke: '#CCCBCB',
+		strokeWidth: '1',
+		rx: 5,
+		ry: 5
+	});
+	svg.appendChild(bordeBarra);
+
+	var anchoLinea = Number(anchoBarra-(separacion*2));
+	var lineaBarra = crearElemento('rect', {
+		x: separacion,
+		y: 17,
+		width: anchoLinea,
+		height: 2,
+		fill: '#E7E5E5',
+		rx: 2,
+		ry: 2
+	}); 
+	svg.appendChild(lineaBarra);
 
   for (var i = 0; i < tmpTotal; i++) {
-    var xRect = i * separacion + i * 46 + 5; //calcula centro x para rectangulo
-
-    var cxCircle = i * separacion + i * 46 + separacion + 23; //calcula x de inicio para recta
-
+		var colorCirculo, rCircle;
+		if(tmpProgreso.length > i) {
+			rCircle = 4;
+			if(tmpProgreso[i].correcto) {
+				colorCirculo = tmpProgreso[i].NUMEROINTENTOS === 1 ? '#00AC4D' : '#E2C04D';
+			} else {
+				colorCirculo = '#E24B4A';
+			}
+		} else if(tmpProgreso.length === i) {
+			rCircle = 8;
+			colorCirculo = '#1280B1';
+		} else {
+			rCircle = 4;
+			colorCirculo = '#CCCBCB';
+		}
+		var cxCircle = separacion * (i+1) + 2;
     var circle = crearElemento('circle', {
       cx: cxCircle,
-      cy: 25,
-      r: 23,
-      fill: 'black',
+      cy: 18,
+      r: rCircle,
+      fill: colorCirculo,
       stroke: 'none'
     });
-    var rect = crearElemento('rect', {
-      x: xRect,
-      y: 13.5,
-      width: separacion - 10,
-      height: 27,
-      fill: 'black',
-      stroke: 'none'
-    });
-    svg.appendChild(circle);
-    svg.appendChild(rect);
+		svg.appendChild(circle);
+		if(tmpProgreso.length === i) {
+			var textPosicion = crearElemento('text', {
+				x: cxCircle,
+				y: 22,
+				fontFamily: 'sans-serif',
+				fontSize: '11px',
+				textAnchor: 'middle',
+				fill: 'white'
+			});
+			textPosicion.textContent = tmpProgreso.length+1;
+			svg.appendChild(textPosicion);
+		}
   }
 
   function crearElemento(nombre, atributos) {
     var element = document.createElementNS("http://www.w3.org/2000/svg", nombre);
-
     for (var p in atributos) {
       element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
         return "-" + m.toLowerCase();
       }), atributos[p]);
     }
-
     return element;
   }
 } 
@@ -170,11 +264,11 @@ function muestraFeedback(esCorrecta, feedback) {
 		$('section.contenido').find('input').prop('disabled', true);
 		if(esCorrecta) {
 			var rando = Math.floor((Math.random() *  arrCorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrCorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrCorrecta[rando]}`;
 			feedbackCorrecta(src);
 		} else {
 			var rando = Math.floor((Math.random() *  arrIncorrecta.length));
-			var src = `https://contenedoradapt.adaptativamente.cl/frontejercicios/imagenes_front/patos/${arrIncorrecta[rando]}`;
+			var src = `../../../../imagenes_front/patos/${arrIncorrecta[rando]}`;
 			feedbackIncorrecta(src);
 		}
 	}
@@ -233,7 +327,13 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		$('input:checked')[0].checked = false;
 		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+		} else {
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
 	$('section.contenido').find('input').prop('disabled', false);
 }
