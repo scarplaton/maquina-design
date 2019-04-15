@@ -424,7 +424,8 @@ function insertarTabla(config) {
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
-            var { tipoInput, maxLength, error0, error2, error3, error4, defaultError,
+            var { tipoInput, maxLength, placeholder, anchoInput,
+              error0, error2, error3, error4, defaultError,
               feed0, feed1, feed2, feed3, feed4, defaultFeed,
               value1, value2, value3, value4 } = table[row][col].value;
             var feedGenerico = regex(feed0, vars, vt);
@@ -462,13 +463,13 @@ function insertarTabla(config) {
             };
             switch (tipoInput) {
               case 'text':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             break;
@@ -513,13 +514,13 @@ function insertarTabla(config) {
             var input;
             switch (tipoInput) {
               case 'text':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" style="width:60px;" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                input = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                input = `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             r += `<p>${p.replace('{input}', input)}</p>`;
@@ -540,7 +541,7 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
-    if(tituloTabla !== '') {
+    if (tituloTabla !== '') {
       container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
       var titulo = document.createElement('span');
       titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));

@@ -2441,6 +2441,9 @@ function repeticionPic(config) {
   }, {
     name: 'signo suma',
     src: '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
+  }, {
+    name: 'rectangulo',
+    src: '../../../../imagenes_front/figuras_geometricas/rectangulo_2.svg'
   }];
   //'signo resta', 'signo igual', 'signo mayor', 'signo menor'
   let { _pictoricos, _separacion, heightCanvas, widthCanvas, _tituloCanvas, _canvasBorder, _canvasBorderRadius,
