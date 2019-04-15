@@ -168,7 +168,6 @@ function print() { //Dibujar ejercicios
               break;
             }
           }
-
           break;
         }
       }
