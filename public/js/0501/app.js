@@ -2258,7 +2258,7 @@ function tablaPosicional(config) {
     }
   }
 
-  async function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
+  function muestraValoresPosicionales(valorPosicional, yStart, diviciones, anchoSeparaciones, imgFlechaAbajo, imgSignoMas) {
     ctx.font = `${valorPosicional.altoTexto}pt LarkeNeueThinFuente`;
     ctx.fillStyle = '#F58220';
     ctx.textAlign = 'center';
@@ -2273,10 +2273,12 @@ function tablaPosicional(config) {
       ctx.drawImage(imgFlechaAbajo, xFlecha, yStart);
       //texto
       if(typeof numerosValorPosicional[i - 1] === 'string') {
+        console.log('es string')
         yTexto = yStart + imgFlechaAbajo.height + _separacionElementos + valorPosicional.altoTexto;
         ctx.fillText(numerosValorPosicional[i - 1], centroSeccion, yTexto);
       } else {
-        await cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
+        console.log('es imagen')
+        cargaImagen(numerosValorPosicional[i-1].src).then(function(img){
           var anchoImgVp = numerosValorPosicional[i-1].alto * img.width / img.height;
           var xImagenVp = centroSeccion-anchoImgVp/2;
           var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos + (valorPosicional.altoTexto/2) - (numerosValorPosicional[i-1].alto/2);

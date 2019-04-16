@@ -1639,7 +1639,7 @@ async function rectNumFn(config) {
           ctx.fillStyle = '#A84C4E';
           ctx.textAlign = "center";
           ctx.font = '15px ' + rectFontType;
-          ctx.fillText(scale.value, xPos + arcoRadio, centroY - arcoRadio - 10);
+          ctx.fillText(espacioMiles(scale.value.toString()), xPos + arcoRadio, centroY - arcoRadio - 10);
         }
       }
     }
