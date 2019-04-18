@@ -2769,18 +2769,18 @@ function repeticionPic(config) {
 
   var vars = vt ? variables : versions;
   try {
-    _repeticiones1 = regex(_repeticiones1, vars, vt);
-    _repeticiones2 = regex(_repeticiones2, vars, vt);
-    _repeticiones3 = regex(_repeticiones3, vars, vt);
-    _repeticiones4 = regex(_repeticiones4, vars, vt);
-    _repeticiones5 = regex(_repeticiones5, vars, vt);
-    _repeticiones6 = regex(_repeticiones6, vars, vt);
-    _repeticiones7 = regex(_repeticiones7, vars, vt);
-    _repeticiones8 = regex(_repeticiones8, vars, vt);
-    _repeticiones9 = regex(_repeticiones9, vars, vt);
-    _repeticiones10 = regex(_repeticiones10, vars, vt);
-    _repeticiones11 = regex(_repeticiones11, vars, vt);
-    _repeticiones12 = regex(_repeticiones12, vars, vt);
+    _repeticiones1 = regexFunctions(regex(_repeticiones1, vars, vt));
+    _repeticiones2 = regexFunctions(regex(_repeticiones2, vars, vt));
+    _repeticiones3 = regexFunctions(regex(_repeticiones3, vars, vt));
+    _repeticiones4 = regexFunctions(regex(_repeticiones4, vars, vt));
+    _repeticiones5 = regexFunctions(regex(_repeticiones5, vars, vt));
+    _repeticiones6 = regexFunctions(regex(_repeticiones6, vars, vt));
+    _repeticiones7 = regexFunctions(regex(_repeticiones7, vars, vt));
+    _repeticiones8 = regexFunctions(regex(_repeticiones8, vars, vt));
+    _repeticiones9 = regexFunctions(regex(_repeticiones9, vars, vt));
+    _repeticiones10 = regexFunctions(regex(_repeticiones10, vars, vt));
+    _repeticiones11 = regexFunctions(regex(_repeticiones11, vars, vt));
+    _repeticiones12 = regexFunctions(regex(_repeticiones12, vars, vt));
   } catch (error) {
     console.log(error);
   }
@@ -3260,6 +3260,34 @@ function repeticionPic(config) {
     }
   }
 }
+
+function cardinalAOrdinal(numero, genero) {//M o F
+  switch(numero){
+      case '1':
+          return genero === 'M' ? 'primer' : 'primera';
+      case '2':
+          return genero === 'M' ? 'segundo' : 'segunda';
+      case '3':
+          return genero === 'M' ? 'tercer' : 'tercera';
+      case '4':
+          return genero === 'M' ? 'cuarto' : 'tercera';
+      case '5':
+          return genero === 'M' ? 'quinto' : 'quinta';
+      case '6':
+          return genero === 'M' ? 'sexto' : 'sexta';
+      case '7':
+          return genero === 'M' ? 'séptimo' : 'séptima';
+      case '8':
+          return genero === 'M' ? 'octavo' : 'octava';
+      case '9':
+          return genero === 'M' ? 'noveno' : 'novena';
+      case '10':
+          return genero === 'M' ? 'décimo' : 'décima';
+      default:
+          return '';
+  }
+}
+
 
 function repeticionBidimensional(config) {
   const { container, params, variables, versions, vt } = config;

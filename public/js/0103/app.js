@@ -154,78 +154,79 @@ function print() { //Dibujar ejercicios
 }
 
 function dibujaHtml() {
-	// INICIO ENUNCIADO
-	var contenidoDiv = document.getElementById('enunciado');
-	var contenidoHtml = '';
-	contenidoBody['e'].forEach((m, i) => {
-		contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
-		} else {
-			contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
-		}
-		contenidoHtml += '</div>'
-	});
-	contenidoDiv.innerHTML = contenidoHtml;
-	// INICIO RESPUESTA
-	var respuestaDiv = document.getElementById('respuesta');
-	var respuestaHtml = '';
+  // INICIO ENUNCIADO
+  var contenidoDiv = document.getElementById('enunciado');
+  var contenidoHtml = '';
+  contenidoBody['e'].forEach((m, i) => {
+    contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
+    } else {
+      contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
+    }
+    contenidoHtml += '</div>'
+  });
+  contenidoDiv.innerHTML = contenidoHtml;
+  // INICIO RESPUESTA
+  var respuestaDiv = document.getElementById('respuesta');
+  var respuestaHtml = '';
 
-	var contenidoRespuestas =  contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
-		if(item.tag != 'general') {
-			return true;
-		} else {
-			return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
-		}
-	});
-	if(contenidoRespuestas.length > 0) {
-		contenidoRespuestas = shuffle(contenidoBody['r'], 5);
-		contenidoRespuestas.forEach(function(item, index){
-				console.log(item);
-				var dataContent = { 
-					feedback: regex(item.params.feed, versionBody.vars, false),
-					respuesta: `Opción ${index+1}`, 
-					errFrec: item.params.errFrec === '' ? null : item.params.errFrec
-				};
-				respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
+  var contenidoRespuestas = contenidoBody['r'].filter((item) => { //respuestas que deben estar en forma de imagen seleccionable
+    if (item.tag != 'general') {
+      return true;
+    } else {
+      return item.name === 'Insertar Imagen' || item.name === 'Insertar Tabla';
+    }
+  });
+  if (contenidoRespuestas.length > 0) {
+    contenidoRespuestas = shuffle(contenidoBody['r']);
+    contenidoRespuestas.forEach(function (item, index) {
+      console.log(item);
+      var dataContent = {
+        feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
+        respuesta: `Opción ${index + 1}`,
+        errFrec: item.params.errFrec === '' ? null : item.params.errFrec
+      };
+      let textoOpcion = item.params.textoOpcion ? regex(item.params.textoOpcion, versionBody.vars, false) : `Opción ${index + 1}`
+      respuestaHtml += `<div class="col-md-${item.params.colmd} col-sm-${item.params.colsm} col-${item.params.col}">
           <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
-            <input id="rbtn${index}" name="answer" value="Opción ${index+1}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
-            <label for="rbtn${index}" id="label${index}">Opción ${index+1}</label>
+            <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
+            <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
 						${
-							item.tag != 'general' ? 
-							`<canvas class="img-fluid" id="container-r${index}"></canvas>` :
-							`<div id="container-r${index}" class="general"></div>`
-						}
+        item.tag != 'general' ?
+          `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+          `<div id="container-r${index}" class="general"></div>`
+        }
 					</div>
 				</div>`;
-		});
-	} else {
-		contenidoBody['r'].forEach(function(item, index){
-			console.log(item);
-			respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
-			if (item.tag != 'general') {
-				respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
-			} else {
-				respuestaHtml += `<div id="container-r${index}" class="general"></div>`
-			}
-			respuestaHtml += '</div>'
-		});
-	}
+    });
+  } else {
+    contenidoBody['r'].forEach(function (item, index) {
+      console.log(item);
+      respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
+      if (item.tag != 'general') {
+        respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
+      } else {
+        respuestaHtml += `<div id="container-r${index}" class="general"></div>`
+      }
+      respuestaHtml += '</div>'
+    });
+  }
 
-	respuestaDiv.innerHTML = respuestaHtml;
-	// INICIO GLOSA
-	var glosaDiv = document.getElementById('glosa');
-	var glosaHtml = '';
-	contenidoBody['g'].forEach((m, i) => {
-		glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
-		if (m.tag != 'general') {
-			glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
-		} else {
-			glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
-		}
-		glosaHtml += '</div>'
-	});
-	glosaDiv.innerHTML = glosaHtml;
+  respuestaDiv.innerHTML = respuestaHtml;
+  // INICIO GLOSA
+  var glosaDiv = document.getElementById('glosa');
+  var glosaHtml = '';
+  contenidoBody['g'].forEach((m, i) => {
+    glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    if (m.tag != 'general') {
+      glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
+    } else {
+      glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
+    }
+    glosaHtml += '</div>'
+  });
+  glosaDiv.innerHTML = glosaHtml;
 }
 
 function insertarTexto(config) {
