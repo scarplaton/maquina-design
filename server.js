@@ -31,7 +31,7 @@ app.get('/archivos', (request, response) => {
       const ejercicioFolders = fs.readdirSync(ejercicioFoldersPath);
       for(var archivoEjercicio = 0; archivoEjercicio < ejercicioFolders.length; archivoEjercicio++) {
         let htmlsPath = path.join(ejercicioFoldersPath, ejercicioFolders[archivoEjercicio]);
-        let datos = fs.readdirSync(htmlsPath).map(x => [
+        let datos = fs.readdirSync(htmlsPath).filter(x => !x.endsWith('.js') && !x.endsWith('.css')).map(x => [
           ejercicioFolders[archivoEjercicio],
           oaFolders[oa],
           ieFolders[ie],
