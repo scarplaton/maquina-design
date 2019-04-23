@@ -182,7 +182,7 @@ function dibujaHtml() {
     contenidoRespuestas.forEach(function (item, index) {
       console.log(item);
       var dataContent = {
-        feedback: regex(item.params.feed, versionBody.vars, false),
+        feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
