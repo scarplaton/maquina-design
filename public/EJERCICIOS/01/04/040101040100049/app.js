@@ -197,7 +197,7 @@ function dibujaHtml() {
   var contenidoDiv = document.getElementById('enunciado');
   var contenidoHtml = '';
   contenidoBody['e'].forEach((m, i) => {
-    contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
+    contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
     if (m.tag != 'general') {
       contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
     } else {
@@ -2840,9 +2840,8 @@ function repeticionPic(config) {
             console.log(repeticion);
             break;
         }
-       
+        posicicionesInicio.push(xStart);
       }
-      posicicionesInicio.push(xStart);
     }
     if (_agruparRepeticiones !== "") {
       dibujaAgrupacionDePictoricos();
@@ -3462,11 +3461,11 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           numeroX: Number(dato.numeroX),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal,
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
-      case 'horVert':    
+      case 'horVert':
         return {
           formaRepeticion: dato.formaRepeticion,
           src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
@@ -3474,7 +3473,7 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           srcVert: String(regex(dato.srcVert, vars, vt)),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal,
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
@@ -3487,7 +3486,7 @@ function multiplicacionPic(config) {
           separacionX: Number(dato.separacionX),
           separacionY: Number(dato.separacionY),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal,
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };

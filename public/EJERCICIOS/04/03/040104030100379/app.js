@@ -242,7 +242,7 @@ function dibujaHtml() {
   } else {
     contenidoBody['r'].forEach(function (item, index) {
       console.log(item);
-      respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
+      respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-${item.width.xs} tag">`
       if (item.tag != 'general') {
         respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
       } else {
@@ -257,7 +257,7 @@ function dibujaHtml() {
   var glosaDiv = document.getElementById('glosa');
   var glosaHtml = '';
   contenidoBody['g'].forEach((m, i) => {
-    glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
+    glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
     if (m.tag != 'general') {
       glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
     } else {
