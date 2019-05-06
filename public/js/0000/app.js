@@ -1148,7 +1148,7 @@ async function rectNumFn(config) {
       valores.push({ valor, xPos });
     }
     if (tramoLLave.mostrar) {
-      mostrarTramoLlave(state, valores, tramoLLave);
+      mostrarTramoLlave(state, valores, tramoLLave, dataRecta);
     }
     if (figures.show) {
       mostrarImagenesEnPosicion(state, valores, dataRecta);
@@ -1221,14 +1221,30 @@ async function rectNumFn(config) {
     });
   }
 
-  function mostrarTramoLlave(state, valores, tramoLLave) {
-    const { ctx, canvas, scale, font } = state
+  function mostrarTramoLlave(state, valores, tramoLLave, dataRecta) {
+    const { ctx, canvas, scale, chart, font } = state
     const { inicio, fin, color, alto, texto, forma, altura } = tramoLLave;
+    const { initValue } = chart.values
+    const { xIni, centroY, segmento, escalaValor } = dataRecta;
+    
     let radio = 15;
     let datosInicio = valores.find(x => x.valor === inicio);
     let datosFin = valores.find(x => x.valor === fin);
-    let xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
-    let xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+    let xInicio, xFin;
+    if(datosInicio && datosFin) {
+      xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
+      xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+    } else {
+      let xInicioRect = xIni - segmento;
+      let valorInicial = Number(initValue) - escalaValor;
+      let diferenciaEscalaInicio = (Number(inicio) - valorInicial) / escalaValor;
+      let diferenciaEscalaFin = (Number(fin) - valorInicial) / escalaValor;
+      xInicio = xInicioRect + segmento * diferenciaEscalaInicio;
+      xFin = xInicioRect + segmento * diferenciaEscalaFin;
+      xInicio = forma === 'igual' ? xInicio : forma === 'incluido' ? xInicio - 5 : xInicio + 5;
+      xFin = forma === 'igual' ? xFin : forma === 'incluido' ? xFin - 5 : xFin + 5;
+      console.log({ xInicio, xFin });
+    }
     let xMitad = (xInicio + xFin) / 2;
     let yTramo = canvas.height / 2 - scale.length - altura;
     let yTramoInicio = yTramo + radio;
