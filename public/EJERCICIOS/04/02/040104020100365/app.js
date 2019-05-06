@@ -3347,7 +3347,8 @@ function repeticionBidimensional(config) {
   Promise.all(datos.map(arreglo => arreglo.tipo === 'texto' ?
     cargaFuente(arreglo.nombreFuente, arreglo.src) :
     cargaImagen(arreglo.src))
-  ).then(function (imagenes) {
+  ).then(async function (imagenes) {
+    await cargaFuente('Open-Sans-Regular-Font', '../../../../fonts/OpenSans-Regular-webfont.woff');
     var anchoTotal = sepElem, altoRepeticiones = [];
     imagenes.forEach(function (imagen, index) {
       if (datos[index].tipo === 'arreglo') {
@@ -3429,7 +3430,7 @@ function repeticionBidimensional(config) {
     }
 
     function mostrarTexto(texto, x, y, aling, fontsize, color) {
-      ctx.font = `${fontsize}px opensansregularfont`;
+      ctx.font = `${fontsize}px Open-Sans-Regular-Font`;
       ctx.textAlign = aling;
       ctx.fillStyle = color ? color : '#000000';
       ctx.fillText(texto, x, y);
