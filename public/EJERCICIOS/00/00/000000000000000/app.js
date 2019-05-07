@@ -69,12 +69,12 @@ function cargaFuente(nombre, src) {
       document.fonts.add(loadedFont);
       loadedFont.load();
       loadedFont.loaded.then(()=>{
-        //console.log('fuente ', nombre, ' cargada');
+        console.log('fuente ', nombre, ' cargada');
       }).catch(error => {
-        //console.log('errror al cargar imagen => ', error);
+        console.log('errror al cargar imagen => ', error);
       });
       document.fonts.ready.then((fontFaceSet) => {
-        //console.log(fontFaceSet.size, 'FontFaces loaded.');
+        console.log(fontFaceSet.size, 'FontFaces loaded.');
         resolve(nombre);
       })
     }).catch(function (error) {
@@ -220,7 +220,7 @@ function dibujaHtml() {
   if (contenidoRespuestas.length > 0) {
     contenidoRespuestas = shuffle(contenidoBody['r']);
     contenidoRespuestas.forEach(function (item, index) {
-      //console.log(item);
+      console.log(item);
       var dataContent = {
         feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
         respuesta: `Opción ${index + 1}`,
@@ -241,7 +241,7 @@ function dibujaHtml() {
     });
   } else {
     contenidoBody['r'].forEach(function (item, index) {
-      //console.log(item);
+      console.log(item);
       respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
       if (item.tag != 'general') {
         respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
@@ -286,7 +286,7 @@ function insertarImagen(config) {
     var relativePath = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
     source = regex(relativePath, vars, vt);
   } catch (e) {
-    //console.log(e);
+    console.log(e);
   }
   cargaImagen(source).then(img => {
     if (display === 'alto exacto') {
@@ -313,7 +313,7 @@ function insertarImagen(config) {
     img.src = "/notfound";
     img.alt = "Error al cargar imagen";
     container.appendChild(img);
-    //console.log(error);
+    console.log(error);
   });
 }
 function insertarInput(config) {
@@ -1148,7 +1148,7 @@ async function rectNumFn(config) {
       valores.push({ valor, xPos });
     }
     if (tramoLLave.mostrar) {
-      mostrarTramoLlave(state, valores, tramoLLave);
+      mostrarTramoLlave(state, valores, tramoLLave, dataRecta);
     }
     if (figures.show) {
       mostrarImagenesEnPosicion(state, valores, dataRecta);
@@ -1171,7 +1171,7 @@ async function rectNumFn(config) {
     }).then(imagenes => {
       let xInicio = xIni - segmento;
       let valorInicial = Number(initValue) - escalaValor;
-      //console.log(imagenes);
+      console.log(imagenes);
       imagenes.forEach(img => {
         if (!img) {
           return;
@@ -1217,23 +1217,37 @@ async function rectNumFn(config) {
         });
       });
     }).catch(error => {
-      //console.log(error);
+      console.log(error);
     });
   }
 
-  function mostrarTramoLlave(state, valores, tramoLLave) {
-    const { ctx, canvas, scale, font } = state
+  function mostrarTramoLlave(state, valores, tramoLLave, dataRecta) {
+    const { ctx, canvas, scale, chart, font } = state
     const { inicio, fin, color, alto, texto, forma, altura } = tramoLLave;
+    const { initValue } = chart.values
+    const { xIni, centroY, segmento, escalaValor } = dataRecta;
+    
     let radio = 15;
     let datosInicio = valores.find(x => x.valor === inicio);
     let datosFin = valores.find(x => x.valor === fin);
-    let xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
-    let xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+    let xInicio, xFin;
+    if(datosInicio && datosFin) {
+      xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
+      xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
+    } else {
+      let xInicioRect = xIni - segmento;
+      let valorInicial = Number(initValue) - escalaValor;
+      let diferenciaEscalaInicio = (Number(inicio) - valorInicial) / escalaValor;
+      let diferenciaEscalaFin = (Number(fin) - valorInicial) / escalaValor;
+      xInicio = xInicioRect + segmento * diferenciaEscalaInicio;
+      xFin = xInicioRect + segmento * diferenciaEscalaFin;
+      xInicio = forma === 'igual' ? xInicio : forma === 'incluido' ? xInicio - 5 : xInicio + 5;
+      xFin = forma === 'igual' ? xFin : forma === 'incluido' ? xFin - 5 : xFin + 5;
+    }
     let xMitad = (xInicio + xFin) / 2;
     let yTramo = canvas.height / 2 - scale.length - altura;
     let yTramoInicio = yTramo + radio;
     let yTramoFin = yTramo - radio;
-    //console.log({ yTramo, yTramoFin, yTramoInicio, altura, alto })
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -1253,7 +1267,7 @@ async function rectNumFn(config) {
     ctx.stroke();
 
     ctx.textAlign = "center";
-    ctx.font = `${alto}px ${rectFontType}`;
+    ctx.font = `${alto}px OpenSansRegular`;
     ctx.fillStyle = font.color;
     ctx.fillText(texto, xMitad, yTramoFin - 5);
 
@@ -1266,7 +1280,7 @@ async function rectNumFn(config) {
     const { theValue, extValues, allValues, point, figure, arcs } = miniScale
     const { xIni, centroY, segmento } = dataRecta
 
-    ////console.log(miniScale)
+    //console.log(miniScale)
     let centroYNum = centroY + scale.length * 1.7
     let valor = Number(theValue)
     for (let i = 0; i <= 10; i++) {
@@ -1735,7 +1749,7 @@ async function rectNumFn(config) {
     ctx.textBaseline = 'top'
     ctx.font = font.size + 'px ' + rectFontType
     ctx.fillText(espacioMiles(valor), x, y)
-    //console.log('texto escrito');
+    console.log('texto escrito');
     ctx.restore()
     ctx.save()
   }
@@ -2013,7 +2027,7 @@ function tablaPosicional(config) {
 
     _resultado = regex(_resultado, vars, vt);
   } catch (error) {
-    //console.log(error);
+    console.log(error);
   }
   let datosEjercicio = {};
   datosEjercicio.tabla = {};
@@ -2126,7 +2140,7 @@ function tablaPosicional(config) {
   }
 
   _separacionElementos = Number(_separacionElementos);
-  //console.log(datosEjercicio);
+  console.log(datosEjercicio);
   let recursos = cargaRecursos();
   var ctx, yStart = 0;
   if (_titulo !== '') {
@@ -2161,7 +2175,7 @@ function tablaPosicional(config) {
     }
 
   }).catch(function (error) {
-    //console.log(error, error.message);
+    console.log(error, error.message);
   });
 
   function dibujaContenidoTabla(anchoSeparaciones, altoImagen) {
@@ -2208,7 +2222,7 @@ function tablaPosicional(config) {
             dibujaRepeticion(numero, fila, columna, tipoRepeticion, altoImagenDeRepeticion);
             break;
           default:
-            //console.log('opcion aun no soportada');
+            console.log('opcion aun no soportada');
             break;
         }
       });
@@ -2232,7 +2246,7 @@ function tablaPosicional(config) {
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
           ctx.drawImage(image, xImg, yImg, altoCuadro * 0.85, altoCuadro * 0.85);
         }).catch(error => {
-          //console.log(error)
+          console.log(error)
         });
       } else if (tipoRepeticion === 'circulo y cuadrado') {
         var img = columna % 2 === 0 ? 'Circulo.svg' : 'Cuadrado.svg';
@@ -2242,7 +2256,7 @@ function tablaPosicional(config) {
           var yImg = porcion + (altoCuadro * fila) + (altoCuadro / 2) - (altoCuadro * 0.85 / 2);
           ctx.drawImage(image, xImg, yImg, altoCuadro * 0.85, altoCuadro * 0.85);
         }).catch(error => {
-          //console.log(error)
+          console.log(error)
         });
       }
     }
@@ -2282,12 +2296,12 @@ function tablaPosicional(config) {
               dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
               break;
             default:
-              //console.log('aun no se pinta ' + ruta);
+              console.log('aun no se pinta ' + ruta);
               break;
           }
         }
       }).catch(error => {
-        //console.log(error);
+        console.log(error);
       });
 
       function dibujaRepeticionDadoBilletes(numero, anchoSeparacion, altoCuadro, image, cx, cy) {
@@ -2353,7 +2367,7 @@ function tablaPosicional(config) {
             ctx.drawImage(image, x2, y3, widthImg, altoImg);
             break;
           default:
-            //console.log('Hola :)');
+            console.log('Hola :)');
             break;
         }
       }
@@ -2469,7 +2483,7 @@ function tablaPosicional(config) {
     ctx.textAlign = 'center';
     var { umil, centena, decena, unidad } = valorPosicional.numeros;
     var numerosValorPosicional = diviciones === 3 ? [centena, decena, unidad] : [umil, centena, decena, unidad];
-    ////console.log(numerosValorPosicional);
+    //console.log(numerosValorPosicional);
     for (var i = 1, centroSeccion, centroSeparacion, yTexto; i < diviciones + 1; i++) {
       centroSeccion = (anchoSeparaciones * i) - (anchoSeparaciones / 2);
       centroSeparacion = anchoSeparaciones * i;
@@ -2487,7 +2501,7 @@ function tablaPosicional(config) {
           var yImagenVp = yStart + imgFlechaAbajo.height + _separacionElementos;
           ctx.drawImage(img, xImagenVp, yImagenVp, anchoImgVp, numerosValorPosicional[i - 1].alto);
         }).catch(function (error) {
-          //console.log(error);
+          console.log(error);
         });
       }
       //singo mas
@@ -2578,7 +2592,7 @@ function valorPosicional(config) {
       _texto = regex(_texto, vars, vt);
     }
   } catch (error) {
-    //console.log(error);
+    console.log(error);
   }
 
 
@@ -2690,7 +2704,7 @@ function valorPosicional(config) {
     }
 
   }).catch(function (error) {
-    //console.log(error)
+    console.log(error)
   });
 }
 
@@ -2782,7 +2796,7 @@ function repeticionPic(config) {
     _repeticiones11 = regexFunctions(regex(_repeticiones11, vars, vt));
     _repeticiones12 = regexFunctions(regex(_repeticiones12, vars, vt));
   } catch (error) {
-    //console.log(error);
+    console.log(error);
   }
 
   var repeticiones = getRepeticiones();
@@ -2837,7 +2851,7 @@ function repeticionPic(config) {
             xStart = dibujaRepeticionBidimensional(repeticion);
             break;
           default:
-            //console.log(repeticion);
+            console.log(repeticion);
             break;
         }
        
@@ -2847,9 +2861,9 @@ function repeticionPic(config) {
     if (_agruparRepeticiones !== "") {
       dibujaAgrupacionDePictoricos();
     }
-    //console.log(posicicionesInicio);
+    console.log(posicicionesInicio);
   }).catch(function (error) {
-    //console.log(error);
+    console.log(error);
   });
 
   function buscarImagen(imagenBuscada) {
@@ -3043,7 +3057,7 @@ function repeticionPic(config) {
   }
 
   function dibujaRepeticionBidimensional(repeticion) {
-    //console.log(xStart);
+    console.log(xStart);
     const { imagen, altoImagen, repeticiones, separacion, ejeY } = repeticion;
     var anchoImagen = imagen.width * altoImagen / imagen.height;
     var altoTotal = altoImagen * ejeY + separacion * (ejeY + 1);
@@ -3052,7 +3066,7 @@ function repeticionPic(config) {
       columna = Math.floor(i / ejeY);
       yImagen = yStart + altoImagen * (fila - 1) + separacion * fila;
       xImagen = xStart + anchoImagen * columna + separacion * columna;
-      //console.log(xImagen);
+      console.log(xImagen);
       ctx.drawImage(imagen, xImagen, yImagen, anchoImagen, altoImagen);
       if (fila === ejeY) {
         fila = 1;
@@ -3211,7 +3225,7 @@ function repeticionPic(config) {
         dibujaBloqueEnPosicionNueve(1, repeticion.imagen, repeticion.altoImagen, repeticion.separacion);
         break;
     }
-    //console.log(x);
+    console.log(x);
     return x + width + _separacion;
 
     function dibujaBloqueEnPosicionNueve(posicion, imagen, altoImagen, separacion) { //posicion 1-9
@@ -3292,7 +3306,7 @@ function cardinalAOrdinal(numero, genero) {//M o F
 
 function repeticionBidimensional(config) {
   const { container, params, variables, versions, vt } = config;
-  //console.log(params);
+  console.log(params);
   const { _separacion, _altoOpciones, _anchoCanvas, _altoCanvas, errFrec, feed } = params;
   let { datos } = params;
   let sepElem = Number(_separacion);
@@ -3340,7 +3354,7 @@ function repeticionBidimensional(config) {
           tipo: dato.tipo
         };
       default:
-        //console.log('defecto');
+        console.log('defecto');
         break;
     }
   });
@@ -3396,7 +3410,7 @@ function repeticionBidimensional(config) {
             let img = new Image();
             img.src = imgOpcionSrc;
             const dibujaImagen = (img, centro, yImg, altoOpcion) => {
-              //console.log(img, centro, yImg, altoOpcion);
+              console.log(img, centro, yImg, altoOpcion);
               let anchoOpcion = img.width * altoOpcion / img.height;
               let xImg = centro - (anchoOpcion / 2);
               ctx.drawImage(img, xImg, yImg, anchoOpcion, altoOpcion);
@@ -3436,13 +3450,13 @@ function repeticionBidimensional(config) {
       ctx.fillText(texto, x, y);
     }
   }).catch(function (error) {
-    //console.log(error);
+    console.log(error);
   });
 }
 
 function multiplicacionPic(config) {
   const { container, params, variables, versions, vt } = config;
-  //console.log(params);
+  console.log(params);
   let { datos, _altoCanvas, _anchoCanvas, _repeticiones, _separacion, _sepImgs, _mostrarValores, _separar } = params;
   container.height = Number(_altoCanvas);
   container.width = Number(_anchoCanvas);
@@ -3493,7 +3507,7 @@ function multiplicacionPic(config) {
           colorValorFinal: dato.colorValorFinal
         };
       default:
-        //console.log('defecto');
+        console.log('defecto');
         break;
     }
   });
@@ -3528,7 +3542,7 @@ function multiplicacionPic(config) {
           altoTotal += datos[index].altoRepeticion;
           break;
         default:
-          //console.log('degault');
+          console.log('degault');
           break;
       }
       anchoElementos.push(datos[index].anchoRepeticion);
@@ -3574,7 +3588,7 @@ function multiplicacionPic(config) {
               ctx.drawImage(imagenValor, xImg, yImg, anchoImagen, repeticion.altoValorFinal);
               break;
             default:
-              //console.log('degault');
+              console.log('degault');
               break;
           }
           centroY += repeticion.altoRepeticion / 2;
@@ -3638,14 +3652,14 @@ function multiplicacionPic(config) {
               }
               break;
             default:
-              //console.log('degault');
+              console.log('degault');
               break;
           }
         }
       }
     }
   }).catch(function (error) {
-    //console.log(error);
+    console.log(error);
   });
 }
 
@@ -3994,11 +4008,11 @@ function abaco(config) {
           ctx.save();
           break;
         default:
-          //console.log('default');
+          console.log('default');
           break;
       }
     }
   }).catch(function(error){
-    //console.log(error);
+    console.log(error);
   });
 }
