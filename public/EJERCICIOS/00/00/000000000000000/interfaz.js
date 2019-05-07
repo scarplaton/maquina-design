@@ -393,7 +393,7 @@ function cambiaRadios(e) {
 }
 function cambiaRadioImagen(e) {
 	_TIPO_INPUT_ = 'radio';
-	//console.log(('seleccionado');
+	console.log('seleccionado');
 	var seleccionado = document.querySelector('.radio-div_selected');
 	if(seleccionado) {
 		seleccionado.classList.remove('radio-div_selected');
