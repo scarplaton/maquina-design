@@ -36,21 +36,6 @@ function regex(theInput, theVariables, isTutorial) {
   return result;
 }
 
-function repeticiones(cantidad, numero, proceso){
-  cantidad = Number(cantidad);
-  
-  let con = "";
-  for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${proceso} `;
-  }
-  return con;
-}
-
-function imagenEnTexto(imgsrc, alto, ancho){
-  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
-
-}
-
 function regexFunctions(text) {
   var result = text.replace(/(?=\{).*?(\})/g, function (coincidencia) { //coincidencia => '{funcion()}'
     var final = coincidencia.length - 2;
@@ -1258,11 +1243,13 @@ async function rectNumFn(config) {
       xFin = xInicioRect + segmento * diferenciaEscalaFin;
       xInicio = forma === 'igual' ? xInicio : forma === 'incluido' ? xInicio - 5 : xInicio + 5;
       xFin = forma === 'igual' ? xFin : forma === 'incluido' ? xFin - 5 : xFin + 5;
+      console.log({ xInicio, xFin });
     }
     let xMitad = (xInicio + xFin) / 2;
     let yTramo = canvas.height / 2 - scale.length - altura;
     let yTramoInicio = yTramo + radio;
     let yTramoFin = yTramo - radio;
+    console.log({ yTramo, yTramoFin, yTramoInicio, altura, alto })
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = 1;
@@ -1282,7 +1269,7 @@ async function rectNumFn(config) {
     ctx.stroke();
 
     ctx.textAlign = "center";
-    ctx.font = `${alto}px OpenSansRegular`;
+    ctx.font = `${alto}px ${rectFontType}`;
     ctx.fillStyle = font.color;
     ctx.fillText(texto, xMitad, yTramoFin - 5);
 
@@ -3376,8 +3363,7 @@ function repeticionBidimensional(config) {
   Promise.all(datos.map(arreglo => arreglo.tipo === 'texto' ?
     cargaFuente(arreglo.nombreFuente, arreglo.src) :
     cargaImagen(arreglo.src))
-  ).then(async function (imagenes) {
-    await cargaFuente('Open-Sans-Regular-Font', '../../../../fonts/OpenSans-Regular-webfont.woff');
+  ).then(function (imagenes) {
     var anchoTotal = sepElem, altoRepeticiones = [];
     imagenes.forEach(function (imagen, index) {
       if (datos[index].tipo === 'arreglo') {
@@ -3459,7 +3445,7 @@ function repeticionBidimensional(config) {
     }
 
     function mostrarTexto(texto, x, y, aling, fontsize, color) {
-      ctx.font = `${fontsize}px Open-Sans-Regular-Font`;
+      ctx.font = `${fontsize}px opensansregularfont`;
       ctx.textAlign = aling;
       ctx.fillStyle = color ? color : '#000000';
       ctx.fillText(texto, x, y);
