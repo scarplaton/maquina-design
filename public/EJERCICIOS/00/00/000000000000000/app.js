@@ -7,6 +7,15 @@ $(document).ready(function () {
   print();
 });
 
+function repeticiones(cantidad, numero){
+  cantidad = Number(cantidad);
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} + `;
+  }
+  return con;
+}
+
 function shuffle(arr, t = 10) {
   for (let i = 0; i < t; i++) {
     arr = arr.sort(() => (.5 - Math.random()));
@@ -69,12 +78,12 @@ function cargaFuente(nombre, src) {
       document.fonts.add(loadedFont);
       loadedFont.load();
       loadedFont.loaded.then(()=>{
-        console.log('fuente ', nombre, ' cargada');
+        //console.log('fuente ', nombre, ' cargada');
       }).catch(error => {
-        console.log('errror al cargar imagen => ', error);
+        //console.log('errror al cargar imagen => ', error);
       });
       document.fonts.ready.then((fontFaceSet) => {
-        console.log(fontFaceSet.size, 'FontFaces loaded.');
+        //console.log(fontFaceSet.size, 'FontFaces loaded.');
         resolve(nombre);
       })
     }).catch(function (error) {
@@ -138,7 +147,8 @@ const FUNCIONES = [
       { id: 'Repetición Pictóricos', action: repeticionPic },
       { id: 'Repeticion Bidimensional', action: repeticionBidimensional },
       { id: 'Multiplicacion Pictoricos', action: multiplicacionPic },
-      { id: 'Abaco', action:abaco }
+      { id: 'Abaco', action:abaco },
+      { id: 'Multiplicacion Elementos', action: multiplicacionElem }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -4015,4 +4025,134 @@ function abaco(config) {
   }).catch(function(error){
     console.log(error);
   });
+}
+
+async function multiplicacionElem(config) {
+  await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
+  const { container, params, variables, versions, vt } = config;
+  var vars = vt ? variables : versions;
+
+  let { datos, _separacion, _altoCanvas, _anchoCanvas, _mostrarValores } = params;
+  _separacion = Number(_separacion);
+  _altoCanvas = Number(_altoCanvas);
+  _anchoCanvas = Number(_anchoCanvas);
+  _mostrarValores = _mostrarValores === 'si' ? true : false;
+  container.width = _anchoCanvas;
+  container.height = _altoCanvas;
+  var ctx = container.getContext('2d');
+  let altoDiviciones = _altoCanvas / datos.length;
+
+  async function getObject(dato) {
+    switch(dato.tipo) {
+      case 'repeticion':
+        return {
+          tipo: dato.tipo,
+          srcImgPrinc: dato.srcImgPrinc,
+          imagenPrinc: await cargaImagen(regex(dato.srcImgPrinc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt)),
+          altoImgPrinc: Number(dato.altoImgPrinc),
+          cantidadPrinc: Number(regex(dato.cantidadPrinc, vars, vt)),
+          srcImgSec: dato.srcImgSec,
+          imagenSec: dato.srcImgSec ? await cargaImagen(regex(dato.srcImgSec.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt)) : null,
+          altoImgSec: Number(dato.altoImgSec),
+          cantidadSec: Number(regex(dato.cantidadSec, vars, vt)),
+          valorFinal: dato.valorFinal.tipoVF === 'texto' ? {
+            tipoVF: dato.valorFinal.tipoVF,
+            textoVF: regex(dato.valorFinal.textoVF, vars, vt),
+            altoTextoVF: dato.valorFinal.altoTextoVF,
+            colorTextoVF: dato.valorFinal.colorTextoVF
+          } : {
+            tipoVF: dato.valorFinal.tipoVF,
+            srcImgVF: dato.valorFinal.srcImgVF,
+            imgVF: await cargaImagen(regex(dato.valorFinal.srcImgVF.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt)),
+            altoImgVF: Number(dato.valorFinal.altoImgVF)
+          }
+        };
+      case 'seccion':
+        return {
+          tipo: dato.tipo,
+          llave: dato.llave === 'si' ? true : false,
+          colorLLave: dato.colorLLave,
+          texto: dato.texto,
+          altoTexto: dato.altoTexto,
+          colorTexto: dato.colorTexto
+        };
+    }
+  }
+  Promise.all(datos.map(x => getObject(x))).then(reps => {
+    let divs, yCentro, divicionesRepeticiones = [];
+    reps.forEach((dato, index) => {
+      yCentro = altoDiviciones * index + altoDiviciones / 2;
+      switch(dato.tipo) {
+        case 'repeticion':
+          divs = dato.cantidadPrinc + (_mostrarValores ? 1 : 0);
+          let anchoDiviciones = _anchoCanvas / divs;
+          let anchoImgPrinc = dato.altoImgPrinc * dato.imagenPrinc.width / dato.imagenPrinc.height;
+          divicionesRepeticiones.push(anchoDiviciones);
+          for(let i = 0, xCentro, xImg, yImg; i < divs; i++) {
+            xCentro = anchoDiviciones * i + anchoDiviciones / 2;
+            if(i+1 === divs && _mostrarValores) {
+              if(dato.valorFinal.tipoVF === 'texto') {
+                ctx.save();
+                ctx.fillStyle = dato.valorFinal.colorTextoVF;
+                ctx.font = `${dato.valorFinal.altoTextoVF}px Open-Sans-Reg`;
+                ctx.textAlign = "center";
+                ctx.fillText(dato.valorFinal.textoVF, xCentro, yCentro+dato.valorFinal.altoTextoVF/2);
+                ctx.restore();
+              } else if(dato.valorFinal.tipoVF === 'imagen') {
+                let anchoImgVF = dato.valorFinal.altoImgVF * dato.valorFinal.imgVF.width / dato.valorFinal.imgVF.height;
+                xImg = xCentro - anchoImgVF / 2;
+                yImg = yCentro - dato.valorFinal.altoImgVF / 2;
+                ctx.drawImage(dato.valorFinal.imgVF, xImg, yImg, anchoImgVF, dato.valorFinal.altoImgVF);
+              }
+            } else {
+              xImg = xCentro - anchoImgPrinc / 2;
+              yImg = yCentro - dato.altoImgPrinc / 2;
+              ctx.drawImage(dato.imagenPrinc, xImg, yImg, anchoImgPrinc, dato.altoImgPrinc);
+            }
+          }
+          break;
+        case 'seccion':
+          let anchoDivMaximo = Math.min(...divicionesRepeticiones);
+          let anchoImagenUltimaRep = (reps[index-1].altoImgPrinc * reps[index-1].imagenPrinc.width / reps[index-1].imagenPrinc.height) / 2;
+          let xInicio = anchoDivMaximo / 2 - anchoImagenUltimaRep;
+          let xFin = _anchoCanvas - anchoDivMaximo / 2 - (_mostrarValores ? anchoDivMaximo : 0) + anchoImagenUltimaRep;
+          let xMitad = (xInicio + xFin) / 2;
+          if(dato.llave) {
+            let radio = 10;
+            let yTramo = yCentro - altoDiviciones / 2;
+            let yTramoInicio = yTramo - radio;
+            let yTramoFin = yTramo + radio;
+            ctx.save();
+            ctx.strokeStyle = dato.colorLLave;
+            ctx.lineWidth = 1;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+
+            ctx.arc(xInicio + radio, yTramoInicio, radio, -Math.PI, -1.5 * Math.PI, true)
+
+            ctx.lineTo(xMitad - radio, yTramo);
+
+            ctx.arc(xMitad - radio, yTramoFin, radio, -0.5 * Math.PI, 0, false);
+            ctx.arc(xMitad + radio, yTramoFin, radio, -Math.PI, -0.5 * Math.PI, false);
+
+            ctx.lineTo(xFin - radio, yTramo);
+
+            ctx.arc(xFin - radio, yTramoInicio, radio, -1.5 * Math.PI, 0, true);
+            ctx.stroke();
+          }
+          if(dato.texto) {
+            ctx.save();
+            ctx.fillStyle = dato.colorTexto;
+            ctx.textAlign = "center";
+            ctx.font = `${dato.altoTexto}px Open-Sans-Reg`;
+            ctx.fillText(dato.texto, xMitad, yCentro);
+            ctx.restore();
+          }
+          
+          break;
+      }
+    });
+  }).catch(x => console.log(x));
+
+
 }
