@@ -45,6 +45,21 @@ function regex(theInput, theVariables, isTutorial) {
   return result;
 }
 
+function repeticiones(cantidad, numero, proceso){
+  cantidad = Number(cantidad);
+  
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${proceso} `;
+  }
+  return con;
+}
+
+function imagenEnTexto(imgsrc, alto, ancho){
+  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+
+}
+
 function regexFunctions(text) {
   var result = text.replace(/(?=\{).*?(\})/g, function (coincidencia) { //coincidencia => '{funcion()}'
     var final = coincidencia.length - 2;
