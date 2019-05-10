@@ -52,16 +52,14 @@ function imagenEnTexto(imgsrc, alto, ancho){
 }
 
 function regexFunctions(text) {
-  var result = text.replace(/(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}'
-      var final = coincidencia.length - 2;
-      var funcion = coincidencia.substr(1,final).replace('&gt;', '>');
-      try {
-          return eval(funcion);
-      } catch(error) {
-          //console.log(error);
-          //console.log(funcion)
-          return coincidencia;
-      }
+  var result = text.replace(/(?=\{).*?(\})/g, function (coincidencia) { //coincidencia => '{funcion()}'
+    var final = coincidencia.length - 2;
+    var funcion = coincidencia.substr(1, final);
+    try {
+      return eval(funcion);
+    } catch (error) {
+      return coincidencia;
+    }
   });
   return result;
 }
