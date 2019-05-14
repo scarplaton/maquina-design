@@ -57,8 +57,8 @@ function regexFunctions(text) {
       try {
           return eval(funcion);
       } catch(error) {
-          //console.log(error);
-          //console.log(funcion)
+          console.log(error);
+          console.log(funcion)
           return coincidencia;
       }
   });
