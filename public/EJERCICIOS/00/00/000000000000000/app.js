@@ -3721,14 +3721,13 @@ function multiplicacionPic(config) {
 
 function abaco(config) {
   const { container, params, variables, versions, vt } = config;
-  const { datos, _altoCanvas, _anchoCanvas } = params;
+  const { datos, _separacion, _altoCanvas, _anchoCanvas } = params;
   let srcImagenAbaco = "../../../../imagenes_front/abaco/Abaco.svg";
   let srcImagenFicha = "../../../../imagenes_front/abaco/Ficha_Abaco.svg";
-  let altoCanvas = Number(_altoCanvas), anchoCanvas = Number(_anchoCanvas);
+  let altoCanvas = Number(_altoCanvas), anchoCanvas = Number(_anchoCanvas), separacion = Number(_separacion);
   container.height = altoCanvas;
   container.width = anchoCanvas;
   let ctx = container.getContext('2d');
-
   var vars = vt ? variables : versions;
 
   let datosfn = datos.map(obj => {
@@ -3786,17 +3785,32 @@ function abaco(config) {
     cargaFuente('larkneuethin', 'https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/LarkeNeueThin.ttf'),
     ...datosfn.map(x => x.tipo === 'imagen' ? cargaImagen(x.src) : null)
   ]).then(function(imagenes){
-    let anchoDivicion = _anchoCanvas / datos.length;
     let imagenAbaco = imagenes[0];
     let imagenFicha = imagenes[1];
-    for(let i=3; i<imagenes.length; i++) {
+    let anchoTotal = 0;
+    for(let i = 3; i < imagenes.length; i++) {
       if(datosfn[i-3].tipo === 'imagen') {
         datosfn[i-3].imagen = imagenes[i];
+        datosfn[i-3].ancho = Number(datosfn[i-3].altoImg) * imagenes[i].width / imagenes[i].height;
+      } else if(datosfn[i-3].tipo === 'abaco') {
+        datosfn[i-3].ancho = Number(datosfn[i-3].altoImg) * imagenAbaco.width / imagenAbaco.height;
+      } else {
+        ctx.save();
+        ctx.font = `${datosfn[i-3].altoTexto}px larkneuethin`;
+        datosfn[i-3].ancho = Math.max(
+          ctx.measureText(datosfn[i-3].texto1).width,
+          ctx.measureText(datosfn[i-3].texto2).width,
+          ctx.measureText(datosfn[i-3].texto3).width,
+          ctx.measureText(datosfn[i-3].texto4).width
+        );
+        ctx.restore();
       }
+      anchoTotal += datosfn[i-3].ancho + ((i+1) === imagenes.length ? 0 : separacion);
     }
     
-    for(let j = 0, centroX, anchoImg, xImg, yImg; j < datosfn.length; j++) {
-      centroX = (j * anchoDivicion) + (anchoDivicion / 2);
+    for(let j = 0, centroX, anchoImg, xImg, yImg, anchoAcu = 0; j < datosfn.length; j++) {
+      anchoAcu += (j === 0) ? 0 : datosfn[j-1].ancho;
+      centroX = (anchoCanvas / 2 - anchoTotal / 2) + anchoAcu + (datosfn[j].ancho / 2) + (separacion * j)
       switch(datosfn[j].tipo) {
         case 'abaco':
           anchoImg = imagenAbaco.width * datosfn[j].altoImg / imagenAbaco.height;
