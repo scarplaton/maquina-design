@@ -100,6 +100,18 @@ function fraccion(entero, numerador, denominador) {
 </math>`;
 }
 
+function repeticiones(cantidad, numero, proceso){
+  cantidad = Number(cantidad);
+  
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${proceso} `;
+  }
+  return con;
+}
+
+
+
 function espacioMiles(stringNumero) {
   if (stringNumero.length >= 4) {
     var arrayReverse = String(stringNumero).split("").reverse();
