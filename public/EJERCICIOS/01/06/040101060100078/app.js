@@ -3534,7 +3534,7 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           numeroX: Number(dato.numeroX),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : dato.valorFinal,
+          valorFinal: regex(dato.valorFinal, vars, vt),
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
@@ -3546,7 +3546,7 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           srcVert: String(regex(dato.srcVert, vars, vt)),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : dato.valorFinal,
+          valorFinal: regex(dato.valorFinal, vars, vt),
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
@@ -3559,7 +3559,7 @@ function multiplicacionPic(config) {
           separacionX: Number(dato.separacionX),
           separacionY: Number(dato.separacionY),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : dato.valorFinal,
+          valorFinal: regex(dato.valorFinal, vars, vt),
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
