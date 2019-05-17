@@ -4262,19 +4262,23 @@ async function repeticionPicV2(config) {
           sepX: dato.sepX.split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
           vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
+            tipo: dato.vp1.tipo,
             texto: regexFunctions(regex(dato.vp1.texto)),
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
+            tipo: dato.vp1.tipo,
             srcImg: srcImgVP1,
             img: await cargaImagen(srcImgVP1),
             altoImg: Number(dato.vp1.altoImg)
           } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
             texto: regexFunctions(regex(dato.vp2.texto)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
             srcImg: srcImgVP2,
             img: await cargaImagen(srcImgVP2),
             altoImg: Number(dato.vp2.altoImg)
@@ -4289,19 +4293,23 @@ async function repeticionPicV2(config) {
           altoTexto: Number(dato.altoTexto),
           colorTexto: dato.colorTexto,
           vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
+            tipo: dato.vp1.tipo,
             texto: regexFunctions(regex(dato.vp1.texto)),
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
+            tipo: dato.vp1.tipo,
             srcImg: srcImgVP1,
             img: await cargaImagen(srcImgVP1),
             altoImg: Number(dato.vp1.altoImg)
           } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
             texto: regexFunctions(regex(dato.vp2.texto)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
             srcImg: srcImgVP2,
             img: await cargaImagen(srcImgVP2),
             altoImg: Number(dato.vp2.altoImg)
@@ -4310,5 +4318,8 @@ async function repeticionPicV2(config) {
     }
   }
 
-  Promise.all(datos.map(x => getObject(x))).then(elementos => console.log(elementos)).catch(x => console.log(x))
+  Promise.all([
+    mostrarRes ? res : null,
+    ...datos.map(x => getObject(x))
+  ]).then(elementos => console.log(elementos)).catch(x => console.log(x))
 }
