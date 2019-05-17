@@ -163,9 +163,8 @@ const FUNCIONES = [
       { id: 'Repetición Pictóricos', action: repeticionPic },
       { id: 'Repeticion Bidimensional', action: repeticionBidimensional },
       { id: 'Multiplicacion Pictoricos', action: multiplicacionPic },
-      { id: 'Abaco', action: abaco },
-      { id: 'Multiplicacion Elementos', action: multiplicacionElem },
-      { id: 'Repetición Pictóricos V2', action: repeticionPicV2 }
+      { id: 'Abaco', action:abaco },
+      { id: 'Multiplicacion Elementos', action: multiplicacionElem }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -4217,109 +4216,4 @@ async function multiplicacionElem(config) {
   }).catch(x => console.log(x));
 
 
-}
-
-async function repeticionPicV2(config) {
-  const { container, params, variables, versions, vt } = config;
-  const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,_mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res } = params;
-  await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
-
-  let vars = vt ? variables : versions;
-  let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
-    separacion = Number(_separacion), //separaciones entre cada repeticion de elementos
-    altoRepeticiones = Number(_altoRepeticiones), //alto que usaran solo las repeticiones
-    anchoCanvas = Number(_anchoCanvas), //ancho del canvas
-    mostrarVP1 = _mostrarVP1 === 'si' ? true : false, //decide si se muestra o no el VP1
-    mostrarVP2 = _mostrarVP2 === 'si' ? true : false, //decide si se muestra o no el VP2
-    mostrarRes = _mostrarRes === 'si' ? true : false, //decide si se muestra o no el resultado
-    altoVP1 = mostrarVP1 ? Number(_altoVP1) : 0, //alto que usara el VP1 si se muestra
-    altoVP2 = mostrarVP2 ? Number(_altoVP2) : 0, //alto que usara el VP2 si se muestra
-    altoRes = mostrarRes ? Number(_altoRes) : 0, //alto que usara el resultado si se muestra
-    res = mostrarRes ? { //datos del resultado final para posicionar en el canvas si es que se muestra
-      tipo: _res.tipo,
-      texto: _res.tipo === 'texto' ? regex(_res.texto, vars, vt) : undefined,
-      altoTexto: _res.tipo === 'texto' ? Number(_res.altoTexto) : undefined,
-      colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
-      srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg, vars, vt))) : undefined,
-      altoImg: _res.altoImg === 'imagen' ? Number(_res.altoImg) : undefined
-    } : null;
-
-
-  async function getObject(dato) {
-    let srcImgVP1 = '', srcImgVP2 = ''; 
-    switch(dato.tipo) {
-      case 'repeticion':
-        let srcImgRepSrc = regexFunctions(regex(dato.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
-        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)) : null : null;
-        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)) : null : null;
-        return {
-          tipo: dato.tipo,
-          srcImg: srcImgRepSrc,
-          altoImg: Number(dato.altoImg),
-          img: await cargaImagen(srcImgRepSrc),
-          cantidadRepeticiones: regex(dato.cantidadRepeticiones, vars, vt),
-          formaRepeticiones: dato.formaRepeticiones,
-          sepX: dato.sepX.split(',').map(x => Number(x)),
-          sepY: dato.sepY.split(',').map(x => Number(x)),
-          vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
-            tipo: dato.vp1.tipo,
-            texto: regexFunctions(regex(dato.vp1.texto)),
-            altoTexto: Number(dato.vp1.altoTexto),
-            colorTexto: dato.vp1.colorTexto
-          } : { // si el valor posicional 1 es imagen
-            tipo: dato.vp1.tipo,
-            srcImg: srcImgVP1,
-            img: await cargaImagen(srcImgVP1),
-            altoImg: Number(dato.vp1.altoImg)
-          } : undefined,
-          vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            texto: regexFunctions(regex(dato.vp2.texto)),
-            altoTexto: Number(dato.vp2.altoTexto),
-            colorTexto: dato.vp2.colorTexto
-          } : { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            srcImg: srcImgVP2,
-            img: await cargaImagen(srcImgVP2),
-            altoImg: Number(dato.vp2.altoImg)
-          } : undefined
-        }
-      case 'texto':
-        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
-        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
-        return {
-          tipo: dato.tipo,
-          texto: regexFunctions(regex(dato.texto, vars, vt)),
-          altoTexto: Number(dato.altoTexto),
-          colorTexto: dato.colorTexto,
-          vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
-            tipo: dato.vp1.tipo,
-            texto: regexFunctions(regex(dato.vp1.texto)),
-            altoTexto: Number(dato.vp1.altoTexto),
-            colorTexto: dato.vp1.colorTexto
-          } : { // si el valor posicional 1 es imagen
-            tipo: dato.vp1.tipo,
-            srcImg: srcImgVP1,
-            img: await cargaImagen(srcImgVP1),
-            altoImg: Number(dato.vp1.altoImg)
-          } : undefined,
-          vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            texto: regexFunctions(regex(dato.vp2.texto)),
-            altoTexto: Number(dato.vp2.altoTexto),
-            colorTexto: dato.vp2.colorTexto
-          } : { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            srcImg: srcImgVP2,
-            img: await cargaImagen(srcImgVP2),
-            altoImg: Number(dato.vp2.altoImg)
-          } : undefined
-        }
-    }
-  }
-
-  Promise.all([
-    mostrarRes ? res : null,
-    ...datos.map(x => getObject(x))
-  ]).then(elementos => console.log(elementos)).catch(x => console.log(x))
 }
