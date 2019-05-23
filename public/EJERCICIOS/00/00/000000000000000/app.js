@@ -4092,6 +4092,8 @@ function abaco(config) {
 async function multiplicacionElem(config) {
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
   const { container, params, variables, versions, vt } = config;
+  container.style.border = "1px solid #000"
+  console.log(container);
   var vars = vt ? variables : versions;
 
   let { datos, _separacion, _altoCanvas, _anchoCanvas, _mostrarValores } = params;
@@ -4223,7 +4225,7 @@ async function repeticionPicV2(config) {
   const { container, params, variables, versions, vt } = config;
   const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,_mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res } = params;
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
-
+  container.style.border = "1px solid #000";
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
     separacion = Number(_separacion), //separaciones entre cada repeticion de elementos
@@ -4242,9 +4244,12 @@ async function repeticionPicV2(config) {
       colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
       srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg, vars, vt))) : undefined,
       altoImg: _res.altoImg === 'imagen' ? Number(_res.altoImg) : undefined
-    } : null;
+    } : null,
+    separaciones = _separaciones.trim().length > 0 ? _separaciones.split(';').map(x => x.split('-')).map(x => ({ inicio: Number(x[0]), fin: Number(x[1]) })) : undefined;
   
   container.height = altoRepeticiones+altoVP1+altoVP2+altoRes;
+  container.width = 1100;
+  anchoCanvas = 1100;//eliminar esta linea
   let ctx = container.getContext('2d');
 
 
@@ -4322,7 +4327,6 @@ async function repeticionPicV2(config) {
   }
 
   function calculaDimencionesRepeticion(formaRepeticiones, altoImg, anchoImg, sepX, sepY, cantidadRepeticiones) {
-    let alto, ancho;
     switch(formaRepeticiones) {
       case 'diagonal/apilado':
         if(cantidadRepeticiones > 5) {
@@ -4338,8 +4342,8 @@ async function repeticionPicV2(config) {
         }
       case 'diagonal':
         return {
-          ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
-          alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+          ancho: anchoImg +  (sepX[0] > 0 ? cantidadRepeticiones * anchoImg : 0) + ((cantidadRepeticiones-1) * sepX[0]),
+          alto: altoImg + (sepY[0] > 0 ? cantidadRepeticiones * altoImg : 0) + ((cantidadRepeticiones-1) * sepY[0])
         };
       case 'dado':
         if(cantidadRepeticiones === 1) {
@@ -4371,8 +4375,8 @@ async function repeticionPicV2(config) {
     }
   }
 
-  let elementos = await Promise.all([...datos.map(x => getObject(x)),mostrarRes?res:null]);
-  let anchoTotal = separacion;
+  let elementos = await Promise.all([...datos.map(x=>getObject(x)),mostrarRes?res:null]);
+  let anchoTotal = separacion, posicicionesInicio = [];
   for(let i = 0; i < elementos.length; i++) {
     switch(elementos[i].tipo) {
       case 'repeticion':
@@ -4384,7 +4388,7 @@ async function repeticionPicV2(config) {
       case 'imagen':
         var { srcImg, altoImg } = elementos[i];
         elementos[i].anchoImg = altoImg * srcImg.width / srcImg.height;
-        anchoTotal += elementos[i].anchoImg + separacion;
+        //si es imagen es el resultado, entonces no se suma al ancho total de la repeticion
         break;
       case 'texto':
         var { texto, altoTexto } = elementos[i];
@@ -4392,7 +4396,7 @@ async function repeticionPicV2(config) {
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
         elementos[i].anchoTexto = ctx.measureText(texto).width;
         ctx.restore();
-        anchoTotal += elementos[i].ancho  + separacion;
+        anchoTotal += (i+1) === elementos.length ? 0 : elementos[i].anchoTexto + separacion;
         break;
     }
     if(mostrarVP1 && !((i+1) === elementos.length)) {
@@ -4420,5 +4424,246 @@ async function repeticionPicV2(config) {
       }
     }
   }
-  console.log({ elementos, anchoTotal });
+  let xInicio = (anchoCanvas / 2) - (anchoTotal / 2) + separacion,
+    xCentro = 0,
+    yCentroRepeticiones = altoRepeticiones / 2,
+    yCentroVP1 = altoRepeticiones + altoVP1 / 2,
+    yCentroVP2 = altoRepeticiones + altoVP1 + altoVP2 / 2,
+    yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2;
+
+  if(mostrarRes) {
+    let datosResultado = elementos.pop()
+    let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
+    if(tipo == 'texto') {
+      ctx.save();
+      ctx.font = `${altoTexto}px Open-Sans-Reg`;
+      ctx.fillStyle = colorTexto;
+      ctx.textAlign = 'center';
+      ctx.fillText(texto, anchoCanvas/2, yCentroRes+altoTexto/2);
+      ctx.restore();
+    } else {
+      let anchoImg = altoImg * srcImg.width / srcImg.height;
+      ctx.drawImage(srcImg, anchoCanvas/2-anchoImg/2, yCentroRes+altoImg/2, anchoImg, altoImg);
+    }
+  }
+
+  elementos.forEach(function(elemento, index) {
+    switch(elemento.tipo) {
+      case 'repeticion':
+        let { formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones } = elemento;
+        posicicionesInicio.push({ xInicio, anchoTotal: dimenciones.ancho, altoTotal: dimenciones.alto });
+        xCentro = xInicio + dimenciones.ancho / 2;
+        dibujaRepeticion(formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones, xCentro, yCentroRepeticiones);
+        xInicio += dimenciones.ancho + separacion;
+        break;
+      case 'texto':
+        let { texto, altoTexto, colorTexto, anchoTexto } = elemento;
+        posicicionesInicio.push({ xInicio, anchoTotal: anchoTexto, altoTotal: altoTexto });
+        xCentro = xInicio + anchoTexto / 2;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        ctx.fillStyle = colorTexto;
+        ctx.textAlign = 'center';
+        ctx.fillText(texto, xCentro, yCentroRepeticiones+altoTexto/2);
+        ctx.restore();
+        xInicio += anchoTexto + separacion;
+        break;
+    }
+    if(mostrarVP1) {
+      if(elemento.vp1.tipo === 'texto') {
+        let { texto, altoTexto, colorTexto } = elemento.vp1;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        ctx.fillStyle = colorTexto;
+        ctx.textAlign = 'center';
+        ctx.fillText(texto, xCentro, yCentroVP1+altoTexto/2);
+        ctx.restore();
+      } else {
+        let { img, altoImg, anchoImg,  } = elemento.vp1;
+        ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP1-altoImg/2, anchoImg, altoImg);
+      }
+    }
+    if(mostrarVP2) {
+      if(elemento.vp2.tipo === 'texto') {
+        let { texto, altoTexto, colorTexto } = elemento.vp2;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        ctx.fillStyle = colorTexto;
+        ctx.textAlign = 'center';
+        ctx.fillText(texto, xCentro, yCentroVP2+altoTexto/2);
+        ctx.restore();
+      } else {
+        let { img, altoImg, anchoImg } = elemento.vp2;
+        ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP2-altoImg/2, anchoImg, altoImg);
+      }
+    }
+  });
+
+  function dibujaRepeticion(formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones, xCentro, yCentroRepeticiones) {
+    switch(formaRepeticiones) {
+      case 'diagonal/apilado':
+        for(let i = 0, x, y; i < cantidadRepeticiones; i++) {
+          if(i <= 4) {
+            x = xCentro - (dimenciones.ancho / 2) + (i * sepX[0]);
+            y = yCentroRepeticiones - (dimenciones.alto / 2) + (i * sepY[0]);
+          } else {
+            x = xCentro - (dimenciones.ancho / 2) + anchoImg + (i * sepX[0]);
+            y = yCentroRepeticiones - (dimenciones.alto / 2) + ((i-5) * sepY[0]);
+          }
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
+        }
+        break;
+      case 'diagonal':
+        for(let i = 0, x, y; i < cantidadRepeticiones; i++) {
+          x = xCentro - (dimenciones.ancho / 2) + (sepX[0] > 0 ? i * anchoImg : 0) + (i * sepX[0]);
+          y = yCentroRepeticiones - (dimenciones.alto / 2)+ (sepY[0] > 0 ? i * altoImg : 0) + (i * sepY[0]);
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
+        }
+        break;
+      case 'dado':
+        switch(cantidadRepeticiones) {
+          case 1:
+            poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 2:
+            poneImagenEnPosicionDado4(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado4(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 3:
+            poneImagenEnPosicionDado9(9, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 4:
+            poneImagenEnPosicionDado4(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado4(2, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado4(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado4(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 5:
+            poneImagenEnPosicionDado9(9, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(7, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 6:
+            poneImagenEnPosicionDado6(6, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado6(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado6(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado6(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado6(2, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado6(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 7:
+            poneImagenEnPosicionDado9(9, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(7, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(6, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 8:
+            poneImagenEnPosicionDado9(9, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(8, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(7, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(6, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(2, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+          case 9:
+            poneImagenEnPosicionDado9(9, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(8, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(7, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(6, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(4, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(3, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(2, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            poneImagenEnPosicionDado9(1, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
+            break;
+        }
+        function poneImagenEnPosicionDado9(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
+          let x, y;
+          if(numero == 1 || numero == 4 || numero == 7) {
+            x = xCentro - (anchoImg * 1.5) - sepX
+          } else if(numero == 2 || numero == 5 || numero == 8) {
+            x = xCentro - (anchoImg / 2)
+          } else {
+            x = xCentro + (anchoImg / 2) + sepX
+          }
+          if(numero == 1 || numero == 2 || numero == 3) {
+            y = yCentro - (altoImg * 1.5) - sepY
+          } else if (numero == 4 || numero == 5 || numero == 6) {
+            y = yCentro - (altoImg / 2)
+          } else {
+            y = yCentro + (altoImg / 2) + sepY
+          }
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
+        }
+        function poneImagenEnPosicionDado6(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
+          let x, y;
+          if(numero == 1 || numero == 3 || numero == 5) {
+            x = xCentro - (sepX / 2) - anchoImg
+          } else {
+            x = xCentro + (sepX / 2)
+          }
+          if(numero == 1 || numero == 2 || numero == 3) {
+            y = yCentro - (altoImg * 1.5) - sepY
+          } else if (numero == 4 || numero == 5 || numero == 6) {
+            y = yCentro - (altoImg / 2)
+          } else {
+            y = yCentro + (altoImg / 2) + sepY
+          }
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
+        }
+        function poneImagenEnPosicionDado4(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
+          let x, y;
+          if(numero == 1 || numero == 3) {
+            x = xCentro - (sepX / 2) - anchoImg
+          } else {
+            x = xCentro + (sepX / 2)
+          }
+          if(numero == 1 || numero == 2) {
+            y = yCentro - (sepY / 2) - altoImg
+          } else {
+            y = yCentro + (sepY / 2)
+          }
+          ctx.drawImage(img, );
+        }
+        break;
+      default:
+        console.log('insoportado');
+        break;
+    }
+  }
+
+  if (titulo !== '') {
+    container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
+    var tituloObj = document.createElement('span');
+    tituloObj.innerText = regexFunctions(regex(titulo, vars, vt));
+    tituloObj.style.fontSize = '18px';
+    tituloObj.style.fontWeight = '600';
+    tituloObj.style.color = 'black';
+    container.parentNode.insertBefore(tituloObj, container);
+  }
+
+  function dibujaAgrupacionDePictoricos() {
+    let heightRect = Math.max(...posicicionesInicio.map(x => x.altoTotal))
+    let yRect = yCentroRepeticiones - heightRect/2 - (separacion / 4);
+    separaciones.forEach(function (agrupacion) {
+      let xRect = posicicionesInicio[agrupacion.inicio - 1].xInicio - (separacion / 4);
+      let widthRect = posicicionesInicio[agrupacion.fin].xInicio - (separacion * 3 / 4) - xRect;
+      ctx.save();
+      ctx.strokeStyle = '#808080';
+      ctx.strokeRect(xRect, yRect, widthRect, heightRect + (separacion / 4));
+      ctx.restore();
+    });
+  }
+  if(separacion) {
+    dibujaAgrupacionDePictoricos();
+  }
 }
