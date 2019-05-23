@@ -4243,6 +4243,9 @@ async function repeticionPicV2(config) {
       srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg, vars, vt))) : undefined,
       altoImg: _res.altoImg === 'imagen' ? Number(_res.altoImg) : undefined
     } : null;
+  
+  container.height = altoRepeticiones+altoVP1+altoVP2+altoRes;
+  let ctx = container.getContext('2d');
 
 
   async function getObject(dato) {
@@ -4257,7 +4260,7 @@ async function repeticionPicV2(config) {
           srcImg: srcImgRepSrc,
           altoImg: Number(dato.altoImg),
           img: await cargaImagen(srcImgRepSrc),
-          cantidadRepeticiones: regex(dato.cantidadRepeticiones, vars, vt),
+          cantidadRepeticiones: Number(regex(dato.cantidadRepeticiones, vars, vt)),
           formaRepeticiones: dato.formaRepeticiones,
           sepX: dato.sepX.split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
@@ -4318,8 +4321,104 @@ async function repeticionPicV2(config) {
     }
   }
 
-  Promise.all([
-    mostrarRes ? res : null,
-    ...datos.map(x => getObject(x))
-  ]).then(elementos => console.log(elementos)).catch(x => console.log(x))
+  function calculaDimencionesRepeticion(formaRepeticiones, altoImg, anchoImg, sepX, sepY, cantidadRepeticiones) {
+    let alto, ancho;
+    switch(formaRepeticiones) {
+      case 'diagonal/apilado':
+        if(cantidadRepeticiones > 5) {
+          return {
+            ancho: anchoImg + (sepX[0] * 5) + anchoImg + ((cantidadRepeticiones-6) * sepX[0]),
+            alto: altoImg + (sepY[0] * 4)
+          };
+        } else {
+          return {
+            ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
+            alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+          };
+        }
+      case 'diagonal':
+        return {
+          ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
+          alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+        };
+      case 'dado':
+        if(cantidadRepeticiones === 1) {
+          return {
+            ancho: anchoImg,
+            alto: altoImg
+          };
+        } else if(cantidadRepeticiones === 2 || cantidadRepeticiones === 4) {
+          return {
+            ancho: anchoImg * 2 + sepX[0],
+            alto: altoImg * 2 + sepY[0]
+          };
+        } else if(cantidadRepeticiones === 3 || cantidadRepeticiones === 5 || cantidadRepeticiones > 6) {
+          return {
+            ancho: anchoImg * 3 + sepX[0] * 2,
+            alto: altoImg * 3 + sepY[0] * 2
+          };
+        } else if(cantidadRepeticiones === 6) {
+          return {
+            ancho: anchoImg * 2 + sepX[0],
+            alto: altoImg * 3 + sepY[0] * 2
+          };
+        }
+      default:
+        return {
+          ancho: 0,
+          alto: 0
+        };
+    }
+  }
+
+  let elementos = await Promise.all([...datos.map(x => getObject(x)),mostrarRes?res:null]);
+  let anchoTotal = separacion;
+  for(let i = 0; i < elementos.length; i++) {
+    switch(elementos[i].tipo) {
+      case 'repeticion':
+        var { img, altoImg, formaRepeticiones, sepX, sepY, cantidadRepeticiones } = elementos[i];
+        elementos[i].anchoImg = altoImg * img.width / img.height;
+        elementos[i].dimenciones = calculaDimencionesRepeticion(formaRepeticiones, altoImg, elementos[i].anchoImg, sepX, sepY, cantidadRepeticiones);
+        anchoTotal += elementos[i].dimenciones.ancho + separacion;
+        break;
+      case 'imagen':
+        var { srcImg, altoImg } = elementos[i];
+        elementos[i].anchoImg = altoImg * srcImg.width / srcImg.height;
+        anchoTotal += elementos[i].anchoImg + separacion;
+        break;
+      case 'texto':
+        var { texto, altoTexto } = elementos[i];
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+        anchoTotal += elementos[i].ancho  + separacion;
+        break;
+    }
+    if(mostrarVP1 && !((i+1) === elementos.length)) {
+      if(elementos[i].vp1.tipo === 'texto') {
+        var { texto, altoTexto } = elementos[i].vp1;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].vp1.anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+      } else {
+        var { img, altoImg } = elementos[i].vp1;
+        elementos[i].vp1.anchoImg = altoImg * img.width / img.height;
+      }
+    }
+    if(mostrarVP2 && !((i+1) === elementos.length)) {
+      if(elementos[i].vp2.tipo === 'texto') {
+        var { texto, altoTexto } = elementos[i].vp1;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].vp2.anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+      } else {
+        var { img, altoImg } = elementos[i].vp2;
+        elementos[i].vp2.anchoImg = altoImg * img.width / img.height;
+      }
+    }
+  }
+  console.log({ elementos, anchoTotal });
 }
