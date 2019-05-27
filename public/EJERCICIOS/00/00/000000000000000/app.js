@@ -4223,33 +4223,47 @@ async function multiplicacionElem(config) {
 
 async function repeticionPicV2(config) {
   const { container, params, variables, versions, vt } = config;
-  const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,_mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res } = params;
+  const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,
+    _mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res,
+    _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha } = params;
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
-  container.style.border = "1px solid #000";
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
     separacion = Number(_separacion), //separaciones entre cada repeticion de elementos
     altoRepeticiones = Number(_altoRepeticiones), //alto que usaran solo las repeticiones
     anchoCanvas = Number(_anchoCanvas), //ancho del canvas
+
     mostrarVP1 = _mostrarVP1 === 'si' ? true : false, //decide si se muestra o no el VP1
-    mostrarVP2 = _mostrarVP2 === 'si' ? true : false, //decide si se muestra o no el VP2
-    mostrarRes = _mostrarRes === 'si' ? true : false, //decide si se muestra o no el resultado
     altoVP1 = mostrarVP1 ? Number(_altoVP1) : 0, //alto que usara el VP1 si se muestra
+    mostrarFlechaVP1 = _flechaVP1 === 'si' ? true : false,
+
+    mostrarVP2 = _mostrarVP2 === 'si' ? true : false, //decide si se muestra o no el VP2
+    mostrarFlechaVP2 = _flechaVP2 === 'si' ? true : false,
     altoVP2 = mostrarVP2 ? Number(_altoVP2) : 0, //alto que usara el VP2 si se muestra
+
+    mostrarRes = _mostrarRes === 'si' ? true : false, //decide si se muestra o no el resultado
+    mostrarFlechaRes = _flechaRes === 'si' ? true : false,
     altoRes = mostrarRes ? Number(_altoRes) : 0, //alto que usara el resultado si se muestra
+
     res = mostrarRes ? { //datos del resultado final para posicionar en el canvas si es que se muestra
       tipo: _res.tipo,
       texto: _res.tipo === 'texto' ? regex(_res.texto, vars, vt) : undefined,
       altoTexto: _res.tipo === 'texto' ? Number(_res.altoTexto) : undefined,
       colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
-      srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg, vars, vt))) : undefined,
-      altoImg: _res.altoImg === 'imagen' ? Number(_res.altoImg) : undefined
+      srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt))) : undefined,
+      altoImg: _res.tipo === 'imagen' ? Number(_res.altoImg) : undefined
     } : null,
+    //datos de la flecha
+    srcFlecha = _srcFlecha.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    altoImgFlecha = Number(_altoImgFlecha),
+    imgFlecha = (mostrarFlechaVP1 || mostrarFlechaVP2 || mostrarFlechaRes) ? await cargaImagen(srcFlecha) : null,
+    anchoImgFlecha = (mostrarFlechaVP1 || mostrarFlechaVP2 || mostrarFlechaRes) ? imgFlecha.width * altoImgFlecha / imgFlecha.height : 0,
+
     separaciones = _separaciones.trim().length > 0 ? _separaciones.split(';').map(x => x.split('-')).map(x => ({ inicio: Number(x[0]), fin: Number(x[1]) })) : undefined;
   
+    console.log(_res, res)
   container.height = altoRepeticiones+altoVP1+altoVP2+altoRes;
-  container.width = 1100;
-  anchoCanvas = 1100;//eliminar esta linea
+  container.width = anchoCanvas;
   let ctx = container.getContext('2d');
 
 
@@ -4258,8 +4272,8 @@ async function repeticionPicV2(config) {
     switch(dato.tipo) {
       case 'repeticion':
         let srcImgRepSrc = regexFunctions(regex(dato.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
-        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)) : null : null;
-        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)) : null : null;
+        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
+        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
         return {
           tipo: dato.tipo,
           srcImg: srcImgRepSrc,
@@ -4367,6 +4381,11 @@ async function repeticionPicV2(config) {
             alto: altoImg * 3 + sepY[0] * 2
           };
         }
+      case 'izq/der':
+        return {
+          ancho: sepX[1] > cantidadRepeticiones ? cantidadRepeticiones * anchoImg + (cantidadRepeticiones-1) * sepX[0] : sepX[1] * anchoImg + (sepX[1]-1) * sepX[0],
+          alto: Math.ceil(cantidadRepeticiones / sepX[1]) * altoImg + (Math.ceil(cantidadRepeticiones / sepX[1])-1) * sepY[0]
+        };
       default:
         return {
           ancho: 0,
@@ -4375,52 +4394,57 @@ async function repeticionPicV2(config) {
     }
   }
 
-  let elementos = await Promise.all([...datos.map(x=>getObject(x)),mostrarRes?res:null]);
+  let elementos = await Promise.all([
+    ...datos.map(x=>getObject(x)),
+    mostrarRes?res:null
+  ]);
   let anchoTotal = separacion, posicicionesInicio = [];
   for(let i = 0; i < elementos.length; i++) {
-    switch(elementos[i].tipo) {
-      case 'repeticion':
-        var { img, altoImg, formaRepeticiones, sepX, sepY, cantidadRepeticiones } = elementos[i];
-        elementos[i].anchoImg = altoImg * img.width / img.height;
-        elementos[i].dimenciones = calculaDimencionesRepeticion(formaRepeticiones, altoImg, elementos[i].anchoImg, sepX, sepY, cantidadRepeticiones);
-        anchoTotal += elementos[i].dimenciones.ancho + separacion;
-        break;
-      case 'imagen':
-        var { srcImg, altoImg } = elementos[i];
-        elementos[i].anchoImg = altoImg * srcImg.width / srcImg.height;
-        //si es imagen es el resultado, entonces no se suma al ancho total de la repeticion
-        break;
-      case 'texto':
-        var { texto, altoTexto } = elementos[i];
-        ctx.save();
-        ctx.font = `${altoTexto}px Open-Sans-Reg`;
-        elementos[i].anchoTexto = ctx.measureText(texto).width;
-        ctx.restore();
-        anchoTotal += (i+1) === elementos.length ? 0 : elementos[i].anchoTexto + separacion;
-        break;
-    }
-    if(mostrarVP1 && !((i+1) === elementos.length)) {
-      if(elementos[i].vp1.tipo === 'texto') {
-        var { texto, altoTexto } = elementos[i].vp1;
-        ctx.save();
-        ctx.font = `${altoTexto}px Open-Sans-Reg`;
-        elementos[i].vp1.anchoTexto = ctx.measureText(texto).width;
-        ctx.restore();
-      } else {
-        var { img, altoImg } = elementos[i].vp1;
-        elementos[i].vp1.anchoImg = altoImg * img.width / img.height;
+    if(elementos[i]) {
+      switch(elementos[i].tipo) {
+        case 'repeticion':
+          var { img, altoImg, formaRepeticiones, sepX, sepY, cantidadRepeticiones } = elementos[i];
+          elementos[i].anchoImg = altoImg * img.width / img.height;
+          elementos[i].dimenciones = calculaDimencionesRepeticion(formaRepeticiones, altoImg, elementos[i].anchoImg, sepX, sepY, cantidadRepeticiones);
+          anchoTotal += elementos[i].dimenciones.ancho + separacion;
+          break;
+        case 'imagen':
+          var { srcImg, altoImg } = elementos[i];
+          elementos[i].anchoImg = altoImg * srcImg.width / srcImg.height;
+          //si es imagen es el resultado, entonces no se suma al ancho total de la repeticion
+          break;
+        case 'texto':
+          var { texto, altoTexto } = elementos[i];
+          ctx.save();
+          ctx.font = `${altoTexto}px Open-Sans-Reg`;
+          elementos[i].anchoTexto = ctx.measureText(texto).width;
+          ctx.restore();
+          anchoTotal += (i+1) === elementos.length ? 0 : elementos[i].anchoTexto + separacion;
+          break;
       }
-    }
-    if(mostrarVP2 && !((i+1) === elementos.length)) {
-      if(elementos[i].vp2.tipo === 'texto') {
-        var { texto, altoTexto } = elementos[i].vp1;
-        ctx.save();
-        ctx.font = `${altoTexto}px Open-Sans-Reg`;
-        elementos[i].vp2.anchoTexto = ctx.measureText(texto).width;
-        ctx.restore();
-      } else {
-        var { img, altoImg } = elementos[i].vp2;
-        elementos[i].vp2.anchoImg = altoImg * img.width / img.height;
+      if(mostrarVP1 && !((i+1) === elementos.length)) {
+        if(elementos[i].vp1.tipo === 'texto') {
+          var { texto, altoTexto } = elementos[i].vp1;
+          ctx.save();
+          ctx.font = `${altoTexto}px Open-Sans-Reg`;
+          elementos[i].vp1.anchoTexto = ctx.measureText(texto).width;
+          ctx.restore();
+        } else {
+          var { img, altoImg } = elementos[i].vp1;
+          elementos[i].vp1.anchoImg = altoImg * img.width / img.height;
+        }
+      }
+      if(mostrarVP2 && !((i+1) === elementos.length)) {
+        if(elementos[i].vp2.tipo === 'texto') {
+          var { texto, altoTexto } = elementos[i].vp1;
+          ctx.save();
+          ctx.font = `${altoTexto}px Open-Sans-Reg`;
+          elementos[i].vp2.anchoTexto = ctx.measureText(texto).width;
+          ctx.restore();
+        } else {
+          var { img, altoImg } = elementos[i].vp2;
+          elementos[i].vp2.anchoImg = altoImg * img.width / img.height;
+        }
       }
     }
   }
@@ -4429,10 +4453,10 @@ async function repeticionPicV2(config) {
     yCentroRepeticiones = altoRepeticiones / 2,
     yCentroVP1 = altoRepeticiones + altoVP1 / 2,
     yCentroVP2 = altoRepeticiones + altoVP1 + altoVP2 / 2,
-    yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2;
+    yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2,
+    datosResultado = elementos.pop();
 
   if(mostrarRes) {
-    let datosResultado = elementos.pop()
     let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
     if(tipo == 'texto') {
       ctx.save();
@@ -4443,7 +4467,11 @@ async function repeticionPicV2(config) {
       ctx.restore();
     } else {
       let anchoImg = altoImg * srcImg.width / srcImg.height;
-      ctx.drawImage(srcImg, anchoCanvas/2-anchoImg/2, yCentroRes+altoImg/2, anchoImg, altoImg);
+      console.log({ yRes: yCentroRes-altoImg/2, yCentroRes, altoImg, datosResultado });
+      ctx.drawImage(srcImg, anchoCanvas/2-anchoImg/2, yCentroRes-altoImg/2, anchoImg, altoImg);
+    }
+    if(mostrarFlechaRes) {
+      ctx.drawImage(imgFlecha, anchoCanvas/2, yCentroRes-altoRes/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
     }
   }
 
@@ -4458,7 +4486,7 @@ async function repeticionPicV2(config) {
         break;
       case 'texto':
         let { texto, altoTexto, colorTexto, anchoTexto } = elemento;
-        posicicionesInicio.push({ xInicio, anchoTotal: anchoTexto, altoTotal: altoTexto });
+        posicicionesInicio.push({ xInicio, anchoTotal: dimenciones.ancho, altoTotal: altoTexto });
         xCentro = xInicio + anchoTexto / 2;
         ctx.save();
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
@@ -4482,6 +4510,9 @@ async function repeticionPicV2(config) {
         let { img, altoImg, anchoImg,  } = elemento.vp1;
         ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP1-altoImg/2, anchoImg, altoImg);
       }
+      if(mostrarFlechaVP1) {
+        ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP1-altoVP1/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+      }
     }
     if(mostrarVP2) {
       if(elemento.vp2.tipo === 'texto') {
@@ -4495,6 +4526,9 @@ async function repeticionPicV2(config) {
       } else {
         let { img, altoImg, anchoImg } = elemento.vp2;
         ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP2-altoImg/2, anchoImg, altoImg);
+      }
+      if(mostrarFlechaVP2) {
+        ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP2-altoVP2/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
       }
     }
   });
@@ -4518,6 +4552,19 @@ async function repeticionPicV2(config) {
           x = xCentro - (dimenciones.ancho / 2) + (sepX[0] > 0 ? i * anchoImg : 0) + (i * sepX[0]);
           y = yCentroRepeticiones - (dimenciones.alto / 2)+ (sepY[0] > 0 ? i * altoImg : 0) + (i * sepY[0]);
           ctx.drawImage(img, x, y, anchoImg, altoImg);
+        }
+        break;
+      case 'izq/der':
+        for (let i = 0, posX = 1, posY, x,y; i < cantidadRepeticiones; i++) {
+          posY = Math.floor(i / sepX[1]);
+          x = xCentro - (dimenciones.ancho / 2) + anchoImg * (posX-1) + sepX[0] * (posX-1);
+          y = yCentroRepeticiones - (dimenciones.alto / 2) + altoImg * posY + sepY[0] * posY;
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
+          if (posX === sepX[1]) {
+            posX = 1;
+          } else {
+            posX++;
+          }
         }
         break;
       case 'dado':
@@ -4641,9 +4688,9 @@ async function repeticionPicV2(config) {
     }
   }
 
-  if (titulo !== '') {
+  if (titulo !== '') { // dibuja titulo
     container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
-    var tituloObj = document.createElement('span');
+    let tituloObj = document.createElement('span');
     tituloObj.innerText = regexFunctions(regex(titulo, vars, vt));
     tituloObj.style.fontSize = '18px';
     tituloObj.style.fontWeight = '600';
@@ -4651,19 +4698,16 @@ async function repeticionPicV2(config) {
     container.parentNode.insertBefore(tituloObj, container);
   }
 
-  function dibujaAgrupacionDePictoricos() {
-    let heightRect = Math.max(...posicicionesInicio.map(x => x.altoTotal))
-    let yRect = yCentroRepeticiones - heightRect/2 - (separacion / 4);
+  if(separaciones) { // dibuja separaciones
+    let heightRect = Math.max(...posicicionesInicio.map(x => x.altoTotal))+(separacion/2)
+    let yRect = yCentroRepeticiones - heightRect/2
     separaciones.forEach(function (agrupacion) {
       let xRect = posicicionesInicio[agrupacion.inicio - 1].xInicio - (separacion / 4);
-      let widthRect = posicicionesInicio[agrupacion.fin].xInicio - (separacion * 3 / 4) - xRect;
+      let widthRect = posicicionesInicio[agrupacion.fin - 1].xInicio + posicicionesInicio[agrupacion.fin - 1].anchoTotal - (separacion * 3 / 4) + separacion - xRect;
       ctx.save();
       ctx.strokeStyle = '#808080';
-      ctx.strokeRect(xRect, yRect, widthRect, heightRect + (separacion / 4));
+      ctx.strokeRect(xRect, yRect, widthRect, heightRect);
       ctx.restore();
     });
-  }
-  if(separacion) {
-    dibujaAgrupacionDePictoricos();
   }
 }
