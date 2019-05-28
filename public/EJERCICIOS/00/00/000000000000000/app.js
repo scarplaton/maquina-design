@@ -3743,7 +3743,7 @@ function abaco(config) {
           centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt)),
           numComp: Number(regex(obj.numComp, vars, vt)),
           esAgrupado: obj.esAgrupado === 'si' ? true : false,
-          grupos: Number(obj.grupos),
+          grupos: Number(regex(obj.grupos, vars, vt)),          
           agrupar: obj.agrupar === 'si' ? true : false,
           numerosArriba: obj.numerosArriba === 'si' ? true : false,
           agruparCanje: obj.agruparCanje === 'si' ? true : false
@@ -3916,7 +3916,7 @@ function abaco(config) {
 
                   ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
                 }
-                if(datosfn[j].unidad * datosfn[j].grupos >= 10) { 
+                if(datosfn[j].decena * datosfn[j].grupos >= 10) { 
                   let yInicio = yImg + (altoDiviciones/2) - datosfn[j].decena*(altoImgFicha/2);
                   let yFin = yDecimaCentena - yInicio;
                   
