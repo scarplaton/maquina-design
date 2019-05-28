@@ -64,13 +64,29 @@ function regexFunctions(text) {
       var final = coincidencia.length - 2;
       var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
       try {
-          return eval(funcion);
+          return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
+            if (coincidencia.length >= 4) {
+                let arrayReverse = coincidencia.split("").reverse();
+                for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
+                    count++;
+                    if (count === 3 && arrayReverse[i + 1]) {
+                        valor = ' ' + arrayReverse[i] + valor;
+                        count = 0;
+                    } else {
+                        valor = arrayReverse[i] + valor;
+                    }
+                }
+                return valor;
+            } else {
+                return coincidencia;
+            }
+        });
       } catch(error) {
           //console.log(error);
           //console.log(funcion)
           return coincidencia;
       }
-  });
+  })
   return result;
 }
 
@@ -163,8 +179,9 @@ const FUNCIONES = [
       { id: 'Repetición Pictóricos', action: repeticionPic },
       { id: 'Repeticion Bidimensional', action: repeticionBidimensional },
       { id: 'Multiplicacion Pictoricos', action: multiplicacionPic },
-      { id: 'Abaco', action:abaco },
-      { id: 'Multiplicacion Elementos', action: multiplicacionElem }
+      { id: 'Abaco', action: abaco },
+      { id: 'Multiplicacion Elementos', action: multiplicacionElem },
+      { id: 'Repetición Pictóricos V2', action: repeticionPicV2 }
     ]
   }, {
     name: 'Medicion', tag: 'medicion', fns: [
@@ -3742,7 +3759,7 @@ function abaco(config) {
           centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt)),
           numComp: Number(regex(obj.numComp, vars, vt)),
           esAgrupado: obj.esAgrupado === 'si' ? true : false,
-          grupos: Number(obj.grupos),
+          grupos: Number(regex(obj.grupos, vars, vt)),          
           agrupar: obj.agrupar === 'si' ? true : false,
           numerosArriba: obj.numerosArriba === 'si' ? true : false,
           agruparCanje: obj.agruparCanje === 'si' ? true : false
@@ -3915,7 +3932,7 @@ function abaco(config) {
 
                   ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
                 }
-                if(datosfn[j].unidad * datosfn[j].grupos >= 10) { 
+                if(datosfn[j].decena * datosfn[j].grupos >= 10) { 
                   let yInicio = yImg + (altoDiviciones/2) - datosfn[j].decena*(altoImgFicha/2);
                   let yFin = yDecimaCentena - yInicio;
                   
@@ -4216,4 +4233,208 @@ async function multiplicacionElem(config) {
   }).catch(x => console.log(x));
 
 
+}
+
+async function repeticionPicV2(config) {
+  const { container, params, variables, versions, vt } = config;
+  const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,_mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res } = params;
+  await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
+
+  let vars = vt ? variables : versions;
+  let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
+    separacion = Number(_separacion), //separaciones entre cada repeticion de elementos
+    altoRepeticiones = Number(_altoRepeticiones), //alto que usaran solo las repeticiones
+    anchoCanvas = Number(_anchoCanvas), //ancho del canvas
+    mostrarVP1 = _mostrarVP1 === 'si' ? true : false, //decide si se muestra o no el VP1
+    mostrarVP2 = _mostrarVP2 === 'si' ? true : false, //decide si se muestra o no el VP2
+    mostrarRes = _mostrarRes === 'si' ? true : false, //decide si se muestra o no el resultado
+    altoVP1 = mostrarVP1 ? Number(_altoVP1) : 0, //alto que usara el VP1 si se muestra
+    altoVP2 = mostrarVP2 ? Number(_altoVP2) : 0, //alto que usara el VP2 si se muestra
+    altoRes = mostrarRes ? Number(_altoRes) : 0, //alto que usara el resultado si se muestra
+    res = mostrarRes ? { //datos del resultado final para posicionar en el canvas si es que se muestra
+      tipo: _res.tipo,
+      texto: _res.tipo === 'texto' ? regex(_res.texto, vars, vt) : undefined,
+      altoTexto: _res.tipo === 'texto' ? Number(_res.altoTexto) : undefined,
+      colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
+      srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg, vars, vt))) : undefined,
+      altoImg: _res.altoImg === 'imagen' ? Number(_res.altoImg) : undefined
+    } : null;
+  
+  container.height = altoRepeticiones+altoVP1+altoVP2+altoRes;
+  let ctx = container.getContext('2d');
+
+
+  async function getObject(dato) {
+    let srcImgVP1 = '', srcImgVP2 = ''; 
+    switch(dato.tipo) {
+      case 'repeticion':
+        let srcImgRepSrc = regexFunctions(regex(dato.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
+        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)) : null : null;
+        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)) : null : null;
+        return {
+          tipo: dato.tipo,
+          srcImg: srcImgRepSrc,
+          altoImg: Number(dato.altoImg),
+          img: await cargaImagen(srcImgRepSrc),
+          cantidadRepeticiones: Number(regex(dato.cantidadRepeticiones, vars, vt)),
+          formaRepeticiones: dato.formaRepeticiones,
+          sepX: dato.sepX.split(',').map(x => Number(x)),
+          sepY: dato.sepY.split(',').map(x => Number(x)),
+          vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
+            tipo: dato.vp1.tipo,
+            texto: regexFunctions(regex(dato.vp1.texto)),
+            altoTexto: Number(dato.vp1.altoTexto),
+            colorTexto: dato.vp1.colorTexto
+          } : { // si el valor posicional 1 es imagen
+            tipo: dato.vp1.tipo,
+            srcImg: srcImgVP1,
+            img: await cargaImagen(srcImgVP1),
+            altoImg: Number(dato.vp1.altoImg)
+          } : undefined,
+          vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
+            texto: regexFunctions(regex(dato.vp2.texto)),
+            altoTexto: Number(dato.vp2.altoTexto),
+            colorTexto: dato.vp2.colorTexto
+          } : { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
+            srcImg: srcImgVP2,
+            img: await cargaImagen(srcImgVP2),
+            altoImg: Number(dato.vp2.altoImg)
+          } : undefined
+        }
+      case 'texto':
+        srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
+        srcImgVP2 = mostrarVP2 ? dato.vp2.tipo === 'imagen' ? await regexFunctions(regex(dato.vp2.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
+        return {
+          tipo: dato.tipo,
+          texto: regexFunctions(regex(dato.texto, vars, vt)),
+          altoTexto: Number(dato.altoTexto),
+          colorTexto: dato.colorTexto,
+          vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
+            tipo: dato.vp1.tipo,
+            texto: regexFunctions(regex(dato.vp1.texto)),
+            altoTexto: Number(dato.vp1.altoTexto),
+            colorTexto: dato.vp1.colorTexto
+          } : { // si el valor posicional 1 es imagen
+            tipo: dato.vp1.tipo,
+            srcImg: srcImgVP1,
+            img: await cargaImagen(srcImgVP1),
+            altoImg: Number(dato.vp1.altoImg)
+          } : undefined,
+          vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
+            texto: regexFunctions(regex(dato.vp2.texto)),
+            altoTexto: Number(dato.vp2.altoTexto),
+            colorTexto: dato.vp2.colorTexto
+          } : { // si el valor posicional 2 es texto
+            tipo: dato.vp2.tipo,
+            srcImg: srcImgVP2,
+            img: await cargaImagen(srcImgVP2),
+            altoImg: Number(dato.vp2.altoImg)
+          } : undefined
+        }
+    }
+  }
+
+  function calculaDimencionesRepeticion(formaRepeticiones, altoImg, anchoImg, sepX, sepY, cantidadRepeticiones) {
+    let alto, ancho;
+    switch(formaRepeticiones) {
+      case 'diagonal/apilado':
+        if(cantidadRepeticiones > 5) {
+          return {
+            ancho: anchoImg + (sepX[0] * 5) + anchoImg + ((cantidadRepeticiones-6) * sepX[0]),
+            alto: altoImg + (sepY[0] * 4)
+          };
+        } else {
+          return {
+            ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
+            alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+          };
+        }
+      case 'diagonal':
+        return {
+          ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
+          alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+        };
+      case 'dado':
+        if(cantidadRepeticiones === 1) {
+          return {
+            ancho: anchoImg,
+            alto: altoImg
+          };
+        } else if(cantidadRepeticiones === 2 || cantidadRepeticiones === 4) {
+          return {
+            ancho: anchoImg * 2 + sepX[0],
+            alto: altoImg * 2 + sepY[0]
+          };
+        } else if(cantidadRepeticiones === 3 || cantidadRepeticiones === 5 || cantidadRepeticiones > 6) {
+          return {
+            ancho: anchoImg * 3 + sepX[0] * 2,
+            alto: altoImg * 3 + sepY[0] * 2
+          };
+        } else if(cantidadRepeticiones === 6) {
+          return {
+            ancho: anchoImg * 2 + sepX[0],
+            alto: altoImg * 3 + sepY[0] * 2
+          };
+        }
+      default:
+        return {
+          ancho: 0,
+          alto: 0
+        };
+    }
+  }
+
+  let elementos = await Promise.all([...datos.map(x => getObject(x)),mostrarRes?res:null]);
+  let anchoTotal = separacion;
+  for(let i = 0; i < elementos.length; i++) {
+    switch(elementos[i].tipo) {
+      case 'repeticion':
+        var { img, altoImg, formaRepeticiones, sepX, sepY, cantidadRepeticiones } = elementos[i];
+        elementos[i].anchoImg = altoImg * img.width / img.height;
+        elementos[i].dimenciones = calculaDimencionesRepeticion(formaRepeticiones, altoImg, elementos[i].anchoImg, sepX, sepY, cantidadRepeticiones);
+        anchoTotal += elementos[i].dimenciones.ancho + separacion;
+        break;
+      case 'imagen':
+        var { srcImg, altoImg } = elementos[i];
+        elementos[i].anchoImg = altoImg * srcImg.width / srcImg.height;
+        anchoTotal += elementos[i].anchoImg + separacion;
+        break;
+      case 'texto':
+        var { texto, altoTexto } = elementos[i];
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+        anchoTotal += elementos[i].ancho  + separacion;
+        break;
+    }
+    if(mostrarVP1 && !((i+1) === elementos.length)) {
+      if(elementos[i].vp1.tipo === 'texto') {
+        var { texto, altoTexto } = elementos[i].vp1;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].vp1.anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+      } else {
+        var { img, altoImg } = elementos[i].vp1;
+        elementos[i].vp1.anchoImg = altoImg * img.width / img.height;
+      }
+    }
+    if(mostrarVP2 && !((i+1) === elementos.length)) {
+      if(elementos[i].vp2.tipo === 'texto') {
+        var { texto, altoTexto } = elementos[i].vp1;
+        ctx.save();
+        ctx.font = `${altoTexto}px Open-Sans-Reg`;
+        elementos[i].vp2.anchoTexto = ctx.measureText(texto).width;
+        ctx.restore();
+      } else {
+        var { img, altoImg } = elementos[i].vp2;
+        elementos[i].vp2.anchoImg = altoImg * img.width / img.height;
+      }
+    }
+  }
+  console.log({ elementos, anchoTotal });
 }
