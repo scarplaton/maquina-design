@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040110010200820</title>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({ 
+            tex2jax: {inlineMath: [["$","$"],["\(","\)"]]}
+        }); 
+    </script>
+    <script src="../js/MathJax.js?config=TeX-AMS_HTML-full"></script>
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+<body id="040110010200820">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row justify-content-center">
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e0" class="general">
+                        <p>Cada barra representa una fracción y está compuesta por 3 cuadrados iguales.&nbsp;</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <img src="imgs/40110010200820.svg"/>
+                </div>
+                <div class="col-md-3 col-sm-4 col-6">
+                    <img src="imgs/40110010200820.svg"/>
+                </div>
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e1" class="general">
+                        <p>¿Cuántos cuadrados se deben pintar para representar el número mixto \begin{align*}1\frac{2}{3}\end{align*} ?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-12 col-sm-4 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-0" name="answer" value="2 cuadrados." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;7&quot;}">
+                        <label for="radio-0">2 cuadrados.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-1" name="answer" value="5 cuadrados." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:null}">
+                        <label for="radio-1">5 cuadrados.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-2" name="answer" value="3 cuadrados." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;7&quot;}">
+                        <label for="radio-2">3 cuadrados.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+    <style type="text/css">
+    .MathJax_Display {
+        display: inline !important;
+    }
+    </style>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040112020201102</title>
+    <!-- MATHJAX NO IMPORTADO -->
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040112020201102" data-content="{'e':[{'id':'-Lg-K6UzRBBMOtJAd2lh','date':'28/5/2019 17:24:24','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Observa la siguiente adición:</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}},{'id':'-Lg-NS-jOfmu2kU064yi','date':'28/5/2019 17:38:58','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>¿Cuál es el resultado de la operación?</p>\n','padding':'10px 10px 0px'},'position':1,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-Lg-NzBY56hfKzrtq-2t','date':'28/5/2019 17:41:18','name':'Insertar Input','params':{'active':2,'anchoInput':'','col':'12','colmd':'3','colsm':'6','defaultError':'','defaultFeed':'','error0':'','error2':'6','error3':'3','error4':'1','feed0':'','feed1':'','feed2':'Usa la coma para distinguir que la columna “U” correspondiente a enteros, y la columna “d” que corresponde a décimos.','feed3':'$w corresponde a la suma de los décimos, sin realizar el canje.','feed4':'Debes realizar el canje de $w décimos para obtener los enteros.','inputSize':'4','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'1 entero  $z décimos.','value2':'1 décimo $z  enteros.','value3':'$w centésimos.','value4':'$w enteros.'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[]}" data-version="{'id':'vt','vars':[{'var':'x','val':'8'},{'var':'y','val':'7'},{'var':'w','val':'15'},{'var':'z','val':'5'}]}">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row">
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e0" class="general">
+                        <p>Observa la siguiente adición:</p>
+                    </div>
+                </div>
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e1" class="general">
+                        <p>¿Cuál es el resultado de la operación?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-0" name="answer" value="15 enteros." onchange="cambiaRadios(event)" data-content="{&quot;respuesta&quot;:&quot;15 enteros.&quot;,&quot;feedback&quot;:&quot;Debes realizar el canje de 15 décimos para obtener los enteros.&quot;,&quot;errFrec&quot;:&quot;1&quot;}">
+                        <label for="radio-0">15 enteros.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-1" name="answer" value="1 décimo 5  enteros." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;6&quot;}">
+                        <label for="radio-1">1 décimo 5 enteros.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-2" name="answer" value="1 entero  5 décimos." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:null}">
+                        <label for="radio-2">1 entero 5 décimos.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-3" name="answer" value="15 centésimos." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;3&quot;}">
+                        <label for="radio-3">15 centésimos.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+
+</body>
+
+</html>

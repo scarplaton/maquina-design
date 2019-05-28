@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040110010200816</title>
+    <!-- MATHJAX NO IMPORTADO -->
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040110010200816" >
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row">
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e0" class="general">
+                        <p>¿Qué fracción representan los cuadrados pintados en la siguiente cuadrícula?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="enunciado" class="row justify-content-center">
+                <div class="col-12 col-sm-3">
+                    <img src="imgs/40110010200816.svg" alt=""/>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label0')">
+                        <input id="rbtn0" name="answer" value="Opción 1" type="radio" data-content="{&quot;feedback&quot;:&quot;Considera que el denominador de la fracción corresponde al total de cuadrados de la cuadrícula.&quot;,&quot;respuesta&quot;:&quot;Opción 1&quot;,&quot;errFrec&quot;:&quot;5&quot;}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn0" id="label0">Opción 1</label>
+                        <div id="container-r0" class="general table-responsive">
+                            <table class="tabla d-block mx-auto" style="width: 30px;">
+                                <tbody>
+                                    <tr style="border-bottom: 2px solid #000;">
+                                        <td>
+                                            <p>7</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>13</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label1')">
+                        <input id="rbtn1" name="answer" value="Opción 2" type="radio" data-content="{&quot;feedback&quot;:&quot;¡Muy Bien!&quot;,&quot;respuesta&quot;:&quot;Opción 2&quot;}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn1" id="label1">Opción 2</label>
+                        <div id="container-r1" class="general table-responsive">
+                            <table class="tabla d-block mx-auto" style="width: 30px;">
+                                <tbody>
+                                    <tr style="border-bottom: 2px solid #000;">
+                                        <td>
+                                            <p>7</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>20</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label2')">
+                        <input id="rbtn2" name="answer" value="Opción 3" type="radio" data-content="{&quot;feedback&quot;:&quot;Vuelve a contar los cuadrados pintados  en la cuadrícula para obtener el numerador de la fracción.&quot;,&quot;respuesta&quot;:&quot;Opción 3&quot;,&quot;errFrec&quot;:&quot;5&quot;}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn2" id="label2">Opción 3</label>
+                        <div id="container-r2" class="general table-responsive">
+                            <table class="tabla d-block mx-auto" style="width: 30px;">
+                                <tbody>
+                                    <tr style="border-bottom: 2px solid #000;">
+                                        <td>
+                                            <p>13</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>20</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+
+</body>
+
+</html>

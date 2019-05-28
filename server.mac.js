@@ -62,6 +62,22 @@ app.get('/archivos', (request, response) => {
   });
 });
 
+app.get('/21Q', (request, response) => {
+  let ejerciciosPath = path.join(publicPath, '21Q')
+  const ejercicios = fs.readdirSync(ejerciciosPath);//lee carpetas de oas
+  let htmlPaths = ejercicios.filter(x => x.endsWith('.html')).map(x => [x.replace('.html',''),`21Q/${x}`])
+  response.send({
+    draw: 1,
+    recordsTotal: htmlPaths.length,
+    recordsFiltered: htmlPaths.length,
+    data: htmlPaths
+  })
+});
+
+app.get('/cuestionario', (request, response) => {
+  response.sendFile(path.join(publicPath, 'cuestionario.html'));
+})
+
 app.listen(port, () => {
   console.log(`Running on port ${port}`)
 });
