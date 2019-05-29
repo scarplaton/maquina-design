@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040527010202256</title>
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040527010202256">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row justify-content-center">
+                <div class="col-md-12 col-sm-12 col-12 ">
+                    <div class="general">
+                        <p>&nbsp;En el gráfico de barras se puede observar la asistencia a clases en distintas salas de un colegio.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <img alt="" src="imgs/40527010202256.svg" />
+                </div>
+                <div class="col-md-12 col-sm-12 col-12 ">
+                    <div class="general">
+                        <p>¿Cuántos estudiantes asistieron en la sala 3?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-1" name="answer" value="28 estudiantes." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;4&quot;}">
+                        <label for="radio-1">28 estudiantes.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-2" name="answer" value="40 estudiantes." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;4&quot;}">
+                        <label for="radio-2">40 estudiantes.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-0" name="answer" value="16 estudiantes." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:null}">
+                        <label for="radio-0">16 estudiantes.</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-4" name="answer" value="36 estudiantes." onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;4&quot;}">
+                        <label for="radio-4">36 estudiantes.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+</body>
+
+</html>

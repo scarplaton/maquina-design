@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Iframe</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+  <style>
+  .contenedor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ejercicio {
+    border: 1px solid #000;
+    border-radius: 30px;
+  }
+  @media (min-width: 1280px) and (min-height: 620px) {
+    .ejercicio {
+      width: 1200px;
+      height: 600px;
+    }
+  }
+  @media (min-width: 577px) and (max-width:1279px), (max-height: 619px) and (min-width: 1279px) {
+    .ejercicio {
+      width: 82vw;
+      max-width: 1024px;
+      height: 100vh;
+    }
+  }
+  @media (max-width: 576px) {
+    .ejercicio {
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+  </style>
+</head>
+<body>
+<div class="contenedor">
+  <select id="vista">
+    <option value="mobile">Mobile</option>
+    <option value="tablet">Tablet</option>
+    <option value="desktop">Desktop</option>
+  </select>
+  <iframe id="iframe" class="ejercicio"></iframe>
+</div>
+<div class="contenedor">
+  <table id="ejercicios" class="display" style="width: 800px;margin:auto;display: block;">
+    <thead>
+      <tr>
+        <th>CODIGO</th>
+        <th>PATH</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>CODIGO</th>
+        <th>PATH</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<div class="contenedor">
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+  $(document).ready(function() {
+    var table = $('#ejercicios').DataTable( {
+      "processing": false,
+      "serverSide": false,
+      "ajax": "/21Q",
+      "sPaginationType": "full_numbers"
+    });
+    $('#ejercicios tbody').on('click', 'tr', function () {
+      var data = table.row( this ).data();
+      $('iframe').attr('src', data[1]);
+    });
+    $('#vista').change(function(e) {
+      switch(e.target.value) {
+        case 'mobile':
+          $('iframe').css('height', '640px')
+          $('iframe').css('width', '360px')
+          break;
+        case 'tablet':
+          $('iframe').css('height', '1024px')
+          $('iframe').css('width', '768px')
+          break;
+        case 'desktop':
+          $('iframe').css('height', '600px')
+          $('iframe').css('width', '1200px')
+          break;
+      }
+    })
+  });
+</script>
+</body>
+</html>

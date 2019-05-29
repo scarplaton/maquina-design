@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040316020201507</title>
+    <!-- MATHJAX NO IMPORTADO -->
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040316020201507">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row justify-content-center">
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e0" class="general">
+                        <p>Ana está dibujando las vistas del siguiente cuerpo geométrico:</p>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-7">
+                    <img src="imgs/40316020201507.svg" alt=""/>
+                </div>
+                <div class="col-md-12 col-sm-12 col-12">
+                    <div id="container-e1" class="general">
+                        <p>¿Cuál de las siguientes figuras corresponde a la vista que le falta dibujar a Ana?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label0')">
+                        <input id="rbtn0" name="answer" value="Opción 1" type="radio" data-content="{&quot;errFrec&quot;:null}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn0" id="label0">Opción 1</label>
+                        <img src="imgs/40316020201507_Opcion_3.svg" class="d-block mx-auto" height="150" alt=""/>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label1')">
+                        <input id="rbtn1" name="answer" value="Opción 2" type="radio" data-content="{&quot;errFrec&quot;:&quot;3&quot;}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn1" id="label1">Opción 2</label>
+                        <img src="imgs/40316020201507_Opcion_2.svg" class="d-block mx-auto" height="150" alt=""/>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label2')">
+                        <input id="rbtn2" name="answer" value="Opción 3" type="radio" data-content="{&quot;errFrec&quot;:&quot;4&quot;}" onchange="cambiaRadioImagen(event)">
+                        <label for="rbtn2" id="label2">Opción 3</label>
+                        <img src="imgs/40316020201507_Opcion_1.svg" class="d-block mx-auto" height="150" alt=""/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+
+</body>
+
+</html>
