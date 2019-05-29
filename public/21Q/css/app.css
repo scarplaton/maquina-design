@@ -90,7 +90,7 @@ table {
 
   .contenido {
     max-height: calc(100vh - 110px); /*header 50px + footer mobile 60 px*/
-    height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
+    height: calc(100vh - 110px); /*header 50px + 10px de margen + footer mobile 60 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
@@ -145,7 +145,7 @@ table {
 
   .contenido {
     max-height: calc(100vh - 150px); /*header 50px + footer mobile 100 px*/
-    height: calc(100vh - 170px); /*header 50px + 20px de margen + footer mobile 100 px*/
+    height: calc(100vh - 150px); /*header 50px + footer mobile 100 px*/
     overflow: auto;
     overflow-y: scroll;
     margin-bottom: 0;
