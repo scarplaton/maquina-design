@@ -57,7 +57,7 @@ function enviar(){
 	/*----Comunicacion de frame a página padre----*/
 	$(hiddenParent).val(envioIntento).trigger('change');
 	$(hiddenParent).val(envioIntento).trigger('click');
-	cerrarFeedGlosa()
+	//cerrarFeedGlosa()
 	/*----INTENTOS----------------------------*/
 	//numeroIntento++;
 }
