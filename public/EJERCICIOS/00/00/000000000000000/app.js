@@ -4196,7 +4196,8 @@ async function repeticionPicV2(config) {
   const { container, params, variables, versions, vt } = config;
   const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,
     _mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res,
-    _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha } = params;
+    _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha,
+    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params;
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
@@ -4207,10 +4208,12 @@ async function repeticionPicV2(config) {
     mostrarVP1 = _mostrarVP1 === 'si' ? true : false, //decide si se muestra o no el VP1
     altoVP1 = mostrarVP1 ? Number(_altoVP1) : 0, //alto que usara el VP1 si se muestra
     mostrarFlechaVP1 = _flechaVP1 === 'si' ? true : false,
+    mostrarSignoMasVP1 = _signoMasVP1 === 'si' ? true : false,
 
     mostrarVP2 = _mostrarVP2 === 'si' ? true : false, //decide si se muestra o no el VP2
     mostrarFlechaVP2 = _flechaVP2 === 'si' ? true : false,
     altoVP2 = mostrarVP2 ? Number(_altoVP2) : 0, //alto que usara el VP2 si se muestra
+    mostrarSignoMasVP2 = _signoMasVP2 === 'si' ? true : false,
 
     mostrarRes = _mostrarRes === 'si' ? true : false, //decide si se muestra o no el resultado
     mostrarFlechaRes = _flechaRes === 'si' ? true : false,
@@ -4229,6 +4232,11 @@ async function repeticionPicV2(config) {
     altoImgFlecha = Number(_altoImgFlecha),
     imgFlecha = (mostrarFlechaVP1 || mostrarFlechaVP2 || mostrarFlechaRes) ? await cargaImagen(srcFlecha) : null,
     anchoImgFlecha = (mostrarFlechaVP1 || mostrarFlechaVP2 || mostrarFlechaRes) ? imgFlecha.width * altoImgFlecha / imgFlecha.height : 0,
+    //datos del signo
+    srcImgSignoMas = _srcImgSignoMas.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
+    altoImgSignoMas = Number(_altoImgSignoMas),
+    imgSignoMas = (mostrarSignoMasVP1 || mostrarSignoMasVP2) ? await cargaImagen(srcImgSignoMas) : null,
+    anchoImgSignoMas = (mostrarSignoMasVP1 || mostrarSignoMasVP2) ? imgSignoMas.width * altoImgSignoMas / imgSignoMas.height : 0,
 
     separaciones = _separaciones.trim().length > 0 ? _separaciones.split(';').map(x => x.split('-')).map(x => ({ inicio: Number(x[0]), fin: Number(x[1]) })) : undefined;
   
@@ -4429,12 +4437,17 @@ async function repeticionPicV2(config) {
 
   if(mostrarRes) {
     let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
+    let primerCentro = xInicio + elementos[0].dimenciones.ancho/2
+    let ultimoCentro = xInicio + anchoTotal - (elementos[elementos.length-1].tipo === 'repeticion' ? 
+      elementos[elementos.length-1].dimenciones.ancho/2 : 
+      elementos[elementos.length-1].anchoTexto/2)-separacion*2
+    let centroRespuesta = primerCentro+((ultimoCentro-primerCentro)/2)
     if(tipo == 'texto') {
       ctx.save();
       ctx.font = `${altoTexto}px Open-Sans-Reg`;
       ctx.fillStyle = colorTexto;
       ctx.textAlign = 'center';
-      ctx.fillText(texto, anchoCanvas/2, yCentroRes+altoTexto/2);
+      ctx.fillText(texto, centroRespuesta, yCentroRes+altoTexto/2);
       ctx.restore();
     } else {
       let anchoImg = altoImg * srcImg.width / srcImg.height;
@@ -4442,11 +4455,12 @@ async function repeticionPicV2(config) {
       ctx.drawImage(srcImg, anchoCanvas/2-anchoImg/2, yCentroRes-altoImg/2, anchoImg, altoImg);
     }
     if(mostrarFlechaRes) {
-      ctx.drawImage(imgFlecha, anchoCanvas/2, yCentroRes-altoRes/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+      ctx.drawImage(imgFlecha, centroRespuesta-anchoImgFlecha/2, yCentroRes-altoRes/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
     }
   }
 
   elementos.forEach(function(elemento, index) {
+    let anchoElemento = 0
     switch(elemento.tipo) {
       case 'repeticion':
         let { formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones } = elemento;
@@ -4454,10 +4468,11 @@ async function repeticionPicV2(config) {
         xCentro = xInicio + dimenciones.ancho / 2;
         dibujaRepeticion(formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones, xCentro, yCentroRepeticiones);
         xInicio += dimenciones.ancho + separacion;
+        anchoElemento = dimenciones.ancho
         break;
       case 'texto':
         let { texto, altoTexto, colorTexto, anchoTexto } = elemento;
-        posicicionesInicio.push({ xInicio, anchoTotal: dimenciones.ancho, altoTotal: altoTexto });
+        posicicionesInicio.push({ xInicio, anchoTotal: anchoTexto, altoTotal: altoTexto });
         xCentro = xInicio + anchoTexto / 2;
         ctx.save();
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
@@ -4466,6 +4481,7 @@ async function repeticionPicV2(config) {
         ctx.fillText(texto, xCentro, yCentroRepeticiones+altoTexto/2);
         ctx.restore();
         xInicio += anchoTexto + separacion;
+        anchoElemento = anchoTexto
         break;
     }
     if(mostrarVP1) {
@@ -4484,6 +4500,14 @@ async function repeticionPicV2(config) {
       if(mostrarFlechaVP1) {
         ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP1-altoVP1/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
       }
+      if(mostrarSignoMasVP1 && (index+1)<elementos.length) {
+        let siguienteCentro = xCentro + anchoElemento/2 + (elementos[index+1].tipo === 'repeticion' ? 
+          elementos[index+1].dimenciones.ancho/2 : 
+          elementos[index+1].anchoTexto/2) + separacion
+        let xImgSignoMas = xCentro + (siguienteCentro-xCentro)/2 - anchoImgSignoMas/2
+        let yImgSignoMas = yCentroVP1-altoImgSignoMas/2;
+        ctx.drawImage(imgSignoMas, xImgSignoMas, yImgSignoMas, anchoImgSignoMas, altoImgSignoMas)
+      }
     }
     if(mostrarVP2) {
       if(elemento.vp2.tipo === 'texto') {
@@ -4500,6 +4524,14 @@ async function repeticionPicV2(config) {
       }
       if(mostrarFlechaVP2) {
         ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP2-altoVP2/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+      }
+      if(mostrarSignoMasVP2 && (index+1)<elementos.length) {
+        let siguienteCentro = xCentro + anchoElemento/2 + (elementos[index+1].tipo === 'repeticion' ? 
+          elementos[index+1].dimenciones.ancho/2 : 
+          elementos[index+1].anchoTexto/2) + separacion
+        let xImgSignoMas = xCentro + (siguienteCentro-xCentro)/2 - anchoImgSignoMas/2
+        let yImgSignoMas = yCentroVP2-altoImgSignoMas/2;
+        ctx.drawImage(imgSignoMas, xImgSignoMas, yImgSignoMas, anchoImgSignoMas, altoImgSignoMas)
       }
     }
   });
@@ -4650,7 +4682,7 @@ async function repeticionPicV2(config) {
           } else {
             y = yCentro + (sepY / 2)
           }
-          ctx.drawImage(img, );
+          ctx.drawImage(img, x, y, anchoImg, altoImg);
         }
         break;
       default:
