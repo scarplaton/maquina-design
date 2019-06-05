@@ -9,7 +9,7 @@ ejeF = idEjercicio.substring(2, 4),
 errFre = '', 
 feed = '', 
 check = false;
-var _TIPO_INPUT_ = '';
+var _TIPO_INPUT_ = '', _VALIDACIONES_INPUT_TABLA_ = null;
 var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
@@ -60,12 +60,15 @@ function validaRespuesta() { //Validar respuesta
 			for(var input of inputs) {
 				coloreaInputTexto(input);
 			}
+			evaluaInputsEjercicio();
+			/*
 			for(var input of inputs) {
 				evaluaInputTexto(input);
 				if(errFre !== null) {
 					break;
 				}
 			}
+			*/
 		}
 	}
 }
@@ -76,72 +79,56 @@ function coloreaInputTexto(inputElement) {
 	switch(content.tipoInput){
 		case 'numero':
 			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
+			content.correctas.split(',').forEach(function(correcta){
+				if(resp === correcta) {
+					inputElement.classList.add('inputTexto-correcto');
 					match = true;
-					break;
 				}
-			}
+			})
 			break;
 		case 'texto':
 			var resp = inputElement.value;
-			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
+			content.correctas.split(',').forEach(function(correcta){
+				var numberArr = correcta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
 				if(checkWord(resp, numberArr)) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
-					match = true;
-					break;
+					inputElement.classList.add('inputTexto-correcto');
 				}
-			}
-			break;
+ 			});
 	}
 	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
 		inputElement.classList.add('inputTexto-incorrecto');
 	}
 }
 
-function evaluaInputTexto(inputElement) {
-	var content = JSON.parse(inputElement.getAttribute('data-content'));
-	var match = false;
-	switch(content.tipoInput){
-		case 'numero':
-			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
+function evaluaInputsEjercicio() {
+	let { respuestas, errFrecDefecto, feedbackDefecto } = _VALIDACIONES_INPUT_TABLA_;
+	for(let i = 0; i < respuestas.length; i++) {
+		let { validaciones, errFrec, feedback } = respuestas[i], coincidenTodas = true;
+	 	for(let val of validaciones) {
+			let input = document.getElementById(val.inputId);
+			let content = JSON.parse(input.getAttribute('data-content'))
+			switch(content.tipoInput){
+				case 'numero':
+					if(input.value.replace(/\s/g, '') !== val.valor){
+						coincidenTodas = false;
+					}
 					break;
-				}
+				case 'texto':
+					var numberArr = correcta.length === 3 ? ('0'+val.valor).split('') : val.valor.split('');
+					if(!checkWord(input.value, numberArr)) {
+						coincidenTodas = false
+					}
 			}
+		}
+		if(coincidenTodas) {
+			feed = feedback;
+			errFre = errFrec;
 			break;
-		case 'texto':
-			var resp = inputElement.value;
-			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
-				if(checkWord(resp, numberArr)) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
-					break;
-				}
-			}
-			break;
+		}
 	}
-	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
+	if(errFre === '') {
+		feed = feedbackDefecto;
+		errFre = errFrecDefecto;
 	}
 }
 
