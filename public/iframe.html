@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Iframe</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
   <style>
   .contenedor {
     display: flex;
@@ -13,7 +13,8 @@
   }
 
   .ejercicio {
-    border: none;
+    border: 1px solid #000;
+    border-radius: 30px;
   }
 
   @media (min-width: 1280px) and (min-height: 620px) {
@@ -43,60 +44,121 @@
 <body>
 <div class="contenedor">
   <iframe id="iframe" class="ejercicio"></iframe>
+  <input id="barraProgreso" type="hidden" />
 </div>
-<div class="container">
-  <div class="row">
-      <div class="input-group col-12">
-        <select id="selectEjercicios" onchange="cambiaEjercicio()" class="custom-select">
-          <option>Seleccione</option>
-        </select>
-      </div>
-  </div>
-  
+<div class="contenedor">
+  <table id="ejercicios" class="display" style="width: 800px;margin:auto;display: block;">
+    <thead>
+      <tr>
+        <th>CODIGO</th>
+        <th>OA</th>
+        <th>IE</th>
+        <th>PATH</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th>CODIGO</th>
+        <th>OA</th>
+        <th>IE</th>
+        <th>PATH</th>
+      </tr>
+    </tfoot>
+  </table>
 </div>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<div class="contenedor">
+<p>
+progreso = {
+  tmpProgreso: [{
+    idasigejermat:00001,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00002,
+    correcto:true,
+    NUMEROINTENTOS:1
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  },{
+    idasigejermat:00003,
+    correcto:false,
+    NUMEROINTENTOS:2
+  }],
+  tmpTotal: 15
+};
+document.getElementById('barraProgreso').value = JSON.stringify(progreso);
+</p>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 <script>
-  localStorage.setItem('tmpProgreso', JSON.stringify(
-    [{
-      "idasigejermat":00001,
-      "correcto":false,
-      "NUMEROINTENTOS":2
+  let progreso = {
+    tmpProgreso: [{
+      idasigejermat:00001,
+      correcto:false,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00002,
-      "correcto":true,
-      "NUMEROINTENTOS":1
+      idasigejermat:00002,
+      correcto:true,
+      NUMEROINTENTOS:1
     },{
-      "idasigejermat":00003,
-      "correcto":false,
-      "NUMEROINTENTOS":2
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00004,
-      "correcto":true,
-      "NUMEROINTENTOS":2
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
     },{
-      "idasigejermat":00005,
-      "correcto":true,
-      "NUMEROINTENTOS":1
-    }]
-  ));
-  localStorage.setItem('tmpTotal', '12');
-  var select = document.getElementById('selectEjercicios');
-  axios.get('/archivos').then(function (response) {
-    response.data.filter(function(x){
-      return x.length > 15;
-    }).forEach(element => {
-      var option = document.createElement('option');
-      option.value = element;
-      option.innerHTML = element;
-      select.appendChild(option);
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    }],
+    tmpTotal: 15
+  };
+  document.getElementById('barraProgreso').value = JSON.stringify(progreso);
+  $(document).ready(function() {
+    var table = $('#ejercicios').DataTable( {
+      "processing": false,
+      "serverSide": false,
+      "ajax": "/archivos",
+      "sPaginationType": "full_numbers"
     });
-  }).catch(function (error) {
-    // handle error
-    console.log(error);
+    $('#ejercicios tbody').on('click', 'tr', function () {
+        var data = table.row( this ).data();
+        $('iframe').attr('src', data[3]);
+    });
   });
-  function cambiaEjercicio() {
-    document.querySelector('iframe').src = select.value;
-  }
 </script>
 </body>
 </html>

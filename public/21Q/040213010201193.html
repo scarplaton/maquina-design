@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040213010201193</title>
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040213010201193">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row justify-content-center">
+                <div class="col-md-12 col-sm-12 col-12 ">
+                    <div class="general">
+                        <p>&nbsp;La lista muestra una secuencia de números cuyo patrón es sumar 9. ¿Con qué cálculo puedo encontrar el número que falta en la secuencia?</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <table style="width:290px;" class="tabla tabla-bordes d-block mx-auto table-responsive">
+                        <tbody>
+                            <tr>
+                                <td>&nbsp;&nbsp;9</td>
+                                <td>18</td>
+                                <td>27</td>
+                                <td>36</td>
+                                <td>&nbsp;?&nbsp;</td>
+                                <td>45</td>
+                                <td>54</td>
+                                <td>63</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-1" name="answer" value="36 + 1" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;3&quot;}">
+                        <label for="radio-1">36 + 1</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-0" name="answer" value="36 + 9" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:null}">
+                        <label for="radio-0">36 + 9</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-2" name="answer" value="54 - 1" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;3&quot;}">
+                        <label for="radio-2">54 - 1</label>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+</body>
+
+</html>

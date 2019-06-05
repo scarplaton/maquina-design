@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <title>040102010200201</title>
+    <script>
+        document.domain = "adaptativamente.cl";
+    </script>
+</head>
+
+<body id="040102010200201">
+    <header class="headline">
+        <div class="container-fluid">
+            <div class="row ">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="contenido">
+        <div class="container-fluid">
+            <div id="enunciado" class="row">
+                <div class="col-md-12 col-sm-12 col-12 tag">
+                    <div id="container-e0" class="general">
+                        <p>&nbsp;Si contamos hacia adelante de <strong>3</strong> en <strong>3</strong>, partiendo desde <strong>3</strong>, tenemos la siguiente secuencia:</p>
+                        <p style="text-align:center;"><span style="font-size: 16px;"><strong>3, 6, 9, 12, 15,…</strong></span></p>
+                        <p>¿Cuáles son los 3 números que siguen?</p>
+                    </div>
+                </div>
+            </div>
+            <div id="respuesta" class="row justify-content-center">
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-0" name="answer" value="16, 17, 18" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;3&quot;}">
+                        <label for="radio-0">16, 17, 18</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-1" name="answer" value="18, 21, 24" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:null}">
+                        <label for="radio-1">18, 21, 24</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-2" name="answer" value="19, 20, 21" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;4&quot;}">
+                        <label for="radio-2">19, 20, 21</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3" style="margin-bottom: 5px;">
+                    <div class="opcionradio">
+                        <span></span>
+                        <input type="radio" id="radio-3" name="answer" value="17, 20, 23" onchange="cambiaRadios(event)" data-content="{&quot;errFrec&quot;:&quot;4&quot;}">
+                        <label for="radio-3">17, 20, 23</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="fixed-bottom pie">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="offset-8 offset-md-9 col-4 col-md-3">
+                    <button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled="" onclick="answer();">
+                        <span>RESPONDER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <input id="hiddenIntento" type="hidden" value="hiddenIntento" onchange="cambio(this)">
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/interfaz.js"></script>
+    <script src="js/jsEjercicios.js"></script>
+</body>
+
+</html>
