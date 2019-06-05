@@ -64,13 +64,29 @@ function regexFunctions(text) {
       var final = coincidencia.length - 2;
       var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
       try {
-          return eval(funcion);
+          return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
+            if (coincidencia.length >= 4) {
+                let arrayReverse = coincidencia.split("").reverse();
+                for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
+                    count++;
+                    if (count === 3 && arrayReverse[i + 1]) {
+                        valor = ' ' + arrayReverse[i] + valor;
+                        count = 0;
+                    } else {
+                        valor = arrayReverse[i] + valor;
+                    }
+                }
+                return valor;
+            } else {
+                return coincidencia;
+            }
+        });
       } catch(error) {
           //console.log(error);
           //console.log(funcion)
           return coincidencia;
       }
-  });
+  })
   return result;
 }
 
@@ -517,28 +533,28 @@ function insertarTabla(config) {
             if (value2 !== '') {
               answers[1] = {
                 respuesta: regex(value2, vars, vt),
-                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed2, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error2 : error0
               }
             }
             if (value3 !== '') {
               answers[2] = {
                 respuesta: regex(value3, vars, vt),
-                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed3, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error3 : error0
               }
             }
             if (value4 !== '') {
               answers[3] = {
                 respuesta: regex(value4, vars, vt),
-                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed4, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error4 : error0
               }
             }
             var dataContent = {
               tipoInput,
               answers,
-              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              feedbackDefecto: feed0 === '' ? regexFunctions(regex(defaultFeed, vars, vt)) : feedGenerico,
               errFrecDefecto: error0 === '' ? defaultError : error0
             };
             var input;
