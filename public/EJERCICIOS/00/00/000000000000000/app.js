@@ -60,32 +60,35 @@ function imagenEnTexto(imgsrc, alto, ancho){
 }
 
 function regexFunctions(text) {
-  var result = text.replace(/(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}'
-      var final = coincidencia.length - 2;
-      var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-      try {
-          return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
-            if (coincidencia.length >= 4) {
-                let arrayReverse = coincidencia.split("").reverse();
-                for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-                    count++;
-                    if (count === 3 && arrayReverse[i + 1]) {
-                        valor = ' ' + arrayReverse[i] + valor;
-                        count = 0;
-                    } else {
-                        valor = arrayReverse[i] + valor;
-                    }
-                }
-                return valor;
+  var result = text.replace(/(\[\\begin{align\*}.*\\end{align\*}\])|(\{.*\})/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
+    var final = coincidencia.length - 2;
+    if(coincidencia[0] === '[' && coincidencia[coincidencia.length-1] === ']') {
+      return coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+    }
+    var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+    try {
+      return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
+        if (coincidencia.length >= 4) {
+          let arrayReverse = coincidencia.split("").reverse();
+          for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
+            count++;
+            if (count === 3 && arrayReverse[i + 1]) {
+              valor = ' ' + arrayReverse[i] + valor;
+              count = 0;
             } else {
-                return coincidencia;
+              valor = arrayReverse[i] + valor;
             }
-        });
-      } catch(error) {
-          //console.log(error);
-          //console.log(funcion)
+          }
+          return valor;
+        } else {
           return coincidencia;
-      }
+        }
+      });
+    } catch(error) {
+        //console.log(error);
+        //console.log(funcion)
+        return coincidencia;
+    }
   })
   return result;
 }
@@ -448,7 +451,10 @@ function insertarTabla(config) {
   const { container, params, variables, versions, vt } = config, 
     { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
     vars = vt ? variables : versions;
-  _VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
+    if(validaciones) {
+      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(validaciones, vars, vt));
+    }
+  //_VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
