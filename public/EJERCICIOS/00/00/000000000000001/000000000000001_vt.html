@@ -327,6 +327,16 @@
 				backface-visibility: hidden;
 			}
 
+			.icon-consulta span {
+				display: block;
+				content: "CONSULTA";
+			}
+
+			.icon-responder span {
+				display: block;
+				content: "CONSULTA";
+			}
+
 			button:not(:disabled).bton-5 span {
 				display: inline-block;
 				-webkit-transition: all 0.8s;
@@ -350,6 +360,7 @@
 				color: #703b87;
 			}
 
+				/* Button 5a */
 			button:not(:disabled).bton-5a:hover span {
 				-webkit-transform: translateY(300%);
 				-moz-transform: translateY(300%);
@@ -451,7 +462,7 @@
 				<div class="col-4 col-md-3">
 					<button type="button" id="btnConsulta" class="bton bton-5 bton-5a icon-consulta"
 						onclick="pressConsulta()">
-						<span></span>
+						<span>CONSULTA</span>
 					</button>
 					<img id="imgfeedback" class="img-fluid d-none" alt="IMG">
 				</div>
@@ -459,7 +470,7 @@
 				<div class="col-4 col-md-3">
 					<button type="button" id="btnResponder"
 						class="bton bton-5 bton-5a icon-responder float-right" disabled>
-						<span></span>
+						<span>RESPONDER</span>
 					</button>
 				</div>
 			</div>
