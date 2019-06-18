@@ -7,10 +7,6 @@ $(document).ready(function () {
   print();
 });
 
-function b64_to_utf8( str ) {
-  return decodeURIComponent(escape(window.atob( str )));
-}
-
 function repeticiones(cantidad, numero){
   cantidad = Number(cantidad);
   let con = "";
@@ -18,6 +14,10 @@ function repeticiones(cantidad, numero){
       con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} + `;
   }
   return con;
+}
+
+function injectHtml(elemento, texto, styles) {
+  return `<${elemento} style="${styles}">${texto}</${elemento}>`;
 }
 
 function shuffle(arr, t = 10) {
@@ -456,8 +456,9 @@ function insertarTabla(config) {
     { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
     vars = vt ? variables : versions;
     if(validaciones) {
-      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(validaciones, vars, vt));
     }
+  //_VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
