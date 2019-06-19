@@ -20,6 +20,10 @@ function injectHtml(elemento, texto, styles) {
   return `<${elemento} style="${styles}">${texto}</${elemento}>`;
 }
 
+function b64_to_utf8(str) {
+  return decodeURIComponent(escape(window.atob(str)));
+}
+
 function shuffle(arr, t = 10) {
   for (let i = 0; i < t; i++) {
     arr = arr.sort(() => (.5 - Math.random()));

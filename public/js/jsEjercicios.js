@@ -49,7 +49,7 @@ function enviar(){
 		"tiempoRespuesta" : ""+date.yyyymmdd()+" "+fechaTerminoIntento.toLocaleTimeString()+"", 
 		"feedback": check ? 'Respuesta Correcta' : 
 												numeroIntento < 2 ? feed.replace(/(\\n)|(\\t)/g, '').trim() :
-																						null, 
+																						'', 
 		"codigoErrorComun" : errFre ? errFre : 0, 
 		"respuesta": values,
 		"glosa": numeroIntento === 2 ? 
@@ -86,6 +86,10 @@ function sgteGlosa(){
 	$("#imagenBotonRespuesta").css("visibility","hidden");	
 	$(hiddenTutorial).val(true).trigger('change');
 }
+
+$(document).on("cut copy paste contextmenu",function(e) {
+	e.preventDefault();
+});
 
 /*---------VALIDACIÓN INGRESO A EJERCICIO--------*/
 
