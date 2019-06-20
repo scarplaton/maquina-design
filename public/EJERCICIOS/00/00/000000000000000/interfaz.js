@@ -34,7 +34,7 @@ if(hiddenBarraDatos) {
 
 barraDeProgreso();
 $(document).ready(function(){
-	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
 		e.preventDefault();
  	});
 	window.addEventListener("keyup", function(event){
@@ -61,14 +61,6 @@ function validaRespuesta() { //Validar respuesta
 				coloreaInputTexto(input);
 			}
 			evaluaInputsEjercicio();
-			/*
-			for(var input of inputs) {
-				evaluaInputTexto(input);
-				if(errFre !== null) {
-					break;
-				}
-			}
-			*/
 		}
 	}
 }
@@ -319,10 +311,11 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 			$('section.contenido').find('input[type=text]').val('');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
+	
 }
 //handle modals
 function openModalFeedback(feedback, correcto) {
@@ -359,9 +352,15 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 		$('input:checked')[0].checked = false;
 		$('.radio-div__selected').removeClass('radio-div__selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+		} else {
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
+	$('section.contenido.inputTexto-incorrecto').prop('disabled', false);
 	btnRespuesta.disabled = true;
 }
 
@@ -411,19 +410,10 @@ function cambiaInputTexto(e) {
 	}
 }
 function cambiaInputNumerico(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
-	}
-	var regex = /[0-9]|\./;
-	if( !regex.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
+	var validacion = e.keyCode >= 48 && e.keyCode <= 57
+	if(!validacion) {
+		e.preventDefault();
+		return false;
 	}
 }
 
