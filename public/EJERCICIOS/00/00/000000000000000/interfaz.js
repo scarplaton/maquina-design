@@ -305,6 +305,7 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
 		$('.radio-div_selected').removeClass('radio-div_selected');
+		$('section.contenido').find('input').prop('disabled', false);
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
