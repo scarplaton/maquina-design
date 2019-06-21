@@ -23,6 +23,7 @@ svg {
 }
 
 p {
+  font-size: 18px;
   margin-bottom: 10px;
 }
 
@@ -53,36 +54,6 @@ table {
 @font-face {
   font-family: 'opensans';
   src: url('../fonts/OpenSans-Regular-webfont.woff');
-}
-
-@media only screen and (min-width: 1367px) {
-  p {
-    font-size: 22px;
-  }
-
-  label {
-    font-size: 22px;
-  }
-}
-
-@media only screen and (min-width: 1280px) and (max-width: 1366px) {
-  p {
-    font-size: 18px;
-  }
-
-  label {
-    font-size: 18px;
-  }
-}
-
-@media only screen and (max-width: 1279px) {
-  p {
-    font-size: 16px;
-  }
-
-  label {
-    font-size: 16px;
-  }
 }
 
 /*CONSIDERACIONES MOBILE*/
