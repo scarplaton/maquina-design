@@ -28,6 +28,11 @@ p {
   margin-bottom: 10px;
 }
 
+li {
+  font-size: 18px;
+  font-family: 'opensans';
+}
+
 canvas {
   margin-top: 10px;
   margin-bottom: 10px;
