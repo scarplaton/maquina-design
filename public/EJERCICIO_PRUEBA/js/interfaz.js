@@ -9,7 +9,7 @@ ejeF = idEjercicio.substring(2, 4),
 errFre = '', 
 feed = '', 
 check = false;
-var _TIPO_INPUT_ = '', _VALIDACIONES_INPUT_TABLA_ = null;
+var _TIPO_INPUT_ = '';
 var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
@@ -32,9 +32,9 @@ if(hiddenBarraDatos) {
 		Number(localStorage.getItem('tmpTotal')) : 0;
 }
 
-barraDeProgreso();
+	barraDeProgreso();
 $(document).ready(function(){
-	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
+	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
 		e.preventDefault();
  	});
 	window.addEventListener("keyup", function(event){
@@ -58,69 +58,37 @@ function validaRespuesta() { //Validar respuesta
 			evaluaInputTexto(inputs[0]);
 		} else {//si hay mas de un input de texto
 			for(var input of inputs) {
-				coloreaInputTexto(input);
+				evaluaInputTexto(input);
+				if(errFre !== null) {
+					input.classList.add('inputTexto-incorrecto');
+					break;
+				} else {
+					input.classList.add('inputTexto-correcto');
+				}
 			}
-			evaluaInputsEjercicio();
 		}
 	}
 }
 
-function coloreaInputTexto(inputElement) {
+function evaluaInputTexto(inputElement) {
 	var content = JSON.parse(inputElement.getAttribute('data-content'));
 	var match = false;
 	switch(content.tipoInput){
 		case 'numero':
 			var resp = inputElement.value.replace(/\s/g, '');
-			content.correctas.split(',').forEach(function(correcta){
-				if(resp === correcta) {
-					inputElement.classList.add('inputTexto-correcto');
+			for(var answer of content.answers) {
+				if(resp === answer.respuesta) {
+					feed = answer.feedback;
+					errFre = answer.errFrec;
 					match = true;
+					break;
 				}
-			})
+			}
 			break;
-		case 'texto':
-			var resp = inputElement.value;
-			content.correctas.split(',').forEach(function(correcta){
-				var numberArr = correcta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
-				if(checkWord(resp, numberArr)) {
-					inputElement.classList.add('inputTexto-correcto');
-				}
- 			});
 	}
 	if(!match) {
-		inputElement.classList.add('inputTexto-incorrecto');
-	}
-}
-
-function evaluaInputsEjercicio() {
-	let { respuestas, errFrecDefecto, feedbackDefecto } = _VALIDACIONES_INPUT_TABLA_;
-	for(let i = 0; i < respuestas.length; i++) {
-		let { validaciones, errFrec, feedback } = respuestas[i], coincidenTodas = true;
-	 	for(let val of validaciones) {
-			let input = document.getElementById(val.inputId);
-			let content = JSON.parse(input.getAttribute('data-content'))
-			switch(content.tipoInput){
-				case 'numero':
-					if(input.value.replace(/\s/g, '') !== val.valor && val.valor !== '-any-'){
-						coincidenTodas = false;
-					}
-					break;
-				case 'texto':
-					var numberArr = correcta.length === 3 ? ('0'+val.valor).split('') : val.valor.split('');
-					if(!checkWord(input.value, numberArr) && val.valor !== '-any-') {
-						coincidenTodas = false
-					}
-			}
-		}
-		if(coincidenTodas) {
-			feed = feedback;
-			errFre = errFrec;
-			break;
-		}
-	}
-	if(errFre === '') {
-		feed = feedbackDefecto;
-		errFre = errFrecDefecto;
+		feed = content.feedbackDefecto;
+		errFre = content.errFrecDefecto;
 	}
 }
 
@@ -140,7 +108,7 @@ function answer() {
 			}
 		}
 		respGeneral++;
-		enviar();
+		//enviar();
 	}
 }
 
@@ -305,18 +273,16 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
 		$('.radio-div_selected').removeClass('radio-div_selected');
-		$('section.contenido').find('input').prop('disabled', false);
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
 		} else {
-			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
-			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('section.contenido').find('input.inputTexto-incorrecto[type=text]').val('');
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
-	
+	$('section.contenido').find('input').prop('disabled', false);
 }
 //handle modals
 function openModalFeedback(feedback, correcto) {
@@ -351,18 +317,11 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 	$('#modalFeedback').modal('hide');
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
-		$('.radio-div__selected').removeClass('radio-div__selected');
-		$('section.contenido').find('input').prop('disabled', false);
+		$('.radio-div_selected').removeClass('radio-div_selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
-		if(inputsCount === 1) {
-			$('section.contenido').find('input[type=text]').val('');
-		} else {
-			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
-			$('section.contenido.inputTexto-incorrecto').prop('disabled', false);
-			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
-		}
+		$('section.contenido').find('input[type=text]').val('');
 	}
+	$('section.contenido').find('input').prop('disabled', false);
 	btnRespuesta.disabled = true;
 }
 
@@ -389,8 +348,8 @@ function cambiaRadioImagen(e) {
 	e.target.parentElement.classList.add("radio-div_selected");
 	btnRespuesta.disabled = false;
 }
-function seleccionaImagenRadio(e, labelId) {
-	document.getElementById(labelId).click();
+function seleccionaImagenRadio(e) {
+	e.target.parentElement.getElementsByTagName('label')[0].click();
 }
 function cambiaInputTexto(e) {
 	var theEvent = e || window.event;
@@ -412,10 +371,19 @@ function cambiaInputTexto(e) {
 	}
 }
 function cambiaInputNumerico(e) {
-	var validacion = e.keyCode >= 48 && e.keyCode <= 57
-	if(!validacion) {
-		e.preventDefault();
-		return false;
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regex = /[0-9]|\./;
+	if( !regex.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
 	}
 }
 
@@ -467,87 +435,4 @@ function checkTexts() {
 	if(!check || respGeneral >= 2) {
 		btnRespuesta.disabled = !todasRespondidas;
 	}
-}
-
-/*
-CODIGO DE GABY PARA VERIFICAR PALABRAS
-*/
-
-let palabras= {
-	"0": ["", "", "", "", ""], //unidad, prefijo unidad, decena, centena
-	"1": ["uno", "on", "diez", "cien"],
-	"2": ["dos", "do", "veinte", "doscientos"],
-	"3": ["tres", "tre", "treinta", "trescientos"],
-	"4": ["cuatro", "cator", "cuarenta", "cuatrocientos"],
-	"5": ["cinco", "quin", "cincuenta", "quinientos"],
-	"6": ["seis", "", "sesenta", "seiscientos"],
-	"7": ["siete", "", "setenta", "setecientos"],
-	"8": ["ocho", "", "ochenta", "ochocientos"],
-	"9": ["nueve", "", "noventa", "novecientos"]
-};
-let regularExpression = {
-	"0": ["", "", "", "", ""], 
-	"1": ["uno", "on", "die[sz]", "[csz]ien"],
-	"2": ["do[sz]", "do", "[vb]einte", "do[csz]{1,2}iento[sz]"],
-	"3": ["tre[sz]", "tre", "treinta", "tre[szc]{1,2}iento[sz]"],
-	"4": ["[ckq]uatro", "[ckq]ator", "[ckq]uarenta", "[ckq]uatro[szc]{1,2}iento[sz]"],
-	"5": ["[csz]in[ck]o", "(quin|kin)", "[csz]in[cqk]uenta", "(quin|kin)iento[sz]"],
-	"6": ["[scz]ei[sz]", "", "[scz]e[scz]enta", "[scz]ei[scz]{1,2}iento[sz]"],
-	"7": ["[scz]iete", "", "[scz]etenta", "[scz]ete[szc]{1,2}iento[sz]"],
-	"8": ["o[sc]ho", "", "o[sc]henta", "o[sc]ho[scz]{1,2}iento[sz]"],
-	"9": ["nue[vb]e", "", "no[vb]enta", "no[vb]e[scz]{1,2}iento[sz]"]
-};
-function checkWord(_word, numberArr){
-	let umil = numberArr[0]
-	let centena = numberArr[1]
-	let decena = numberArr[2]
-	let unidad = numberArr[3]
-	let word = _word.toLowerCase().trim();
-	let rgx = ''
-	if (unidad > 0) {
-			//uno, dos, tres...
-			if (decena == 0) {
-					rgx = regularExpression[unidad][0];
-			} else if (decena == 1) {
-					//once doce, trece, catorce, quince
-					if (unidad > 0 && unidad < 6) {
-							rgx = regularExpression[unidad][1] + "[scz]e"
-					}
-					// dieciseis, diecisiete, dieciocho, diecinueve
-					else if (unidad >= 6) {
-							rgx = "die[csz]i" + regularExpression[unidad][0]
-					}
-			}
-			//veinituno, veintidos, veintitres....
-			else if (decena == 2) {
-					rgx = "[vb]einti" + regularExpression[unidad][0];
-			}
-			// treinta y uno, cuarenta y dos, cincuenta y tres...
-			else if (decena > 2) {
-					rgx = regularExpression[decena][2] + " y " + regularExpression[unidad][0]
-			}
-	} else if (unidad == 0) {
-			//veinte, treinta, cuarenta...
-			if (decena > 0) {
-					rgx = regularExpression[decena][2]
-			}
-	}
-	//cien, doscientos, trescientos...
-	if (centena > 0) {
-			if (centena == 1) {
-					if (decena == 0 && unidad == 0) rgx = regularExpression[centena][3] + " " + rgx;
-					if (decena != 0 || unidad != 0) rgx = "[szc]iento " + rgx
-			} else if (centena > 1) {
-					rgx = regularExpression[centena][3] + " " + rgx;
-			}
-	}
-	//mil, dos mil, tres mil
-	if (umil == 1) rgx = "mil " + rgx;
-	else if (umil > 1) rgx = regularExpression[umil][0] + " mil " + rgx;
-
-	rgx = rgx.trim();
-	rgx = rgx.replace(/^/, '^')
-	rgx = rgx + '$'
-	let newRgx = new RegExp(rgx);
-	return newRgx.test(word)
 }
