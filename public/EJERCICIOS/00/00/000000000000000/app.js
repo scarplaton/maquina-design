@@ -74,31 +74,35 @@ function regexFunctions(text) {
       return coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
     }
     var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    try {
-      return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
-        if (coincidencia.length >= 4) {
-          let arrayReverse = coincidencia.split("").reverse();
-          for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-            count++;
-            if (count === 3 && arrayReverse[i + 1]) {
-              valor = ' ' + arrayReverse[i] + valor;
-              count = 0;
-            } else {
-              valor = arrayReverse[i] + valor;
-            }
-          }
-          return valor;
-        } else {
-          return coincidencia;
-        }
-      });
+    try { 
+      return eval(funcion)
     } catch(error) {
-        console.log(error);
-        console.log(funcion)
+        //console.log(error);
+        //console.log(funcion)
         return coincidencia;
     }
   })
   return result;
+}
+
+function espacioMilesRegex(texto) {
+  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
+    if (coincidencia.length >= 4) {
+      let arrayReverse = coincidencia.split("").reverse();
+      for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
+        count++;
+        if (count === 3 && arrayReverse[i + 1]) {
+          valor = '&nbsp;' + arrayReverse[i] + valor;
+          count = 0;
+        } else {
+          valor = arrayReverse[i] + valor;
+        }
+      }
+      return valor;
+    } else {
+      return coincidencia;
+    }
+  })
 }
 
 function cargaImagen(src) {
@@ -275,7 +279,7 @@ function dibujaHtml() {
     contenidoRespuestas = shuffle(contenidoBody['r']);
     contenidoRespuestas.forEach(function (item, index) {
       var dataContent = {
-        feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
+        feedback: espacioMilesRegex(regexFunctions(regex(item.params.feed, versionBody.vars, false))),
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
@@ -326,6 +330,7 @@ function insertarTexto(config) {
     let vars = vt ? variables : versions;
     var texto = regex(params.content, vars, vt);
     texto = regexFunctions(texto, true);
+    texto = espacioMilesRegex(texto, true);
     container.innerHTML = texto;
   }
 }
@@ -376,30 +381,32 @@ function insertarInput(config) {
       value1, value2, value3, value4, inputType, colmd, colsm, col } = params
   var vars = vt ? variables : versions;
   let r = '', n = '', valoresReemplazados = '';
-  var feedGenerico = regexFunctions(regex(feed0, vars, vt));
+  var feedGenerico = espacioMilesRegex(regexFunctions(regex(feed0, vars, vt)));
+  console.log(feedGenerico)
   var answers = [{
-    respuesta: regexFunctions(regex(value1, vars, vt)),
-    feedback: regexFunctions(regex(feed1, vars, vt)),
+    respuesta: espacioMilesRegex(regexFunctions(regex(value1, vars, vt))),
+    feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
     errFrec: null
   }, {
-    respuesta: regexFunctions(regex(value2, vars, vt)),
-    feedback: feed0 === '' ? regexFunctions(regex(feed2, vars, vt)) : feedGenerico,
+    respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
+    feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
     errFrec: error0 === '' ? error2 : error0
   }];
   if (inputSize > 2) {
     answers[2] = {
-      respuesta: regexFunctions(regex(value3, vars, vt)),
-      feedback: feed0 === '' ? regexFunctions(regex(feed3, vars, vt)) : feedGenerico,
+      respuesta: espacioMilesRegex(regexFunctions(regex(value3, vars, vt))),
+      feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed3, vars, vt))) : feedGenerico,
       errFrec: error0 === '' ? error3 : error0
     }
   }
   if (inputSize > 3) {
     answers[3] = {
-      respuesta: regexFunctions(regex(value4, vars, vt)),
-      feedback: feed0 === '' ? regexFunctions(regex(feed4, vars, vt)) : feedGenerico,
+      respuesta: espacioMilesRegex(regexFunctions(regex(value4, vars, vt))),
+      feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed4, vars, vt))) : feedGenerico,
       errFrec: error0 === '' ? error4 : error0
     }
   }
+  console.log(answers)
   if (container) {
     switch (inputType) {
       case 'input':
