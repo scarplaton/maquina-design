@@ -279,7 +279,7 @@ function dibujaHtml() {
     contenidoRespuestas = shuffle(contenidoBody['r']);
     contenidoRespuestas.forEach(function (item, index) {
       var dataContent = {
-        feedback: regexFunctions(regex(item.params.feed, versionBody.vars, false)),
+        feedback: espacioMilesRegex(regexFunctions(regex(item.params.feed, versionBody.vars, false))),
         respuesta: `Opción ${index + 1}`,
         errFrec: item.params.errFrec === '' ? null : item.params.errFrec
       };
@@ -381,30 +381,32 @@ function insertarInput(config) {
       value1, value2, value3, value4, inputType, colmd, colsm, col } = params
   var vars = vt ? variables : versions;
   let r = '', n = '', valoresReemplazados = '';
-  var feedGenerico = regexFunctions(regex(feed0, vars, vt));
+  var feedGenerico = espacioMilesRegex(regexFunctions(regex(feed0, vars, vt)));
+  console.log(feedGenerico)
   var answers = [{
-    respuesta: regexFunctions(regex(value1, vars, vt)),
-    feedback: regexFunctions(regex(feed1, vars, vt)),
+    respuesta: espacioMilesRegex(regexFunctions(regex(value1, vars, vt))),
+    feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
     errFrec: null
   }, {
-    respuesta: regexFunctions(regex(value2, vars, vt)),
-    feedback: feed0 === '' ? regexFunctions(regex(feed2, vars, vt)) : feedGenerico,
+    respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
+    feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
     errFrec: error0 === '' ? error2 : error0
   }];
   if (inputSize > 2) {
     answers[2] = {
-      respuesta: regexFunctions(regex(value3, vars, vt)),
-      feedback: feed0 === '' ? regexFunctions(regex(feed3, vars, vt)) : feedGenerico,
+      respuesta: espacioMilesRegex(regexFunctions(regex(value3, vars, vt))),
+      feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed3, vars, vt))) : feedGenerico,
       errFrec: error0 === '' ? error3 : error0
     }
   }
   if (inputSize > 3) {
     answers[3] = {
-      respuesta: regexFunctions(regex(value4, vars, vt)),
-      feedback: feed0 === '' ? regexFunctions(regex(feed4, vars, vt)) : feedGenerico,
+      respuesta: espacioMilesRegex(regexFunctions(regex(value4, vars, vt))),
+      feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed4, vars, vt))) : feedGenerico,
       errFrec: error0 === '' ? error4 : error0
     }
   }
+  console.log(answers)
   if (container) {
     switch (inputType) {
       case 'input':
