@@ -74,31 +74,35 @@ function regexFunctions(text) {
       return coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
     }
     var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    try {
-      return eval(funcion).toString().replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) {
-        if (coincidencia.length >= 4) {
-          let arrayReverse = coincidencia.split("").reverse();
-          for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-            count++;
-            if (count === 3 && arrayReverse[i + 1]) {
-              valor = ' ' + arrayReverse[i] + valor;
-              count = 0;
-            } else {
-              valor = arrayReverse[i] + valor;
-            }
-          }
-          return valor;
-        } else {
-          return coincidencia;
-        }
-      });
+    try { 
+      return eval(funcion)
     } catch(error) {
-        console.log(error);
-        console.log(funcion)
+        //console.log(error);
+        //console.log(funcion)
         return coincidencia;
     }
   })
   return result;
+}
+
+function espacioMilesRegex(texto) {
+  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
+    if (coincidencia.length >= 4) {
+      let arrayReverse = coincidencia.split("").reverse();
+      for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
+        count++;
+        if (count === 3 && arrayReverse[i + 1]) {
+          valor = '&nbsp;' + arrayReverse[i] + valor;
+          count = 0;
+        } else {
+          valor = arrayReverse[i] + valor;
+        }
+      }
+      return valor;
+    } else {
+      return coincidencia;
+    }
+  })
 }
 
 function cargaImagen(src) {
@@ -326,6 +330,7 @@ function insertarTexto(config) {
     let vars = vt ? variables : versions;
     var texto = regex(params.content, vars, vt);
     texto = regexFunctions(texto, true);
+    texto = espacioMilesRegex(texto, true);
     container.innerHTML = texto;
   }
 }
