@@ -65,39 +65,6 @@ function validaRespuesta() { //Validar respuesta
 	}
 }
 
-function evaluaInputTexto(inputElement) {	
-	var content = JSON.parse(inputElement.getAttribute('data-content'));
-	var match = false;
-	switch(content.tipoInput){
-		case 'numero':
-			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
-					break;
-				}	
-			}	
-			break;	
-		case 'texto':	
-			var resp = inputElement.value;	
-			for(var answer of content.answers) {	
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');	
-				if(checkWord(resp, numberArr)) {
-					feed = answer.feedback;	
-					errFre = answer.errFrec;	
-					match = true;	
-					break;
-				}
-			}
-	}
-	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
-	}
-}
-
 function coloreaInputTextoPorDefecto(inputElement) {
 	var content = JSON.parse(inputElement.getAttribute('data-content'));
 	var match = false;

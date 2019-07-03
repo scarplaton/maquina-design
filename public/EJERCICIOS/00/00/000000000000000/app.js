@@ -24,6 +24,10 @@ function b64_to_utf8(str) {
   return decodeURIComponent(escape(window.atob(str)));
 }
 
+function utf8_to_b64( str ) {
+  return window.btoa(unescape(encodeURIComponent(str)));
+}
+
 function shuffle(arr, t = 10) {
   for (let i = 0; i < t; i++) {
     arr = arr.sort(() => (.5 - Math.random()));
@@ -548,7 +552,7 @@ function insertarTabla(config) {
           case 'input':
             var { anchoInput,correctas,idInput,maxLength,placeholder,tipoInput } = table[row][col].value;
             var dataContent = {
-              correctas: regex(correctas, vars, vt),
+              correctas: utf8_to_b64(regex(correctas, vars, vt)),
               tipoInput
             }
             switch (tipoInput) {
