@@ -7,11 +7,11 @@ $(document).ready(function () {
   print();
 });
 
-function repeticiones(cantidad, numero){
+function repeticiones(cantidad, numero, signo){
   cantidad = Number(cantidad);
   let con = "";
   for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} + `;
+      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${signo} `;
   }
   return con;
 }

@@ -2636,7 +2636,7 @@ function tablaPosicional(config) {
     let altoCanvas = altoImagen + // alto de la imagen de la tabla
       altoFlechas * flechas + //alto de las imagenes de flechas
       separaciones * _separacionElementos + // alto de las separaciones
-      texto; //alto de la fuente de los textos
+      texto + 10; //alto de la fuente de los textos
     return { altoCanvas, altoImagen };
   }
 }

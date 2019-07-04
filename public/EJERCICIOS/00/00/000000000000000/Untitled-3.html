@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+            #elCanvas{
+                background-color: #FC3;
+                border: 1px solid black;
+                /* border-radius: 100px; */
+                box-shadow: 10px 10px 8px rgba(0, 0, 0, .5);
+                position: absolute;
+            }
+            body{
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+        </style>
+        <script>
+            function inicio() {
+                contexto = document.getElementById("elCanvas").getContext("2d");
+                laFoto.addEventListener("mousemove", dibujar);
+                laFoto.addEventListener("mouseover", mostrar);
+                laFoto.addEventListener("mouseout", ocultar);
+                elCanvas.style.display = "none";
+                
+            }
+            function mostrar() {
+                elCanvas.style.display = "inline";
+            }
+            function ocultar() {
+                elCanvas.style.display = "none";
+            }
+            function dibujar(event) {
+                var posX = event.clientX;
+                var posY = event.clientY;
+                elCanvas.style.left = (posX+ 10) + "px";
+                elCanvas.style.top = (posY+ 10) + "px";
+                contexto.drawImage(laFoto, posX - 50, posY -50, 100,100, 0,0,200,200);
+            }
+        </script>
+</head>
+<body onLoad = "inicio()">
+    <img id="laFoto" src="img/image3.jpg" width="" height="">
+    <canvas id="elCanvas" width="200" height="200">
+        no html 5
+    </canvas>
+</body>
+</html>
