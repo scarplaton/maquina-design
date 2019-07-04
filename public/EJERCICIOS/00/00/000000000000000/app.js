@@ -486,6 +486,22 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
+  var marcasEnTd2 = lineasHorizontales !== '' ? String(lineasHorizontales).split(';') : false;
+  
+  function debeDelinearse(tr, td) {
+    
+    var encontrado = false;
+    
+    marcasEnTd2.forEach(function (linea) {
+      
+       if (linea[0] == (tr + 1) && linea[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  
   let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
     let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
@@ -495,18 +511,24 @@ function insertarTabla(config) {
         r += `<col width="${ancho}%"/>`;
       });
     }
+    
     for (var row = 0; row < table.length; row++) {
-      if (lineasHorizontales === '') {
-        r += '<tr>';
-      } else {
-        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
-      }
+      r += '<tr>';   
       for (var col = 0; col < table[row].length; col++) {
         if (destacado === '') {
           r += '<td>';
         } else {
           if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
+        if (lineasHorizontales === '') {
+          r += '<td>';
+        } else {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
           } else {
             r += '<td>';
           }
