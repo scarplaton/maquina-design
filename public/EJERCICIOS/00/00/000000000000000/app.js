@@ -4507,7 +4507,7 @@ async function repeticionPicV2(config) {
     yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2,
     datosResultado = elementos.pop();
 
-  if(mostrarRes) {
+  if(mostrarRes && elementos.length > 1) {
     let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
     let primerCentro = xInicio + elementos[0].dimenciones.ancho/2
     let ultimoCentro = xInicio + anchoTotal - (elementos[elementos.length-1].tipo === 'repeticion' ? 
