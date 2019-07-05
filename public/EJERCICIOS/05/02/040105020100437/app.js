@@ -3680,7 +3680,7 @@ function multiplicacionPic(config) {
               }
               break;
             case 'horVert':
-              let limite = 4;
+              let limite = 5;
               let imagen = await cargaImagen(repeticion.srcVert);
               for (let hv = 0, xImg, yImg; hv < repeticion.cantidad; hv++) {
                 if (hv < limite) {
