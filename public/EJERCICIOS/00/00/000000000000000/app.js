@@ -386,7 +386,7 @@ function insertarInput(config) {
   var vars = vt ? variables : versions;
   let r = '', n = '', valoresReemplazados = '';
   var feedGenerico = espacioMilesRegex(regexFunctions(regex(feed0, vars, vt)));
-  console.log(feedGenerico)
+  //console.log(feedGenerico)
   var answers = [{
     respuesta: espacioMilesRegex(regexFunctions(regex(value1, vars, vt))),
     feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
@@ -410,7 +410,7 @@ function insertarInput(config) {
       errFrec: error0 === '' ? error4 : error0
     }
   }
-  console.log(answers)
+  //console.log(answers)
   if (container) {
     switch (inputType) {
       case 'input':
@@ -513,31 +513,26 @@ function insertarTabla(config) {
     }
     
     for (var row = 0; row < table.length; row++) {
-      r += '<tr>';
+      r += '<tr>';   
       for (var col = 0; col < table[row].length; col++) {
-        if (destacado === '' && lineasHorizontales === '') {
+        if (destacado === '') {
           r += '<td>';
-        } else if (destacado !== '' && lineasHorizontales === '') {
+        } else {
           if (debeMarcarse(row, col)) {
-            r += `<td style="background:${estiloFondoTD};">`;
-          }else{r += '<td>';}
-        } else if (destacado === '' && lineasHorizontales !== '') {
-          if (debeDelinearse(row, col)) {
-            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-          }else{r += '<td>';}
-        } else if (destacado !== '' && lineasHorizontales !== '') {
-          if (debeDelinearse(row, col)) {
-            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-            if (debeMarcarse(row, col)) {
-              r += `<td style="background:${estiloFondoTD};">`;
-            }
-          } else if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
           } else {
             r += '<td>';
           }
         }
-        
+        if (lineasHorizontales === '') {
+          r += '<td>';
+        } else {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+          } else {
+            r += '<td>';
+          }
+        }
         switch (table[row][col].type) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
@@ -4268,7 +4263,7 @@ async function repeticionPicV2(config) {
   const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,
     _mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res,
     _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha,
-    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params;
+    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
@@ -4292,7 +4287,7 @@ async function repeticionPicV2(config) {
 
     res = mostrarRes ? { //datos del resultado final para posicionar en el canvas si es que se muestra
       tipo: _res.tipo,
-      texto: _res.tipo === 'texto' ? regex(_res.texto, vars, vt) : undefined,
+      texto: _res.tipo === 'texto' ? regexFunctions(regex(_res.texto, vars, vt)) : undefined,
       altoTexto: _res.tipo === 'texto' ? Number(_res.altoTexto) : undefined,
       colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
       srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt))) : undefined,
@@ -4335,7 +4330,7 @@ async function repeticionPicV2(config) {
           sepY: dato.sepY.split(',').map(x => Number(x)),
           vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
             tipo: dato.vp1.tipo,
-            texto: regexFunctions(regex(dato.vp1.texto)),
+            texto: regexFunctions(regex(dato.vp1.texto, vars, vt)),
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
@@ -4346,7 +4341,7 @@ async function repeticionPicV2(config) {
           } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
             tipo: dato.vp2.tipo,
-            texto: regexFunctions(regex(dato.vp2.texto)),
+            texto: regexFunctions(regex(dato.vp2.texto, vars, vt)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
@@ -4445,7 +4440,13 @@ async function repeticionPicV2(config) {
   }
 
   let elementos = await Promise.all([
-    ...datos.map(x=>getObject(x)),
+    ...datos.filter(function(x){
+      if(x.tipo === 'texto') {
+        return true;
+      } else if(x.tipo === 'repeticion') {
+        return Number(regex(x.cantidadRepeticiones, vars, vt)) > 0
+      }
+    }).map(x=>getObject(x)),
     mostrarRes?res:null
   ]);
   let anchoTotal = separacion, posicicionesInicio = [];
