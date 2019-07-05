@@ -513,26 +513,31 @@ function insertarTabla(config) {
     }
     
     for (var row = 0; row < table.length; row++) {
-      r += '<tr>';   
+      r += '<tr>';
       for (var col = 0; col < table[row].length; col++) {
-        if (destacado === '') {
+        if (destacado === '' && lineasHorizontales === '') {
           r += '<td>';
-        } else {
+        } else if (destacado !== '' && lineasHorizontales === '') {
           if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          }else{r += '<td>';}
+        } else if (destacado === '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+          }else{r += '<td>';}
+        } else if (destacado !== '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+            if (debeMarcarse(row, col)) {
+              r += `<td style="background:${estiloFondoTD};">`;
+            }
+          } else if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
           } else {
             r += '<td>';
           }
         }
-        if (lineasHorizontales === '') {
-          r += '<td>';
-        } else {
-          if (debeDelinearse(row, col)) {
-            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-          } else {
-            r += '<td>';
-          }
-        }
+        
         switch (table[row][col].type) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
