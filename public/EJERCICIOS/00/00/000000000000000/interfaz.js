@@ -54,7 +54,7 @@ function validaRespuesta() { //Validar respuesta
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
 	} else if (_TIPO_INPUT_ === 'input') {
 		var inputs = document.querySelectorAll(".contenido input[name='answer']");
-		if(inputs.length === 1) {//si solo hay un input de texto
+		if(inputs.length === 1 && !_VALIDACIONES_INPUT_TABLA_) {//si solo hay un input de texto
 			evaluaInputTexto(inputs[0]);
 		} else {//si hay mas de un input de texto
 			/*for(var input of inputs) {
@@ -371,6 +371,8 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
@@ -418,6 +420,8 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
