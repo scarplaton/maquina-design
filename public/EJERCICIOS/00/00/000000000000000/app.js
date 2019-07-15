@@ -67,6 +67,36 @@ function repeticiones(cantidad, numero, proceso){
   return con;
 }
 
+function numeroAPartitivo(numero, plural) {
+  let s = plural === 'si' ? 's' : ''
+  switch(numero) {
+    case '2':
+      return `medio${s}`
+    case '3':
+      return `tercio${s}`
+    case '4':
+      return `cuarto${s}`
+    case '5': 
+      return `quinto${s}`
+    case '6':
+      return `sexto${s}`
+    case '7':
+      return `séptimo${s}`
+    case '8':
+      return `octavo${s}`
+    case '9':
+      return `noveno${s}`
+    case '10':
+      return `décimo${s}`
+    case '11':
+      return `onceavo${s}`
+    case '12':
+      return `doceavo${s}`
+    default:
+      return `[[[hay que agregar el partitivo]]]`
+  }
+}
+
 function imagenEnTexto(imgsrc, alto, ancho){
   return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
 }
