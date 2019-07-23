@@ -7,6 +7,10 @@ $(document).ready(function () {
   print();
 });
 
+function imagenEnTexto(imgsrc, alto, ancho){
+  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+}
+
 function repeticiones(cantidad, numero, signo){
   cantidad = Number(cantidad);
   let con = "";
@@ -14,6 +18,16 @@ function repeticiones(cantidad, numero, signo){
       con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${signo} `;
   }
   return con;
+}
+
+function repeticionesImg(cantidad, imgsrc, alto, ancho, signo){
+  cantidad = Number(cantidad);
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
+  }
+  return con;
+  
 }
 
 function injectHtml(elemento, texto, styles) {
@@ -97,9 +111,7 @@ function numeroAPartitivo(numero, plural) {
   }
 }
 
-function imagenEnTexto(imgsrc, alto, ancho){
-  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
-}
+
 
 function regexFunctions(text) {
   var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
@@ -118,21 +130,23 @@ function regexFunctions(text) {
 
 function espacioMilesRegex(texto) {
   return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
-    if (coincidencia.length >= 4) {
-      let arrayReverse = coincidencia.split("").reverse();
-      for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-        count++;
-        if (count === 3 && arrayReverse[i + 1]) {
-          valor = '&nbsp;' + arrayReverse[i] + valor;
-          count = 0;
+    let entero = coincidencia.split('.')[0]
+    let decimal = coincidencia.split('.')[1]
+    let enteroEspaciado = entero.length >= 4 ? '' : entero
+    if(entero.length >= 4) {
+      let enteroReverse = entero.split('').reverse()
+      let count = 1
+      enteroReverse.forEach(function(numero){
+        if(count === 3) {
+          enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
+          count = 1
         } else {
-          valor = arrayReverse[i] + valor;
+          enteroEspaciado = numero + enteroEspaciado
+          count++;
         }
-      }
-      return valor;
-    } else {
-      return coincidencia;
+      })
     }
+    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
   })
 }
 
