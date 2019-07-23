@@ -118,21 +118,23 @@ function regexFunctions(text) {
 
 function espacioMilesRegex(texto) {
   return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
-    if (coincidencia.length >= 4) {
-      let arrayReverse = coincidencia.split("").reverse();
-      for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-        count++;
-        if (count === 3 && arrayReverse[i + 1]) {
-          valor = '&nbsp;' + arrayReverse[i] + valor;
-          count = 0;
+    let entero = coincidencia.split('.')[0]
+    let decimal = coincidencia.split('.')[1]
+    let enteroEspaciado = entero.length >= 4 ? '' : entero
+    if(entero.length >= 4) {
+      let enteroReverse = entero.split('').reverse()
+      let count = 1
+      enteroReverse.forEach(function(numero){
+        if(count === 3) {
+          enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
+          count = 1
         } else {
-          valor = arrayReverse[i] + valor;
+          enteroEspaciado = numero + enteroEspaciado
+          count++;
         }
-      }
-      return valor;
-    } else {
-      return coincidencia;
+      })
     }
+    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
   })
 }
 
