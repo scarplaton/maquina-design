@@ -7,6 +7,10 @@ $(document).ready(function () {
   print();
 });
 
+function imagenEnTexto(imgsrc, alto, ancho){
+  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+}
+
 function repeticiones(cantidad, numero, signo){
   cantidad = Number(cantidad);
   let con = "";
@@ -14,6 +18,16 @@ function repeticiones(cantidad, numero, signo){
       con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${signo} `;
   }
   return con;
+}
+
+function repeticionesImg(cantidad, imgsrc, alto, ancho, signo){
+  cantidad = Number(cantidad);
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
+  }
+  return con;
+  
 }
 
 function injectHtml(elemento, texto, styles) {
@@ -97,9 +111,7 @@ function numeroAPartitivo(numero, plural) {
   }
 }
 
-function imagenEnTexto(imgsrc, alto, ancho){
-  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
-}
+
 
 function regexFunctions(text) {
   var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
