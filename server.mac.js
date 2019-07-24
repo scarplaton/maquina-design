@@ -45,7 +45,7 @@ app.get('/archivos', (request, response) => {
                 oaFolders[oa],
                 ieFolders[ie],
                 path.join(ejercicioFoldersPath, ejercicioFolders[archivoEjercicio], x)
-                        .replace("/Users/user/Documents/GitHub/maquina-design/public/", '')
+                        .replace("/Users/user/Documents/Sourcetree/maquina-design/public/", '')
               ]);
               archivos = archivos.concat(datos);
             }
