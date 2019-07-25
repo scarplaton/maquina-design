@@ -1,0 +1,21 @@
+<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <style>.cls-1{fill:#ffcb08;}.cls-2{font-size:52.09px;fill:#fff;font-family:LarkeNeueThin-Thin, Larke Neue Thin;}</style>
+  <filter id="svg_5_blur">
+   <feGaussianBlur stdDeviation="NaN"/>
+  </filter>
+  <filter id="svg_1_blur">
+   <feGaussianBlur stdDeviation="0.7" in="SourceGraphic"/>
+  </filter>
+ </defs>
+ <title>Flecha</title>
+ <g>
+  <title>background</title>
+  <rect x="-1" y="-1" width="802" height="802" id="canvas_background" fill="none"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <polygon filter="url(#svg_1_blur)" class="cls-1" points="802.5,541.062255859375 703.5,454.1022644042969 703.5,496.0222473144531 2.500000238418579,496.0222473144531 2.500000238418579,586.102294921875 703.5,586.102294921875 703.5,628.022216796875 802.5,541.062255859375 " id="svg_1"/>
+  <text fill="#ffffff" stroke-width="NaN" stroke-opacity="null" x="337.894296" y="415.839627" id="svg_5" font-size="1" font-family="Helvetica, Arial, sans-serif" text-anchor="start" xml:space="preserve" transform="matrix(62.948245178165095,0,0,45.9883425189033,-21049.74409515322,-18567.077133693438) " stroke="null" filter="url(#svg_5_blur)">Dividido en 1</text>
+ </g>
+</svg>
