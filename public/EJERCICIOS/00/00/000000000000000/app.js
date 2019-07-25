@@ -120,7 +120,7 @@ function regexFunctions(text) {
     try { 
       return eval(funcion)
     } catch(error) {
-       /*console.log(error);
+        /*console.log(error);
         console.log(funcion)*/
         return coincidencia;
     }
@@ -4365,7 +4365,7 @@ async function repeticionPicV2(config) {
           srcImg: srcImgRepSrc,
           altoImg: Number(dato.altoImg),
           img: await cargaImagen(srcImgRepSrc),
-          cantidadRepeticiones: Number(regex(dato.cantidadRepeticiones, vars, vt)),
+          cantidadRepeticiones: Number(regexFunctions(regex(dato.cantidadRepeticiones, vars, vt))),
           formaRepeticiones: dato.formaRepeticiones,
           sepX: dato.sepX.split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
@@ -4485,7 +4485,7 @@ async function repeticionPicV2(config) {
       if(x.tipo === 'texto') {
         return true;
       } else if(x.tipo === 'repeticion') {
-        return Number(regex(x.cantidadRepeticiones, vars, vt)) > 0
+        return Number(regexFunctions(regex(x.cantidadRepeticiones, vars, vt))) > 0
       }
     }).map(x=>getObject(x)),
     mostrarRes?res:null
