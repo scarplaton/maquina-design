@@ -1,0 +1,14 @@
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <style>.cls-1{fill:#f05023;}</style>
+ </defs>
+ <title>Rectangulo</title>
+ <g>
+  <title>background</title>
+  <rect x="-1" y="-1" width="802" height="452" id="canvas_background" fill="none"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path class="cls-1" d="m781,42l0,360l-760,0l0,-360l760,0m20,-20l-800,0l0,400l800,0l0,-400z" id="svg_1"/>
+ </g>
+</svg>
