@@ -120,7 +120,7 @@ function regexFunctions(text) {
     try { 
       return eval(funcion)
     } catch(error) {
-       /*console.log(error);
+        /*console.log(error);
         console.log(funcion)*/
         return coincidencia;
     }
@@ -554,30 +554,34 @@ function insertarTabla(config) {
     }
     
     for (var row = 0; row < table.length; row++) {
-      r += '<tr>';   
+      r += '<tr>';
       for (var col = 0; col < table[row].length; col++) {
-        if (destacado === '') {
+        if (destacado === '' && lineasHorizontales === '') {
           r += '<td>';
-        } else {
+        } else if (destacado !== '' && lineasHorizontales === '') {
           if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          }else{r += '<td>';}
+        } else if (destacado === '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+          }else{r += '<td>';}
+        } else if (destacado !== '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+            if (debeMarcarse(row, col)) {
+              r += `<td style="background:${estiloFondoTD};">`;
+            }
+          } else if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
           } else {
             r += '<td>';
           }
         }
-        if (lineasHorizontales === '') {
-          r += '<td>';
-        } else {
-          if (debeDelinearse(row, col)) {
-            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-          } else {
-            r += '<td>';
-          }
-        }
+        
         switch (table[row][col].type) {
           case 'text':
-            var tachado = table[row][col].value.tachar === 'si' ?
-              `class="strikethrough"` : '';
+            var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
             if (encabezado === 'arriba' && row === 0) {
               r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
@@ -4365,7 +4369,7 @@ async function repeticionPicV2(config) {
           srcImg: srcImgRepSrc,
           altoImg: Number(dato.altoImg),
           img: await cargaImagen(srcImgRepSrc),
-          cantidadRepeticiones: Number(regex(dato.cantidadRepeticiones, vars, vt)),
+          cantidadRepeticiones: Number(regexFunctions(regex(dato.cantidadRepeticiones, vars, vt))),
           formaRepeticiones: dato.formaRepeticiones,
           sepX: dato.sepX.split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
@@ -4485,7 +4489,7 @@ async function repeticionPicV2(config) {
       if(x.tipo === 'texto') {
         return true;
       } else if(x.tipo === 'repeticion') {
-        return Number(regex(x.cantidadRepeticiones, vars, vt)) > 0
+        return Number(regexFunctions(regex(x.cantidadRepeticiones, vars, vt))) > 0
       }
     }).map(x=>getObject(x)),
     mostrarRes?res:null
