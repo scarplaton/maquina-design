@@ -120,8 +120,8 @@ function regexFunctions(text) {
     try { 
       return eval(funcion)
     } catch(error) {
-       console.log(error);
-        console.log(funcion)
+        /*console.log(error);
+        console.log(funcion)*/
         return coincidencia;
     }
   })
@@ -333,12 +333,13 @@ function dibujaHtml() {
           <div class="radio-div" onclick="seleccionaImagenRadio(event, 'label${index}')">
             <input id="rbtn${index}" name="answer" value="${textoOpcion}" type="radio" data-content='${JSON.stringify(dataContent)}' onchange="cambiaRadioImagen(event)"/>
             <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
-						${  item.tag != 'general' ?
-                `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
-                `<div id="container-r${index}" class="general"></div>`
-            }
-            </div>
-          </div>`;
+						${
+        item.tag != 'general' ?
+          `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+          `<div id="container-r${index}" class="general"></div>`
+        }
+					</div>
+				</div>`;
     });
   } else {
     contenidoBody['r'].forEach(function (item, index) {
@@ -511,8 +512,8 @@ function insertarTabla(config) {
     { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
     vars = vt ? variables : versions;
     if(validaciones) {
-      //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
-      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)));
+      //console.log(regex(b64_to_utf8(validaciones), vars, vt))
+      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
     }
   //_VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
@@ -553,33 +554,39 @@ function insertarTabla(config) {
     }
     
     for (var row = 0; row < table.length; row++) {
-      r += '<tr>';   
+      r += '<tr>';
       for (var col = 0; col < table[row].length; col++) {
-        if (destacado === '') {
-         
-        } else {
+        if (destacado === '' && lineasHorizontales === '') {
+          r += '<td>';
+        } else if (destacado !== '' && lineasHorizontales === '') {
           if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          }else{r += '<td>';}
+        } else if (destacado === '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+          }else{r += '<td>';}
+        } else if (destacado !== '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+            if (debeMarcarse(row, col)) {
+              r += `<td style="background:${estiloFondoTD};">`;
+            }
+          } else if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
           } else {
             r += '<td>';
           }
         }
-        if (lineasHorizontales === '') {
-          r += '<td>';
-        } else {
-          if (debeDelinearse(row, col)) {
-            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-          } else {
-            r += '<td>';
-          }
-        }
+        
         switch (table[row][col].type) {
           case 'text':
             if(table[row][col].value.tachar) {
-              var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
+              var tachado =  regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
             } else {
               var tachado = ''
             }
+            
             if (encabezado === 'arriba' && row === 0) {
               r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
@@ -678,7 +685,7 @@ function insertarTabla(config) {
     r += '</tbody></table>';
     container.classList.add("table-responsive");
     container.innerHTML = r;
-    /*if (tituloTabla !== '') {
+    if (tituloTabla !== '') {
       container.parentElement.querySelectorAll('span').forEach(e => e.parentNode.removeChild(e));
       var titulo = document.createElement('span');
       titulo.innerText = regexFunctions(regex(tituloTabla, vars, vt));
@@ -686,7 +693,7 @@ function insertarTabla(config) {
       titulo.style.fontWeight = '600';
       titulo.style.color = 'black';
       container.parentNode.insertBefore(titulo, container);
-    }*/
+    }
   }
 }
 //inicio rect num
@@ -4367,7 +4374,7 @@ async function repeticionPicV2(config) {
           srcImg: srcImgRepSrc,
           altoImg: Number(dato.altoImg),
           img: await cargaImagen(srcImgRepSrc),
-          cantidadRepeticiones: Number(regex(dato.cantidadRepeticiones, vars, vt)),
+          cantidadRepeticiones: Number(regexFunctions(regex(dato.cantidadRepeticiones, vars, vt))),
           formaRepeticiones: dato.formaRepeticiones,
           sepX: dato.sepX.split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
@@ -4487,7 +4494,7 @@ async function repeticionPicV2(config) {
       if(x.tipo === 'texto') {
         return true;
       } else if(x.tipo === 'repeticion') {
-        return Number(regex(x.cantidadRepeticiones, vars, vt)) > 0
+        return Number(regexFunctions(regex(x.cantidadRepeticiones, vars, vt))) > 0
       }
     }).map(x=>getObject(x)),
     mostrarRes?res:null

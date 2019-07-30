@@ -146,7 +146,7 @@ function evaluaInputsEjercicio() {
 			}
 		})
 		if(coincidenTodas) {
-			feed =  feedback;
+			feed = feedback;
 			errFre = errFrec;
 			if(errFre !== null) {
 				coloreaInputsTextoPorCoincidencia(respuestas[i]) //colorear input
