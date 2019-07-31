@@ -7,6 +7,10 @@ $(document).ready(function () {
   print();
 });
 
+function imagenEnTexto(imgsrc, alto, ancho){
+  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+}
+
 function repeticiones(cantidad, numero, signo){
   cantidad = Number(cantidad);
   let con = "";
@@ -16,12 +20,26 @@ function repeticiones(cantidad, numero, signo){
   return con;
 }
 
+function repeticionesImg(cantidad, imgsrc, alto, ancho, signo){
+  cantidad = Number(cantidad);
+  let con = "";
+  for(let i = 0; i < cantidad; i++){ 
+      con += i+1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
+  }
+  return con;
+  
+}
+
 function injectHtml(elemento, texto, styles) {
   return `<${elemento} style="${styles}">${texto}</${elemento}>`;
 }
 
 function b64_to_utf8(str) {
   return decodeURIComponent(escape(window.atob(str)));
+}
+
+function utf8_to_b64( str ) {
+  return window.btoa(unescape(encodeURIComponent(str)));
 }
 
 function shuffle(arr, t = 10) {
@@ -63,22 +81,47 @@ function repeticiones(cantidad, numero, proceso){
   return con;
 }
 
-function imagenEnTexto(imgsrc, alto, ancho){
-  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+function numeroAPartitivo(numero, plural) {
+  let s = plural === 'si' ? 's' : ''
+  switch(numero) {
+    case '2':
+      return `medio${s}`
+    case '3':
+      return `tercio${s}`
+    case '4':
+      return `cuarto${s}`
+    case '5': 
+      return `quinto${s}`
+    case '6':
+      return `sexto${s}`
+    case '7':
+      return `séptimo${s}`
+    case '8':
+      return `octavo${s}`
+    case '9':
+      return `noveno${s}`
+    case '10':
+      return `décimo${s}`
+    case '11':
+      return `onceavo${s}`
+    case '12':
+      return `doceavo${s}`
+    default:
+      return `[[[hay que agregar el partitivo]]]`
+  }
 }
 
+
+
 function regexFunctions(text) {
-  var result = text.replace(/(\[\\begin{align\*}.*\\end{align\*}\])|(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
-    var final = coincidencia.length - 2;
-    if(coincidencia[0] === '[' && coincidencia[coincidencia.length-1] === ']') {
-      return coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    }
-    var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+  var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
+    var final = coincidencia.length - 4;
+    var funcion = coincidencia.substr(2,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
     try { 
       return eval(funcion)
     } catch(error) {
-        //console.log(error);
-        //console.log(funcion)
+       /*console.log(error);
+        console.log(funcion)*/
         return coincidencia;
     }
   })
@@ -87,21 +130,23 @@ function regexFunctions(text) {
 
 function espacioMilesRegex(texto) {
   return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
-    if (coincidencia.length >= 4) {
-      let arrayReverse = coincidencia.split("").reverse();
-      for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
-        count++;
-        if (count === 3 && arrayReverse[i + 1]) {
-          valor = '&nbsp;' + arrayReverse[i] + valor;
-          count = 0;
+    let entero = coincidencia.split('.')[0]
+    let decimal = coincidencia.split('.')[1]
+    let enteroEspaciado = entero.length >= 4 ? '' : entero
+    if(entero.length >= 4) {
+      let enteroReverse = entero.split('').reverse()
+      let count = 1
+      enteroReverse.forEach(function(numero){
+        if(count === 3) {
+          enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
+          count = 1
         } else {
-          valor = arrayReverse[i] + valor;
+          enteroEspaciado = numero + enteroEspaciado
+          count++;
         }
-      }
-      return valor;
-    } else {
-      return coincidencia;
+      })
     }
+    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
   })
 }
 
@@ -382,7 +427,7 @@ function insertarInput(config) {
   var vars = vt ? variables : versions;
   let r = '', n = '', valoresReemplazados = '';
   var feedGenerico = espacioMilesRegex(regexFunctions(regex(feed0, vars, vt)));
-  console.log(feedGenerico)
+  //console.log(feedGenerico)
   var answers = [{
     respuesta: espacioMilesRegex(regexFunctions(regex(value1, vars, vt))),
     feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
@@ -406,7 +451,7 @@ function insertarInput(config) {
       errFrec: error0 === '' ? error4 : error0
     }
   }
-  console.log(answers)
+  //console.log(answers)
   if (container) {
     switch (inputType) {
       case 'input':
@@ -482,6 +527,22 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
+  var marcasEnTd2 = lineasHorizontales !== '' ? String(lineasHorizontales).split(';') : false;
+  
+  function debeDelinearse(tr, td) {
+    
+    var encontrado = false;
+    
+    marcasEnTd2.forEach(function (linea) {
+      
+       if (linea[0] == (tr + 1) && linea[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  
   let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
     let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
@@ -491,22 +552,33 @@ function insertarTabla(config) {
         r += `<col width="${ancho}%"/>`;
       });
     }
+    
     for (var row = 0; row < table.length; row++) {
-      if (lineasHorizontales === '') {
-        r += '<tr>';
-      } else {
-        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
-      }
+      r += '<tr>';
       for (var col = 0; col < table[row].length; col++) {
-        if (destacado === '') {
+        if (destacado === '' && lineasHorizontales === '') {
           r += '<td>';
-        } else {
+        } else if (destacado !== '' && lineasHorizontales === '') {
           if (debeMarcarse(row, col)) {
+            r += `<td style="background:${estiloFondoTD};">`;
+          }else{r += '<td>';}
+        } else if (destacado === '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+          }else{r += '<td>';}
+        } else if (destacado !== '' && lineasHorizontales !== '') {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
+            if (debeMarcarse(row, col)) {
+              r += `<td style="background:${estiloFondoTD};">`;
+            }
+          } else if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
           } else {
             r += '<td>';
           }
         }
+        
         switch (table[row][col].type) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
@@ -526,7 +598,7 @@ function insertarTabla(config) {
           case 'input':
             var { anchoInput,correctas,idInput,maxLength,placeholder,tipoInput } = table[row][col].value;
             var dataContent = {
-              correctas: regex(correctas, vars, vt),
+              correctas: utf8_to_b64(regex(correctas, vars, vt)),
               tipoInput
             }
             switch (tipoInput) {
@@ -4237,7 +4309,7 @@ async function repeticionPicV2(config) {
   const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,
     _mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res,
     _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha,
-    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params;
+    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
@@ -4261,7 +4333,7 @@ async function repeticionPicV2(config) {
 
     res = mostrarRes ? { //datos del resultado final para posicionar en el canvas si es que se muestra
       tipo: _res.tipo,
-      texto: _res.tipo === 'texto' ? regex(_res.texto, vars, vt) : undefined,
+      texto: _res.tipo === 'texto' ? regexFunctions(regex(_res.texto, vars, vt)) : undefined,
       altoTexto: _res.tipo === 'texto' ? Number(_res.altoTexto) : undefined,
       colorTexto: _res.tipo === 'texto' ? _res.colorTexto : undefined,
       srcImg: _res.tipo === 'imagen' ? await cargaImagen(regexFunctions(regex(_res.srcImg.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt))) : undefined,
@@ -4304,7 +4376,7 @@ async function repeticionPicV2(config) {
           sepY: dato.sepY.split(',').map(x => Number(x)),
           vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
             tipo: dato.vp1.tipo,
-            texto: regexFunctions(regex(dato.vp1.texto)),
+            texto: regexFunctions(regex(dato.vp1.texto, vars, vt)),
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
@@ -4315,7 +4387,7 @@ async function repeticionPicV2(config) {
           } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
             tipo: dato.vp2.tipo,
-            texto: regexFunctions(regex(dato.vp2.texto)),
+            texto: regexFunctions(regex(dato.vp2.texto, vars, vt)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
@@ -4414,7 +4486,13 @@ async function repeticionPicV2(config) {
   }
 
   let elementos = await Promise.all([
-    ...datos.map(x=>getObject(x)),
+    ...datos.filter(function(x){
+      if(x.tipo === 'texto') {
+        return true;
+      } else if(x.tipo === 'repeticion') {
+        return Number(regex(x.cantidadRepeticiones, vars, vt)) > 0
+      }
+    }).map(x=>getObject(x)),
     mostrarRes?res:null
   ]);
   let anchoTotal = separacion, posicicionesInicio = [];
@@ -4475,7 +4553,7 @@ async function repeticionPicV2(config) {
     yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2,
     datosResultado = elementos.pop();
 
-  if(mostrarRes) {
+  if(mostrarRes && elementos.length > 1) {
     let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
     let primerCentro = xInicio + elementos[0].dimenciones.ancho/2
     let ultimoCentro = xInicio + anchoTotal - (elementos[elementos.length-1].tipo === 'repeticion' ? 

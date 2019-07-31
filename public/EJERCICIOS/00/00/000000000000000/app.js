@@ -149,6 +149,27 @@ function espacioMilesRegex(texto) {
     return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
   })
 }
+function espacioMilesRegexx(texto) {
+  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
+    let entero = coincidencia.split('.')[0]
+    let decimal = coincidencia.split('.')[1]
+    let enteroEspaciado = entero.length >= 4 ? '' : entero
+    if(entero.length >= 4) {
+      let enteroReverse = entero.split('').reverse()
+      let count = 1
+      enteroReverse.forEach(function(numero){
+        if(count === 3) {
+          enteroEspaciado = ' ' + numero + enteroEspaciado
+          count = 1
+        } else {
+          enteroEspaciado = numero + enteroEspaciado
+          count++;
+        }
+      })
+    }
+    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
+  })
+}
 
 function cargaImagen(src) {
   return new Promise(function (resolve, reject) {
@@ -432,11 +453,14 @@ function insertarInput(config) {
     respuesta: espacioMilesRegex(regexFunctions(regex(value1, vars, vt))),
     feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
     errFrec: null
-  }, {
-    respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
-    feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
-    errFrec: error0 === '' ? error2 : error0
   }];
+  if(inputSize > 1) {
+    answers[1] = {
+      respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
+      feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
+      errFrec: error0 === '' ? error2 : error0
+    }
+  }
   if (inputSize > 2) {
     answers[2] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value3, vars, vt))),
@@ -464,13 +488,13 @@ function insertarInput(config) {
         container.innerHTML = '';
         switch (tipoInput) {
           case 'texto':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${utf8_to_b64(JSON.stringify(dataContent))}' onkeypress="cambiaInputTexto(event)" onkeyup="checkTexts()"/> `;
             break;
           case 'numero':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${utf8_to_b64(JSON.stringify(dataContent))}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
             break;
-          case 'alfanumerico':
-            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+          case 'texto-numerico':
+            container.innerHTML = `<input type="text" name="answer" maxlength="${maxLength}" autocomplete="off" class="inputTexto" style="width:${anchoInput};" placeholder="${placeholder}" data-content='${utf8_to_b64(JSON.stringify(dataContent))}' onkeypress="cambiaInputTexto(event)" onkeyup="checkTexts()"/>`;
             break;
         }
         break;
@@ -581,14 +605,13 @@ function insertarTabla(config) {
         
         switch (table[row][col].type) {
           case 'text':
-            var tachado = table[row][col].value.tachar === 'si' ?
-              `class="strikethrough"` : '';
+            var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
             if (encabezado === 'arriba' && row === 0) {
-              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+              r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
-              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
+              r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
             } else {
-              r += `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
+              r += `<p ${tachado}>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</p>`;
             }
             break;
           case 'image':
@@ -3616,7 +3639,7 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           numeroX: Number(dato.numeroX),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : '',
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
@@ -3628,7 +3651,7 @@ function multiplicacionPic(config) {
           cantidad: Number(regex(dato.cantidad, vars, vt)),
           srcVert: String(regex(dato.srcVert, vars, vt)),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : '',
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
@@ -3641,7 +3664,7 @@ function multiplicacionPic(config) {
           separacionX: Number(dato.separacionX),
           separacionY: Number(dato.separacionY),
           tipoValorFinal: dato.tipoValorFinal,
-          valorFinal: regex(dato.valorFinal, vars, vt),
+          valorFinal: dato.valorFinal ? regex(dato.valorFinal, vars, vt) : '',
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
