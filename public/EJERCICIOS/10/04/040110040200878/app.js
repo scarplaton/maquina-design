@@ -149,6 +149,7 @@ function espacioMilesRegex(texto) {
     return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
   })
 }
+
 function espacioMilesRegexx(texto) {
   return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
     let entero = coincidencia.split('.')[0]
@@ -605,11 +606,11 @@ function insertarTabla(config) {
             var tachado = table[row][col].value.tachar === 'si' ?
               `class="strikethrough"` : '';
             if (encabezado === 'arriba' && row === 0) {
-              r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
-              r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
+              r += `<p ${tachado}><b>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</b></p>`;
             } else {
-              r += `<p ${tachado}>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</p>`;
+              r += `<p ${tachado}>${regexFunctions(regex(table[row][col].value.text, vars, vt))}</p>`;
             }
             break;
           case 'image':
@@ -3626,7 +3627,7 @@ function multiplicacionPic(config) {
   let separacionElem = Number(_separacion);
 
   
-
+  //console.log(datos)
   datos = datos.map(function (dato, index) {
     switch (dato.formaRepeticion) {
       case 'izqDer':

@@ -604,7 +604,7 @@ function insertarTabla(config) {
           case 'text':
             var tachado = table[row][col].value.tachar === 'si' ?
               `class="strikethrough"` : '';
-            if (encabezado === 'arriba' && row === 0) {
+            if (encabezado === 'arriba' && row === 0) { 
               r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
               r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
