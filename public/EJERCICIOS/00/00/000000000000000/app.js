@@ -605,7 +605,11 @@ function insertarTabla(config) {
         
         switch (table[row][col].type) {
           case 'text':
-            var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
+            if(table[row][col].value.tachar) {
+              var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
+            } else {
+              var tachado = ''
+            }
             if (encabezado === 'arriba' && row === 0) {
               r += `<p ${tachado}><b>${espacioMilesRegex(regexFunctions(regex(table[row][col].value.text, vars, vt)))}</b></p>`;
             } else if (encabezado === 'izquierda' && col === 0) {
