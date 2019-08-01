@@ -66,7 +66,7 @@ function validaRespuesta() { //Validar respuesta
 }
 
 function evaluaInputTexto(inputElement) {	
-	var content = JSON.parse(b64_to_utf8(inputElement.getAttribute('data-content')));
+	var content = JSON.parse(inputElement.getAttribute('data-content'));
 	var match = false;
 	switch(content.tipoInput){
 		case 'numero':
@@ -81,17 +81,6 @@ function evaluaInputTexto(inputElement) {
 			}	
 			break;	
 		case 'texto':	
-			var resp = inputElement.value
-			for(var answer of content.answers) {
-				if(String(resp).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "") === String(answer.respuesta).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")) {
-					feed = answer.feedback;	
-					errFre = answer.errFrec;	
-					match = true;	
-					break;
-				}
-			}
-			break
-		case 'texto-numerico':
 			var resp = inputElement.value;	
 			for(var answer of content.answers) {	
 				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');	
@@ -102,7 +91,6 @@ function evaluaInputTexto(inputElement) {
 					break;
 				}
 			}
-			break
 	}
 	if(!match) {
 		feed = content.feedbackDefecto;
@@ -382,8 +370,9 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
-			$('section input[type=text]').val('');
-			$('section input[type=text]').prop('disabled', false);
+			$('section.contenido').find('input[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
@@ -457,6 +446,7 @@ function cambiaRadios(e) {
 }
 function cambiaRadioImagen(e) {
 	_TIPO_INPUT_ = 'radio';
+	console.log('seleccionado');
 	var seleccionado = document.querySelector('.radio-div_selected');
 	if(seleccionado) {
 		seleccionado.classList.remove('radio-div_selected');
@@ -468,16 +458,22 @@ function seleccionaImagenRadio(e, labelId) {
 	document.getElementById(labelId).click();
 }
 function cambiaInputTexto(e) {
-	var validacion = (e.keyCode >= 48 && e.keyCode <= 57) //numero
-		|| (e.keyCode >= 65 && e.keyCode <= 90) //letra mayuzc
-		|| (e.keyCode >= 97 && e.keyCode <= 122) //letra minusc
-		|| (e.keyCode == 241 || e.keyCode == 209) //ñ y Ñ
-		|| (e.keyCode == 225 || e.keyCode == 233 || e.keyCode == 237 || e.keyCode == 243 || e.keyCode == 250) //áéíóú
-		|| (e.keyCode == 193 || e.keyCode == 201 || e.keyCode == 205 || e.keyCode == 211 || e.keyCode == 218) //ÁÉÍÓÚ
-		|| (e.keyCode == 32) //espacio
-	if( !validacion ) {
-		e.preventDefault();
-		return false;
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regex = /[a-zA-Z]|\.|ñ|\s/;
+	if( !regex.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
+	} else {
+		_TIPO_INPUT_ = 'input';
+		checkTexts();
 	}
 }
 function cambiaInputNumerico(e) {
@@ -500,22 +496,42 @@ function formatearNumero(e) {
 		}
 	} 
 	e.target.value = valor;
+	_TIPO_INPUT_ = 'input';
 	checkTexts();
+}
+
+function cambiaInputAlfanumerico(e) {
+	var theEvent = e || window.event;
+	// Handle paste
+	if (theEvent.type === 'paste') {
+				key = event.clipboardData.getData('text/plain');
+	} else {
+	// Handle key press
+				var key = theEvent.keyCode || theEvent.which;
+				key = String.fromCharCode(key);
+	}
+	var regexNumero = /[0-9]|\./;
+	var regexTexto = /[a-zA-Z]|\.|ñ|\s/;
+	if( !regexNumero.test(key) && !regexTexto.test(key) ) {
+		 theEvent.returnValue = false;
+		 if(theEvent.preventDefault) theEvent.preventDefault();
+	} else {
+		_TIPO_INPUT_ = 'input';
+		checkTexts();
+	}
 }
 
 function checkTexts() {
 	var todasRespondidas = true;
-	let inputs = document.querySelectorAll('input[type=text]:not([disabled])')
-	for(let i = 0; i < inputs.length; i++) {
-		if(inputs[i].value === '') {
+	$('input[type=text]:not([disabled])').each(function(){
+		if($(this).val() == ''){
 			todasRespondidas = false;
-			break
+			return false;
 		}
-	}
+	});
 	if(!check || respGeneral >= 2) {
 		btnRespuesta.disabled = !todasRespondidas;
 	}
-	_TIPO_INPUT_ = 'input';
 }
 
 /*
