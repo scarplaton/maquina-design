@@ -423,22 +423,30 @@ function cambiaInputTexto(e) {
 		checkTexts();
 	}
 }
-function cambiaInputNumerico(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
+
+function cambiaInputNumerico(event) {
+	var validacion = event.keyCode >= 48 && event.keyCode <= 57
+	if(!validacion) {
+	  event.preventDefault();
+		return false;
 	}
-	var regex = /[0-9]|\./;
-	if( !regex.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
-	}
-}
+  }
+// function cambiaInputNumerico(e) {
+// 	var theEvent = e || window.event;
+// 	// Handle paste
+// 	if (theEvent.type === 'paste') {
+// 				key = event.clipboardData.getData('text/plain');
+// 	} else {
+// 	// Handle key press
+// 				var key = theEvent.keyCode || theEvent.which;
+// 				key = String.fromCharCode(key);
+// 	}
+// 	var regex = /[0-9]|\./;
+// 	if( !regex.test(key) ) {
+// 		 theEvent.returnValue = false;
+// 		 if(theEvent.preventDefault) theEvent.preventDefault();
+// 	}
+// }
 
 function formatearNumero(e) {
 	var arrayReverse = String(e.target.value).replace(/\s/g,'').split("").reverse();
