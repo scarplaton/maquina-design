@@ -37,12 +37,6 @@ $(document).ready(function(){
 	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
 		e.preventDefault();
  	});
-	window.addEventListener("keyup", function(event){
-		event.preventDefault();
-		if(event.keyCode === 13) {
-			!btnRespuesta.disabled && btnRespuesta.click();
-		}
-	});
 });
 
 function validaRespuesta() { //Validar respuesta
