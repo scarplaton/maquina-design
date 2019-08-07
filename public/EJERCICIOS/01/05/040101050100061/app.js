@@ -37,15 +37,17 @@ function regex(theInput, theVariables, isTutorial) {
 }
 
 function regexFunctions(text) {
-  var result = text.replace(/(?=\{).*?(\})/g, function (coincidencia) { //coincidencia => '{funcion()}'
-    var final = coincidencia.length - 2;
-    var funcion = coincidencia.substr(1, final);
-    try {
-      return eval(funcion);
-    } catch (error) {
-      return coincidencia;
+  var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
+    var final = coincidencia.length - 4;
+    var funcion = coincidencia.substr(2,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+    try { 
+      return eval(funcion)
+    } catch(error) {
+        /*console.log(error);
+        console.log(funcion)*/
+        return coincidencia;
     }
-  });
+  })
   return result;
 }
 
@@ -100,13 +102,35 @@ function fraccion(entero, numerador, denominador) {
 </math>`;
 }
 
+function espacioMilesRegex(texto) {
+  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
+    let entero = coincidencia.split('.')[0]
+    let decimal = coincidencia.split('.')[1]
+    let enteroEspaciado = entero.length >= 4 ? '' : entero
+    if(entero.length >= 4) {
+      let enteroReverse = entero.split('').reverse()
+      let count = 1
+      enteroReverse.forEach(function(numero){
+        if(count === 3) {
+          enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
+          count = 1
+        } else {
+          enteroEspaciado = numero + enteroEspaciado
+          count++;
+        }
+      })
+    }
+    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
+  })
+}
+
 function espacioMiles(stringNumero) {
   if (stringNumero.length >= 4) {
     var arrayReverse = String(stringNumero).split("").reverse();
     for (var i = 0, count = 0, valor = ''; i < arrayReverse.length; i++) {
       count++;
       if (count === 3 && arrayReverse[i + 1]) {
-        valor = ' ' + arrayReverse[i] + valor;
+        valor = '&nbsp;' + arrayReverse[i] + valor;
         count = 0;
       } else {
         valor = arrayReverse[i] + valor;
