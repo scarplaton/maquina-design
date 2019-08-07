@@ -68,17 +68,14 @@ function imagenEnTexto(imgsrc, alto, ancho){
 }
 
 function regexFunctions(text) {
-  var result = text.replace(/(\[\\begin{align\*}.*\\end{align\*}\])|(?=\{).*?(\})/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
-    var final = coincidencia.length - 2;
-    if(coincidencia[0] === '[' && coincidencia[coincidencia.length-1] === ']') {
-      return coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    }
-    var funcion = coincidencia.substr(1,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+  var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
+    var final = coincidencia.length - 4;
+    var funcion = coincidencia.substr(2,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
     try { 
       return eval(funcion)
     } catch(error) {
-        //console.log(error);
-        //console.log(funcion)
+        /*console.log(error);
+        console.log(funcion)*/
         return coincidencia;
     }
   })
