@@ -5246,7 +5246,8 @@ async function recta(config) {
 	}
 
 	async function getImagenObj(img) {
-    let src = Number(regexFunctions(regex(img.srcImg, vars, vt)))
+    let src = regexFunctions(regex(img.srcImg, vars, vt))
+    src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
 		return {
 			srcImg: src,
 			imagen: await cargaImagen(src),
