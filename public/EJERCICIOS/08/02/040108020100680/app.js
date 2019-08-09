@@ -120,8 +120,8 @@ function regexFunctions(text) {
     try { 
       return eval(funcion)
     } catch(error) {
-        //console.log(error);
-        //console.log(funcion)
+        /*console.log(error);
+        console.log(funcion)*/
         return coincidencia;
     }
   })
@@ -249,8 +249,9 @@ const FUNCIONES = [
       { id: 'Insertar Tabla', action: insertarTabla },
       { id: 'Insertar Imagen', action: insertarImagen }
     ]
-  }, {
-    name: 'Datos', tag: 'datos', fns: [
+  },{
+    name: 'SVG', tag:'svg', fns:[
+      { id:'Recta', action:recta }
     ]
   }, {
     name: 'Numeracion', tag: 'numeracion', fns: [
@@ -323,9 +324,13 @@ function dibujaHtml() {
   contenidoBody['e'].forEach((m, i) => {
     contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
     if (m.tag != 'general') {
-      contenidoHtml += `<canvas id="container-${'e'}${i}" class="img-fluid mx-auto d-block" style="background:${m.params.background}"></canvas>`
+      if(m.tag == 'svg') {
+        contenidoHtml += `<svg id="container-e${i}" class="img-fluid mx-auto d-block"></svg>`
+      } else {
+        contenidoHtml += `<canvas id="container-e${i}" class="img-fluid mx-auto d-block"></canvas>`
+      }
     } else {
-      contenidoHtml += `<div id="container-${'e'}${i}" class="general"></div>`
+      contenidoHtml += `<div id="container-e${i}" class="general"></div>`
     }
     contenidoHtml += '</div>'
   });
@@ -356,7 +361,9 @@ function dibujaHtml() {
             <label for="rbtn${index}" id="label${index}">${textoOpcion}</label>
 						${
         item.tag != 'general' ?
-          `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
+          item.tag == 'svg' ?
+            `<svg id="container-r${index}" class="img-fluid"></svg>` :
+            `<canvas class="img-fluid" id="container-r${index}"></canvas>` :
           `<div id="container-r${index}" class="general"></div>`
         }
 					</div>
@@ -366,7 +373,11 @@ function dibujaHtml() {
     contenidoBody['r'].forEach(function (item, index) {
       respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
       if (item.tag != 'general') {
-        respuestaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-r${index}" style="background:${item.params.background}"></canvas>`
+        if(m.tag == 'svg') {
+          contenidoHtml += `<svg id="container-r${index}" class="img-fluid mx-auto d-block"></svg>`
+        } else {
+          contenidoHtml += `<canvas id="container-r${index}" class="img-fluid mx-auto d-block"></canvas>`
+        }
       } else {
         respuestaHtml += `<div id="container-r${index}" class="general"></div>`
       }
@@ -381,9 +392,13 @@ function dibujaHtml() {
   contenidoBody['g'].forEach((m, i) => {
     glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
     if (m.tag != 'general') {
-      glosaHtml += `<canvas class="img-fluid mx-auto d-block" id="container-${'g'}${i}" style="background:${m.params.background}"></canvas>`
+      if(m.tag == 'svg') {
+        glosaHtml += `<svg id="container-g${i}" class="img-fluid mx-auto d-block"></svg>`
+      } else {
+        glosaHtml += `<canvas id="container-g${i}" class="img-fluid mx-auto d-block"></canvas>`
+      }
     } else {
-      glosaHtml += `<div id="container-${'g'}${i}" class="general"></div>`
+      glosaHtml += `<div id="container-g${i}" class="general"></div>`
     }
     glosaHtml += '</div>'
   });
@@ -4858,4 +4873,421 @@ async function repeticionPicV2(config) {
       ctx.restore();
     });
   }
+}
+
+async function recta(config) {
+	const { container, params, variables, versions, vt } = config
+	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
+	//container.style.border = '1px solid #000'
+	let vars = vt ? variables : versions
+
+	let { altoRecta,anchoRecta, 
+		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize, //diseño recta numerica
+		formato,valorInicialRecta,valorFinalRecta,valorEscalaRecta,divicionesRecta, //valores para pintar recta
+		extremos,valores,valoresEspecificos, //valores a mostrar en recta
+		imagenes, //aqui se agregan las imagenes de la recta
+		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,textoTramo,//datos de tramos
+		mostrarArcos,inicioArcos,finArcos,direccionArcos,colorArcos } = params //datos de arcos
+	//reemplaza valores para calcular datos de recta
+	valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
+	divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
+	valorFinalRecta = valorFinalRecta ? 
+		Number(regexFunctions(regex(valorFinalRecta, vars, vt))) : 
+		valorInicialRecta + Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) * divicionesRecta
+	valorEscalaRecta = valorEscalaRecta ? 
+		Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) : 
+		(valorFinalRecta - valorInicialRecta) / divicionesRecta
+	//valores para mostrar en recta numerica
+	valoresEspecificos = valores === 'especificos' ? 
+		String(valoresEspecificos)
+		.split(',')
+		.map(x => regexFunctions(regex(x, vars, vt)))
+		.map(x => Number(Number(x).toFixed(10))) : []
+	//imagenes para mostrar en recta numerica
+	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
+	//parsea los textos y los numeros reemplazando variables y funciones
+	grosorRecta = Number(grosorRecta)
+	grosorMarcas = Number(grosorMarcas)
+	largoFlechas = Number(largoFlechas)
+	largoMarcas = Number(largoMarcas)
+	fontSize = Number(fontSize)
+	inicioTramo = Number(regexFunctions(regex(inicioTramo, vars, vt)))
+	finTramo = Number(regexFunctions(regex(finTramo, vars, vt)))
+	separacionTramo = Number(separacionTramo)
+	textoTramo = regexFunctions(regex(textoTramo, vars, vt))
+	inicioArcos = regexFunctions(regex(inicioArcos, vars, vt))
+	finArcos = regexFunctions(regex(finArcos, vars, vt))
+	//setea valores de dimensiones de recta
+	container.setAttributeNS(null, 'height', altoRecta)
+	container.setAttributeNS(null, 'width', anchoRecta)
+	container.setAttributeNS(null, 'viewBox', `0 0 ${anchoRecta} ${altoRecta}`)
+	let _centroYRecta = altoRecta/2-grosorRecta/2,
+		_anchoSeparaciones = anchoRecta / (divicionesRecta + 2),
+		_posicionesEnRecta = []
+	//importa fuente opensans para ser utilizada en los elementos de texto
+	let defs = crearElemento('defs', {})
+	let styles = document.createElement('style')
+	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/OpenSans-Regular-webfont.woff");}'
+	defs.appendChild(styles)
+	container.appendChild(defs)
+	//dibuja recta numerica (linea base y flechas)
+	container.appendChild(crearElemento('rect', { //dibuja linea principal
+		x: 0,
+		y: _centroYRecta,
+		width: anchoRecta,
+		height: grosorRecta,
+		fill: colorRecta,
+		rx: 2,
+		ry: 2
+	}))
+	container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+		x: grosorRecta/2,
+		y: _centroYRecta,
+		width: largoFlechas,
+		height: grosorRecta,
+		fill: colorRecta,
+		transform: `rotate(30 ${0},${_centroYRecta})`,
+		rx: 2,
+		ry: 2
+	}))
+	container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+		x: 0,
+		y: _centroYRecta,
+		width: largoFlechas,
+		height: grosorRecta,
+		fill: colorRecta,
+		transform: `rotate(-30 ${0},${_centroYRecta})`,
+		rx: 2,
+		ry: 2
+	}))
+	container.appendChild(crearElemento('rect', { //dibuja flecha final
+		x: anchoRecta-largoFlechas,
+		y: _centroYRecta,
+		width: largoFlechas,
+		height: grosorRecta,
+		fill: colorRecta,
+		transform: `rotate(30 ${anchoRecta},${_centroYRecta})`,
+		rx: 2,
+		ry: 2
+	}))
+	container.appendChild(crearElemento('rect', { //dibuja flecha final
+		x: anchoRecta-largoFlechas-grosorRecta/2,
+		y: _centroYRecta,
+		width: largoFlechas,
+		height: grosorRecta,
+		fill: colorRecta,
+		transform: `rotate(-30 ${anchoRecta},${_centroYRecta})`,
+		rx: 2,
+		ry: 2
+	}))
+	//calcula los valores a posicionar en la recta numerica y sus posiciones en el eje x
+	_posicionesEnRecta = [{ 
+			numero: valorInicialRecta,
+			posicion: _anchoSeparaciones - grosorMarcas/2
+		}]
+		.concat(Array(divicionesRecta)
+		.fill()
+		.map((x,index) => ({
+			numero: Number((valorInicialRecta + valorEscalaRecta * (index+1)).toFixed(10)),
+			posicion: _anchoSeparaciones + _anchoSeparaciones*(index+1) - grosorMarcas/2
+		})))
+	//dibuja marcas y numeros en recta numerica 
+	//console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
+	_posicionesEnRecta.forEach(({ numero, posicion }, index) => {
+		//dibuja las marcas por si solas
+		dibujarMarca(posicion)
+		//dibuja el numero asociado a la marca
+		if(index == 0  && (extremos == 'ambos' || extremos == 'inicial')) { // dibuja primer valor
+			dibujaValorDeMarca(numero, posicion, index)
+		} else if(index == divicionesRecta && (extremos == 'ambos' || extremos == 'final')) { //dibuja ultimo valor
+			dibujaValorDeMarca(numero, posicion, index)
+		}
+		if(index != 0 && index != divicionesRecta && valores === 'todos') { //dibuja todos los valores de recta
+			dibujaValorDeMarca(numero, posicion, index)
+		}
+	})
+
+	valoresEspecificos.forEach(valor => {
+		let posicionX = valorRectaACoordenadaX(valor) - grosorMarcas/2
+		dibujaValorDeMarca(valor, posicionX, _posicionesEnRecta.map(x => x.numero).indexOf(valor))
+		dibujarMarca(posicionX)
+	})
+
+	imagenes.forEach(img => {
+		let widthImg = img.height * img.imagen.width / img.imagen.height
+		img.posiciones.forEach(posicionEnRecta => {
+			let posicionX = valorRectaACoordenadaX(posicionEnRecta)
+			if(img.marcar) {
+				container.appendChild(crearElemento('rect', { //dibuja marca
+					x: posicionX-grosorMarcas/2,
+					y: altoRecta/2-largoMarcas/2,
+					width: grosorMarcas,
+					height: largoMarcas,
+					fill: colorRecta,
+					rx: 2,
+					ry: 2
+				}))
+			}
+			container.appendChild(crearElementoDeImagen(img.srcImg,{
+				x: posicionX-widthImg/2,
+				y: img.posicion == 'arriba' ? altoRecta/2-largoMarcas/2-img.separacion-img.height : altoRecta/2+largoMarcas/2+img.separacion,
+				height: img.height
+			}))
+		})
+	})
+	//dibuja tramo de recta numerica
+	if(resaltarTramo === 'si') {
+		let inicioX = valorRectaACoordenadaX(inicioTramo)
+		let finX = valorRectaACoordenadaX(finTramo)
+		let centro = (finX - inicioX) / 2 + inicioX
+		let inicioY = altoRecta/2-largoMarcas/2-separacionTramo
+		let radio = 10
+		
+		switch(tipoTramo) {
+			case 'llave':
+				container.appendChild(crearElemento('path',{
+					d: `M ${inicioX} ${inicioY}
+						A ${radio} ${radio} 0 0 1 ${inicioX+radio} ${inicioY-radio}
+						H ${centro-radio}
+						A ${radio} ${radio} 0 0 0 ${centro} ${inicioY-radio*2}
+						A ${radio} ${radio} 0 0 0 ${centro+radio} ${inicioY-radio}
+						H ${finX-radio}
+						A ${radio} ${radio} 0 0 1 ${finX} ${inicioY}`,
+					fill: 'none',
+					stroke: colorTramo,
+					strokeWidth: grosorMarcas
+				}))
+				textoTramo != '' && container.appendChild(crearElementoDeTexto({
+					x: centro+grosorMarcas/2,
+					y: inicioY-radio*3,
+					fontSize: fontSize,
+					textAnchor: 'middle',
+					fill: colorRecta,
+					style: 'font-family:Open-Sans-Reg;'
+				}, textoTramo))
+				break
+			case 'punto-punto':
+				container.appendChild(crearElemento('circle', {
+					cx: inicioX,
+					cy: altoRecta/2,
+					r: grosorRecta+2,
+					fill: colorTramo,
+					stroke: colorRecta,
+					strokeWidth: grosorRecta/2
+				}))
+				container.appendChild(crearElemento('circle', {
+					cx: finX,
+					cy: altoRecta/2,
+					r: grosorRecta+2,
+					fill: colorTramo,
+					stroke: colorRecta,
+					strokeWidth: grosorRecta/2
+				}))
+				container.appendChild(crearElemento('rect', {
+					x: inicioX,
+					y: altoRecta/2-grosorRecta/2,
+					width: finX-inicioX,
+					height: grosorRecta,
+					fill: colorTramo
+				}))
+				textoTramo != '' && container.appendChild(crearElementoDeTexto({
+					x: centro+grosorMarcas/2,
+					y: inicioY,
+					fontSize: fontSize,
+					textAnchor: 'middle',
+					fill: colorRecta,
+					style: 'font-family:Open-Sans-Reg;'
+				}, textoTramo))
+				break
+			default:
+				console.log('no se puede agregar este tipo de tramo :c')
+				break
+		}
+	}
+
+	if(mostrarArcos == 'si' && inicioArcos != finArcos) {
+		let puntosDeArcos = _posicionesEnRecta.filter(x => x.numero >= inicioArcos && x.numero <= finArcos)
+		try {
+			puntosDeArcos.forEach(({ posicion }, index) => {
+				if(index+1 == puntosDeArcos.length) {
+					return
+				}
+				let x = posicion+_anchoSeparaciones/2
+				let y = altoRecta/2
+				let radio = _anchoSeparaciones/2
+				container.appendChild(crearElemento('path',{
+					d: createArcWithAngles(x, y, radio, 45, 135),
+					fill: 'none',
+					stroke: colorArcos,
+					strokeWidth: grosorMarcas
+				}))
+				if(direccionArcos == 'derecha') {
+					let puntaFlecha = polarToCartesian(x, y, radio, 135)
+					container.appendChild(crearElemento('path', {
+						d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y-5}
+							L ${puntaFlecha.x-5} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+						fill: colorArcos,
+						stroke: colorArcos
+					}))
+				} else {
+					let puntaFlecha = polarToCartesian(x, y, radio, 45)
+					container.appendChild(crearElemento('path', {
+						d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y-5}
+							L ${puntaFlecha.x+5} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+						fill: colorArcos,
+						stroke: colorArcos
+					}))
+				}
+			})
+		} catch(e) {
+			console.log(e)
+		}
+	}
+
+	function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
+		let angleInRadians = (angleInDegrees-180) * Math.PI / 180.0;
+		
+		return {
+			x: centerX + (radius * Math.cos(angleInRadians)),
+			y: centerY + (radius * Math.sin(angleInRadians))
+		}
+	}
+	  
+	function createArcWithAngles(x, y, radius, startAngle, endAngle){
+	  
+		let start = polarToCartesian(x, y, radius, endAngle)
+		let end = polarToCartesian(x, y, radius, startAngle)
+	
+		let arcSweep = endAngle - startAngle <= 180 ? '0' : '1'
+	
+		let d = [
+			'M', start.x, start.y, 
+			'A', radius, radius, 0, arcSweep, 0, end.x, end.y
+			//'L', x,y,
+			//'L', start.x, start.y
+		].join(' ')
+	
+		return d  
+	}
+
+	function valorRectaACoordenadaX(valorRecta) {
+		return ((anchoRecta * valorRecta) / (valorFinalRecta-valorInicialRecta+valorEscalaRecta*2)) + _anchoSeparaciones
+	}
+
+	async function getImagenObj(img) {
+    let src = String(regexFunctions(regex(img.srcImg, vars, vt))).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
+		return {
+			srcImg: src,
+			imagen: await cargaImagen(src),
+			height: Number(img.height),
+			posicion: img.posicion,
+			separacion: Number(img.separacion),
+			marcar: img.marcar === 'si' ? true : false,
+			posiciones: String(img.posiciones).split(',')
+				.map(x => regexFunctions(regex(x, vars, vt)))
+				.map(x => Number(Number(x).toFixed(10)))
+		}
+	}
+
+	function dibujarMarca(posicion) {
+		container.appendChild(crearElemento('rect', { //dibuja marca
+			x: posicion,
+			y: altoRecta/2-largoMarcas/2,
+			width: grosorMarcas,
+			height: largoMarcas,
+			fill: colorRecta,
+			rx: 2,
+			ry: 2
+		}))
+	}
+
+	function dibujaValorDeMarca(numero, posicion, index){ //pone los numeros o fracciones debajo de la marca de la recta
+		if(Number.isInteger(numero)) {
+			dibujaNumeroEnPosicion(numero, posicion)
+		} else if(formato == 'numero') {
+//va a pintar el valor como numero, ya sea decimal o no, con todos sus decimales
+			dibujaNumeroEnPosicion(numero, posicion)
+		} else if(((valorFinalRecta-valorInicialRecta)==1) && formato == 'fraccion' && index >= 0) {
+/*si la diferencia entre la primera y la segunda marca es 1 y 
+el formato se debe pintar como fraccion y 
+el valor esta dentro de los valores de la recta*/
+			dibujaFraccionEnPosicion(numero, posicion, index)
+		}
+	}
+
+	function dibujaNumeroEnPosicion(numero, posicion) {
+		container.appendChild(crearElementoDeTexto({ 
+			x: posicion+grosorMarcas/2,
+			y: altoRecta/2+largoMarcas/2+fontSize,
+			fontSize: fontSize,
+			textAnchor: 'middle',
+			fill: colorRecta,
+			style: 'font-family:Open-Sans-Reg;'
+		}, numero.toString().replace('.',',')))
+	}
+
+	function dibujaFraccionEnPosicion(numero, posicion, index) {
+		let numerador = index, denominador = divicionesRecta, entero = Math.floor(numero)
+		container.appendChild(crearElementoDeTexto({ 
+			x: posicion+grosorMarcas/2,
+			y: altoRecta/2+largoMarcas/2+fontSize,
+			fontSize: fontSize,
+			textAnchor: 'middle',
+			fill: colorRecta,
+			style: 'font-family:Open-Sans-Reg;'
+		}, numerador))
+		container.appendChild(crearElemento('line', { 
+			x1: posicion+grosorMarcas/2-10,
+			y1: altoRecta/2+largoMarcas/2+fontSize+3,
+			x2: posicion+grosorMarcas/2+10,
+			y2: altoRecta/2+largoMarcas/2+fontSize+3,
+			stroke: colorRecta,
+			strokeWidth: 2
+		}))
+		container.appendChild(crearElementoDeTexto({ 
+			x: posicion+grosorMarcas/2,
+			y: altoRecta/2+largoMarcas/2+fontSize*2,
+			fontSize: fontSize,
+			textAnchor: 'middle',
+			fill: colorRecta,
+			style: 'font-family:Open-Sans-Reg;'
+		}, denominador))
+	}
+
+	function crearElementoDeImagen(src, atributos) {
+		let element = document.createElementNS('http://www.w3.org/2000/svg', 'image')
+		element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
+		for (let p in atributos) {
+		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+			return '-' + m.toLowerCase()
+		  }), atributos[p])
+		}
+		return element
+	}
+
+	function crearElemento(nombre, atributos) {
+		let element = document.createElementNS('http://www.w3.org/2000/svg', nombre)
+		for (let p in atributos) {
+		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+			return '-' + m.toLowerCase()
+		  }), atributos[p])
+		}
+		return element
+	}
+
+	function crearElementoDeTexto(atributos, texto) {
+		let element = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+		for (let p in atributos) {
+		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+			return '-' + m.toLowerCase()
+		  }), atributos[p])
+		}
+		let textNode = document.createTextNode(texto)
+		element.appendChild(textNode)
+		return element
+	}
 }
