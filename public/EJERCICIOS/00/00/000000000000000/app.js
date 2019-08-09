@@ -4878,7 +4878,7 @@ async function repeticionPicV2(config) {
 async function recta(config) {
 	const { container, params, variables, versions, vt } = config
 	container.innerHTML = '' //quitar linea en funcionalidad de app.js
-	container.style.border = '1px solid #000'
+	//container.style.border = '1px solid #000'
 	let vars = vt ? variables : versions
 
 	let { altoRecta,anchoRecta, 
@@ -5246,9 +5246,11 @@ async function recta(config) {
 	}
 
 	async function getImagenObj(img) {
+    let src = regexFunctions(regex(img.srcImg, vars, vt))
+    src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
 		return {
-			srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
-			imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
+			srcImg: src,
+			imagen: await cargaImagen(src),
 			height: Number(img.height),
 			posicion: img.posicion,
 			separacion: Number(img.separacion),
