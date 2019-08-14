@@ -246,6 +246,7 @@ const FUNCIONES = [
     name: 'General', tag: 'general', fns: [
       { id: 'Insertar Texto', action: insertarTexto },
       { id: 'Insertar Input', action: insertarInput },
+      { id:'Insertar Input Fraccion', action: insertarInputFraccion },
       { id: 'Insertar Tabla', action: insertarTabla },
       { id: 'Insertar Imagen', action: insertarImagen }
     ]
@@ -546,6 +547,33 @@ function insertarInput(config) {
     }
   }
 }
+
+function insertarInputFraccion(config) {
+	const { container, params, variables, versions, vt } = config;
+  const { enteroMaxLen,numeradorMaxLen,denominadorMaxLen,validaciones,enteroCorrecta,numeradorCorrecta,denominadorCorrecta } = params
+  let vars = vt ? variables : versions
+  //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
+  //_VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+	let inputFraccion = `<table>
+	<tbody>
+		<tr>
+			<td rowspan="2">
+				<input type="text" id="input1" name="answer" autocomplete="off" class="input-numerador" maxlength="${enteroMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(enteroCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />
+			</td>
+			<td style="border-bottom: 2px solid black;">
+				<input type="text" id="input2" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${numeradorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(numeradorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="text" id="input3" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${denominadorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(denominadorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+			</td>
+		</tr>
+	</tbody>
+</table>`
+	container.innerHTML = inputFraccion;
+}
+
 function insertarTabla(config) {
   const { container, params, variables, versions, vt } = config, 
     { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
@@ -4877,17 +4905,22 @@ async function repeticionPicV2(config) {
 
 async function recta(config) {
 	const { container, params, variables, versions, vt } = config
-	container.innerHTML = '' //quitar linea en funcionalidad de app.js
+	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
 	//container.style.border = '1px solid #000'
 	let vars = vt ? variables : versions
 
 	let { altoRecta,anchoRecta, 
 		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize,colorFuente, //diseño recta numerica
 		formato,valorInicialRecta,valorFinalRecta,valorEscalaRecta,divicionesRecta, //valores para pintar recta
-		marcas,extremos,valores,valoresEspecificos, //valores a mostrar en recta
+		marcas,extremos,valores,valorInicioMostrar,valorFinalMostrar,
+		formatoSubescala,divicionesSubescala,marcasSubescala,marcaInicioMostrarSubescala,marcaFinMostrarSubescala,valoresSubescala,valorInicioMostrarSubescala,valorFinMostrarSubescala,
+		valoresEspecificos, //valores a mostrar en recta
 		imagenes, //aqui se agregan las imagenes de la recta
-		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,textoTramo,//datos de tramos
-		arcos } = params //datos de arcos
+		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,//datos de tramos
+		arcos, //datos de arcos
+		textos, //datos de texto
+		puntos,
+		encerrarValores } = params //puntos de la recta para marcar
 	//reemplaza valores para calcular datos de recta
 	valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
 	divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
@@ -4898,22 +4931,38 @@ async function recta(config) {
 		Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) : 
 		(valorFinalRecta - valorInicialRecta) / divicionesRecta
 	//valores para mostrar en recta numerica
-	valoresEspecificos = valoresEspecificos ? valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x)) : []
-	//console.log(valoresEspecificos)
+	valoresEspecificos = valoresEspecificos ? await Promise.all(valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x))) : []
+	//subdiviciones de recta numerica
+	divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
+	//puntos de la recta para marcar
+	puntos = puntos.length > 0 ? regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		color: x[1]
+	})) : []
+	//valores para ecerrar en recta numerica
+	encerrarValores = encerrarValores.length > 0 ? regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		ancho: Number(x[1]),
+		alto: Number(x[2]),
+		color: x[3]
+	})) : []
 	//imagenes para mostrar en recta numerica
 	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
 	//arcos para mostrar en la recta numerica
-	arcos = arcos ? arcos.map(x => getArcoObj(x)) : []
+	arcos = arcos ? await Promise.all(arcos.map(x => getArcoObj(x))) : []
+	//texto para mostrar en la recta numerica
+	textos = textos ? await Promise.all(textos.map(x => getTextoObj(x))) : []
 	//parsea los textos y los numeros reemplazando variables y funciones
 	grosorRecta = Number(grosorRecta)
 	grosorMarcas = Number(grosorMarcas)
 	largoFlechas = Number(largoFlechas)
 	largoMarcas = Number(largoMarcas)
 	fontSize = Number(fontSize)
-	inicioTramo = Number(regexFunctions(regex(inicioTramo, vars, vt)))
-	finTramo = Number(regexFunctions(regex(finTramo, vars, vt)))
+	inicioTramo = Number(Number(regexFunctions(regex(inicioTramo, vars, vt))).toFixed(10))
+	finTramo = Number(Number(regexFunctions(regex(finTramo, vars, vt))).toFixed(10))
 	separacionTramo = Number(separacionTramo)
-	textoTramo = regexFunctions(regex(textoTramo, vars, vt))
+	valorInicioMostrar = Number(Number(regexFunctions(regex(valorInicioMostrar, vars, vt))).toFixed(10))
+	valorFinalMostrar = Number(Number(regexFunctions(regex(valorFinalMostrar, vars, vt))).toFixed(10))
 	//setea valores de dimensiones de recta
 	container.setAttributeNS(null, 'height', altoRecta)
 	container.setAttributeNS(null, 'width', anchoRecta)
@@ -4924,7 +4973,7 @@ async function recta(config) {
 	//importa fuente opensans para ser utilizada en los elementos de texto
 	let defs = crearElemento('defs', {})
 	let styles = document.createElement('style')
-	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/OpenSans-Regular-webfont.woff");}'
+	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
 	defs.appendChild(styles)
 	container.appendChild(defs)
 	//dibuja recta numerica (linea base y flechas)
@@ -4978,7 +5027,7 @@ async function recta(config) {
 		ry: 2
 	}))
 	//calcula los valores a posicionar en la recta numerica y sus posiciones en el eje x
-	_posicionesEnRecta = [{ 
+	_posicionesEnRecta = await Promise.all([{ 
 			numero: valorInicialRecta,
 			posicion: _anchoSeparaciones - grosorMarcas/2
 		}]
@@ -4987,7 +5036,7 @@ async function recta(config) {
 		.map((x,index) => ({
 			numero: Number((valorInicialRecta + valorEscalaRecta * (index+1)).toFixed(10)),
 			posicion: _anchoSeparaciones + _anchoSeparaciones*(index+1) - grosorMarcas/2
-		})))
+		}))))
 	//dibuja marcas y numeros en recta numerica 
 	////console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
 	_posicionesEnRecta.forEach(({ numero, posicion }, index) => {
@@ -5005,6 +5054,19 @@ async function recta(config) {
 			dibujaValorDeMarca(numero, posicion, index)
 		}
 	})
+
+	if(puntos && puntos.length > 0) {
+		puntos.forEach(punto => {
+			container.appendChild(crearElemento('circle', {
+				cx: punto.posicion,
+				cy: altoRecta/2,
+				r: grosorRecta+grosorRecta/2,
+				fill: punto.color,
+				stroke: colorRecta,
+				strokeWidth: grosorRecta/2
+			}))
+		})
+	}
 
 	valoresEspecificos.forEach(valor => {
 		if(valor.tipo == 'numero') {
@@ -5040,6 +5102,14 @@ async function recta(config) {
 			}))
 		})
 	})
+	//dibuja solo los valores entre las variables valorInicioMostrar y valorFinalMostrar
+	if(marcas == 'ninguna' && valores == 'entre') {
+		let valoresAMarcar = _posicionesEnRecta.filter(x => x.numero >= valorInicioMostrar && x.numero <= valorFinalMostrar)
+		valoresAMarcar.forEach(({ numero, posicion }) => {
+			dibujarMarca(posicion)
+			dibujaValorDeMarca(numero, posicion, _posicionesEnRecta.map(x => x.numero).indexOf(numero))
+		})
+	}
 	//dibuja tramo de recta numerica
 	if(resaltarTramo === 'si') {
 		let inicioX = valorRectaACoordenadaX(inicioTramo)
@@ -5062,14 +5132,6 @@ async function recta(config) {
 					stroke: colorTramo,
 					strokeWidth: grosorMarcas
 				}))
-				textoTramo != '' && container.appendChild(crearElementoDeTexto({
-					x: centro+grosorMarcas/2,
-					y: inicioY-radio*3,
-					fontSize: fontSize,
-					textAnchor: 'middle',
-					fill: colorFuente,
-					style: 'font-family:Open-Sans-Reg;'
-				}, textoTramo))
 				break
 			case 'punto-punto':
 				container.appendChild(crearElemento('circle', {
@@ -5095,14 +5157,6 @@ async function recta(config) {
 					height: grosorRecta,
 					fill: colorTramo
 				}))
-				textoTramo != '' && container.appendChild(crearElementoDeTexto({
-					x: centro+grosorMarcas/2,
-					y: inicioY,
-					fontSize: fontSize,
-					textAnchor: 'middle',
-					fill: colorFuente,
-					style: 'font-family:Open-Sans-Reg;'
-				}, textoTramo))
 				break
 			default:
 				//console.log('no se puede agregar este tipo de tramo :c')
@@ -5150,7 +5204,7 @@ async function recta(config) {
 				if(arco.mostrarValorTramo) {
 					container.appendChild(crearElementoDeTexto({
 						x: posicion+_anchoSeparaciones/2,
-						y: altoRecta/2-_anchoSeparaciones/2,
+						y: altoRecta/2-_anchoSeparaciones/2-5,
 						fontSize: fontSize,
 						textAnchor: 'middle',
 						fill: colorFuente,
@@ -5210,6 +5264,35 @@ async function recta(config) {
 			}
 		}
 	})
+	//pone todos los textos de la recta
+	textos.forEach(({texto, valorCentro, posicionY}) => {
+		container.appendChild(crearElementoDeTexto({
+			x: valorCentro,
+			y: posicionY,
+			fontSize: fontSize,
+			textAnchor: 'middle',
+			fill: colorFuente,
+			style: 'font-family:Open-Sans-Reg;'
+		}, texto))
+	})
+
+	if(divicionesSubescala > 0) {
+		
+	}
+
+	if(encerrarValores && encerrarValores.length > 0) {
+		encerrarValores.forEach(encerrarValor => {
+			container.appendChild(crearElemento('rect', {
+				x: encerrarValor.posicion - encerrarValor.ancho/2,
+				y: altoRecta/2-encerrarValor.alto/2,
+				width: encerrarValor.ancho,
+				height: encerrarValor.alto,
+				stroke: encerrarValor.color,
+				strokeWidth: '2',
+				fill: 'none'
+			}))
+		})
+	}
 
 	function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
 		let angleInRadians = (angleInDegrees-180) * Math.PI / 180.0;
@@ -5249,8 +5332,8 @@ async function recta(config) {
     let src = regexFunctions(regex(img.srcImg, vars, vt))
     src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
 		return {
-			srcImg: src,
-			imagen: await cargaImagen(src),
+			srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
+			imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
 			height: Number(img.height),
 			posicion: img.posicion,
 			separacion: Number(img.separacion),
@@ -5269,6 +5352,14 @@ async function recta(config) {
 			color: '#8B1013',
 			saltos: arco.saltos == 'si' ? true : false,
 			mostrarValorTramo: arco.mostrarValorTramo == 'si' ? true : false
+		}
+	}
+
+	function getTextoObj(texto) {
+		return {
+			texto: regexFunctions(regex(texto.texto, vars, vt)),
+			valorCentro:  valorRectaACoordenadaX(Number(regexFunctions(regex(texto.valorCentro, vars, vt)))),
+			posicionY: texto.posicionY
 		}
 	}
 
