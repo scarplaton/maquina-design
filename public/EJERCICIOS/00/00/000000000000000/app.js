@@ -553,7 +553,7 @@ function insertarInputFraccion(config) {
   const { enteroMaxLen,numeradorMaxLen,denominadorMaxLen,validaciones,enteroCorrecta,numeradorCorrecta,denominadorCorrecta } = params
   let vars = vt ? variables : versions
   //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
-  _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+  //_VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
 	let inputFraccion = `<table>
 	<tbody>
 		<tr>
@@ -4905,18 +4905,22 @@ async function repeticionPicV2(config) {
 
 async function recta(config) {
 	const { container, params, variables, versions, vt } = config
+	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
+	//container.style.border = '1px solid #000'
 	let vars = vt ? variables : versions
 
 	let { altoRecta,anchoRecta, 
 		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize,colorFuente, //diseño recta numerica
 		formato,valorInicialRecta,valorFinalRecta,valorEscalaRecta,divicionesRecta, //valores para pintar recta
 		marcas,extremos,valores,valorInicioMostrar,valorFinalMostrar,
-		subdivicionesRecta,
+		formatoSubescala,divicionesSubescala,marcasSubescala,marcaInicioMostrarSubescala,marcaFinMostrarSubescala,valoresSubescala,valorInicioMostrarSubescala,valorFinMostrarSubescala,
 		valoresEspecificos, //valores a mostrar en recta
 		imagenes, //aqui se agregan las imagenes de la recta
 		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,//datos de tramos
 		arcos, //datos de arcos
-		textos } = params //datos de texto
+		textos, //datos de texto
+		puntos,
+		encerrarValores } = params //puntos de la recta para marcar
 	//reemplaza valores para calcular datos de recta
 	valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
 	divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
@@ -4929,7 +4933,19 @@ async function recta(config) {
 	//valores para mostrar en recta numerica
 	valoresEspecificos = valoresEspecificos ? await Promise.all(valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x))) : []
 	//subdiviciones de recta numerica
-	subdivicionesRecta = Number(regexFunctions(regex(valorInicioMostrar, vars, vt)))
+	divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
+	//puntos de la recta para marcar
+	puntos = regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		color: x[1]
+	}))
+	//valores para ecerrar en recta numerica
+	encerrarValores = regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		ancho: Number(x[1]),
+		alto: Number(x[2]),
+		color: x[3]
+	}))
 	//imagenes para mostrar en recta numerica
 	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
 	//arcos para mostrar en la recta numerica
@@ -4957,7 +4973,7 @@ async function recta(config) {
 	//importa fuente opensans para ser utilizada en los elementos de texto
 	let defs = crearElemento('defs', {})
 	let styles = document.createElement('style')
-	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../fonts/OpenSans-Regular-webfont.woff");}'
+	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
 	defs.appendChild(styles)
 	container.appendChild(defs)
 	//dibuja recta numerica (linea base y flechas)
@@ -5038,6 +5054,19 @@ async function recta(config) {
 			dibujaValorDeMarca(numero, posicion, index)
 		}
 	})
+
+	if(puntos && puntos.length > 0) {
+		puntos.forEach(punto => {
+			container.appendChild(crearElemento('circle', {
+				cx: punto.posicion,
+				cy: altoRecta/2,
+				r: grosorRecta+grosorRecta/2,
+				fill: punto.color,
+				stroke: colorRecta,
+				strokeWidth: grosorRecta/2
+			}))
+		})
+	}
 
 	valoresEspecificos.forEach(valor => {
 		if(valor.tipo == 'numero') {
@@ -5246,6 +5275,24 @@ async function recta(config) {
 			style: 'font-family:Open-Sans-Reg;'
 		}, texto))
 	})
+
+	if(divicionesSubescala > 0) {
+		
+	}
+
+	if(encerrarValores && encerrarValores.length > 0) {
+		encerrarValores.forEach(encerrarValor => {
+			container.appendChild(crearElemento('rect', {
+				x: encerrarValor.posicion - encerrarValor.ancho/2,
+				y: altoRecta/2-encerrarValor.alto/2,
+				width: encerrarValor.ancho,
+				height: encerrarValor.alto,
+				stroke: encerrarValor.color,
+				strokeWidth: '2',
+				fill: 'none'
+			}))
+		})
+	}
 
 	function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
 		let angleInRadians = (angleInDegrees-180) * Math.PI / 180.0;
