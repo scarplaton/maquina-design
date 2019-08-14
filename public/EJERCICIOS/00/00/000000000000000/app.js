@@ -4935,17 +4935,17 @@ async function recta(config) {
 	//subdiviciones de recta numerica
 	divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
 	//puntos de la recta para marcar
-	puntos = regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
+	puntos = puntos.length > 0 ? regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
 		posicion: valorRectaACoordenadaX(Number(x[0])),
 		color: x[1]
-	}))
+	})) : []
 	//valores para ecerrar en recta numerica
-	encerrarValores = regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+	encerrarValores = encerrarValores.length > 0 ? regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
 		posicion: valorRectaACoordenadaX(Number(x[0])),
 		ancho: Number(x[1]),
 		alto: Number(x[2]),
 		color: x[3]
-	}))
+	})) : []
 	//imagenes para mostrar en recta numerica
 	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
 	//arcos para mostrar en la recta numerica
