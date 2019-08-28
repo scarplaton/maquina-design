@@ -1,6 +1,7 @@
 //datos ejercicio
 var contenidoBody = JSON.parse(document.body.getAttribute('data-content').replace(/\'/g, '\"'));
 var versionBody = JSON.parse(document.body.getAttribute('data-version').replace(/\'/g, '\"'));
+var svgGlosa = []
 
 $(document).ready(function () {
   dibujaHtml();
@@ -289,7 +290,7 @@ function print() { //Dibujar ejercicios
                 params: m.params,
                 versions: versionBody.vars,
                 vt: false
-              });
+              }, m.tag == 'svg' ? n : undefined);
 
               break;
             }
@@ -4903,7 +4904,7 @@ async function repeticionPicV2(config) {
   }
 }
 
-async function recta(config) {
+async function recta(config, tipo) {
 	const { container, params, variables, versions, vt } = config
 	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
 	//container.style.border = '1px solid #000'
@@ -5516,17 +5517,21 @@ el valor esta dentro de los valores de la recta*/
     container.setAttributeNS(null, 'height', Number(altoRecta)+50)
     container.style.borderRadius = '5px'
     container.style.background = '#CACCCA'
-    svgPanZoom(container, {
-      zoomEnabled: true,
-      minZomm: 1,
-      maxZoom: 2,
-      customEventsHandler: eventsHandler,
-      beforePan: beforePan
-    })
+    if(tipo == 'g') {
+      svgGlosa.push(container)
+    } else {
+      svgPanZoom(container, {
+        zoomEnabled: true,
+        minZomm: 1,
+        maxZoom: 2,
+        customEventsHandler: eventsHandler,
+        beforePan: beforePan
+      })
+    }
   }
 }
 
-let eventsHandler = {
+var eventsHandler = {
   haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
   init: function(options) {
     var instance = options.instance
