@@ -108,7 +108,7 @@ table {
 
   .icon-responder span {
     display: block;
-    content: url("../imagenes_front/botones_ejercicios/flecha-der.svg");
+    content: url("../../../../imagenes_front/botones_ejercicios/flecha-der.svg");
     margin: 0 auto;
     height: 85%;
     width: auto;
@@ -218,7 +218,7 @@ table {
   }
 
   button:not(:disabled).icon-responder:before {
-    content: url("../imagenes_front/botones_ejercicios/flecha-der.svg");
+    content: url("../../../../imagenes_front/botones_ejercicios/flecha-der.svg");
     width: 36px;
     margin-left: auto;
     margin-right: auto;
@@ -401,7 +401,7 @@ hr.sidelinebar {
 }
 
 .btnCerrarFeed div {
-  content: url("../imagenes_front/botones_ejercicios/flecha-der.svg");
+  content: url("../../../../imagenes_front/botones_ejercicios/flecha-der.svg");
   height: 80%;
   width: auto;
   margin: 0 auto;
