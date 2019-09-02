@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="../../../../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../../../css/app.css">
+	<title>01897_36</title>
+	<!-- MATHJAX NO IMPORTADO -->
+	<script>document.domain = "adaptativamente.cl";</script>
+</head>
+<body id="040421030201897" data-content="{'e':[{'id':'-Lkj5gPOF75Kd_ZLcB7v','date':'26/7/2019 12:26:20','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>&nbsp;Claudia inició una caminata con su abuela a las <strong>$a:$b</strong> de la tarde. Si ellas caminaron durante <strong>$z</strong> minutos, ¿a qué hora terminaron su caminata?&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-Lkj6DAJluTSIQye8NzX','date':'26/7/2019 12:28:39','name':'Insertar Input','params':{'active':2,'anchoInput':'','col':'12','colmd':'3','colsm':'6','defaultError':'','defaultFeed':'','error0':'','error2':'1','error3':'2','error4':'','feed0':'','feed1':'¡Muy bien!','feed2':'Recuerda que cada vez que transcurran 60 minutos, eso es una hora más en el reloj.','feed3':'Esta es la hora de inicio de la caminata.','feed4':'','inputSize':'3','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'A las $p:$q de la tarde.','value2':'A las $a:$q de la tarde.','value3':'A las $a:$b de la tarde.','value4':''},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-Lkj6lm-DdOMuAi2bIpv','date':'26/7/2019 12:31:04','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si la caminata de Claudia y su abuela comenzó a las<strong> $a:$b</strong> de la tarde y caminaron <strong>$z</strong> minutos, para saber la hora de término de la caminata, calculamos <strong>$b + $z</strong>, lo que resulta <strong>$w</strong>.</p>\n<p>Consideremos que, al escribir cualquier hora, el número máximo de minutos es 59. Al sobrepasar esa cantidad, debemos considerar que ha transcurrido más de 1 hora.</p>\n<p>Calculamos <strong>$w </strong>- <strong>60</strong>, que da como resultado <strong>$q</strong>. De esta manera sabremos la cantidad de minutos de la hora de término. Los 60 minutos que quitamos, los agregamos como 1 hora más. Entonces, calculando <strong>$a</strong> + <strong>1</strong>, obtenemos <strong>$p</strong>.</p>\n<p></p>\n<p>Esto quiere decir que la caminata terminó a las <strong>$p:$q</strong> de la tarde.&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':36,'vars':[{'rank':5,'val':4,'var':'a'},{'rank':0,'val':55,'var':'b'},{'rank':5,'val':11,'var':'i'},{'rank':7,'val':11,'var':'j'},{'rank':0,'val':5,'var':'p'},{'rank':0,'val':50,'var':'q'},{'rank':0,'val':110,'var':'w'},{'rank':0,'val':55,'var':'z'}]}">
+	<header class="barraprogreso">
+			<div class="container-fluid">
+				<div class="row justify-content-center no-gutters align-items-center">
+					<div class="col-11 lineasbarra">
+						<hr class="sidelinebar d-none d-sm-block">
+						<svg xmlns="http://www.w3.org/2000/svg" id="progressbar" version="1.1" class="mx-sm-auto d-sm-block"></svg>
+						<hr class="sidelinebar d-none d-sm-block">
+					</div>
+					<div class="col-1 d-sm-none">
+						<!--<svg id="botonSalir" class="float-right" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="bottom" title="Salir de la misión">
+							<path d="M0 0h24v24H0z" fill="none"/><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+						</svg>-->
+					</div>
+				</div>
+			</div>
+	</header>
+	<section class="contenido">
+			<div class="container-fluid">
+				<div id="enunciado" class="row"></div>
+				<div id="respuesta" class="row justify-content-center"></div>
+			</div>
+	</section>
+	<footer class="fixed-bottom pie">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnConsulta" class="btn btn-block bton bton-5 bton-5a icon-consulta" onclick="pressConsulta()">
+								<span>CONSULTA</span>
+							</button>
+							<img id="imgfeedback" class="img-fluid d-none" alt="IMG" />
+						</div>
+						<div class="col-4 col-md-6"></div>
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled>
+								<span>RESPONDER</span>
+							</button> 
+						</div>
+				</div>
+			</div>
+	</footer>
+	<div class="modal fade" id="modalFeedback" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content" style="border-radius: 10px!important">
+						<div id="feedback" class="modal-body" style="padding: 10px 0;">
+							<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="col-12">
+												
+										</div>
+										<div class="col-4 offset-8">
+											<button id="btnCloseModal" type="button" class="btnCerrarFeed">
+												<div></div>
+											</button>
+										</div>
+									</div>
+							</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<div class="modal fade" id="modalGlosa" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered dimensionGlosa" role="document">
+				<div id="contenidoGlosa" class="modal-content glosaEjercicio">
+						<div class="modal-body modalBody">
+								<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="offset-2 col-10 tituloGlosa">
+											<span>Solución</span>
+										</div>
+										<div class="col-2 d-none d-sm-block">
+											<img class="img-fluid" src="../../../../imagenes_front/patos/togaSuki.svg">
+										</div>
+										<div class="col-12 col-sm-10">
+											<div class="row" id="glosa"></div>
+										</div>
+									</div>
+									<div class="row no-gutters">
+										<div class="offset-8 col-4 offset-sm-9 col-sm-3 offset-md-10 col-md-2">
+											<button id="btnCloseGlosa" type="button" class="btn btn-primary" onclick="cerrarFeedGlosa()">Aceptar</button>
+										</div>
+									</div>
+								</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<input id="hiddenIntento" type="hidden" value="hiddenIntento"/>
+	<script src="../../../../js/jquery-3.3.1.slim.min.js"></script>
+	<script src="../../../../js/bootstrap.min.js"></script>
+	<script src="app.js"></script>
+	<script src="interfaz.js"></script>
+	<script src="../../../../js/jsEjercicios.js"></script>
+</body>
+</html>

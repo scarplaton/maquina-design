@@ -11,7 +11,7 @@ function repeticiones(cantidad, numero){
   cantidad = Number(cantidad);
   let con = "";
   for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} + `;
+      con += i+1 === cantidad ?  `${numero}` : `${numero}+`;
   }
   return con;
 }
@@ -22,6 +22,10 @@ function injectHtml(elemento, texto, styles) {
 
 function b64_to_utf8(str) {
   return decodeURIComponent(escape(window.atob(str)));
+}
+
+function utf8_to_b64( str ) {
+  return window.btoa(unescape(encodeURIComponent(str)));
 }
 
 function shuffle(arr, t = 10) {
@@ -58,7 +62,7 @@ function repeticiones(cantidad, numero, proceso){
   
   let con = "";
   for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${proceso} `;
+      con += i+1 === cantidad ?  `${numero}` : `${numero} ${proceso}`;
   }
   return con;
 }
