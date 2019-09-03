@@ -429,7 +429,14 @@ function insertarInput(config) {
   }
 }
 function insertarTabla(config) {
-  const { container, params, variables, versions, vt } = config, { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla } = params, vars = vt ? variables : versions
+  const { container, params, variables, versions, vt } = config, 
+    { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
+    vars = vt ? variables : versions;
+    if(validaciones) {
+      //console.log(regex(b64_to_utf8(validaciones), vars, vt))
+      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+    }
+  //_VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
     var encontrado = false;
@@ -441,6 +448,22 @@ function insertarTabla(config) {
     });
     return encontrado;
   }
+  var marcasEnTd2 = lineasHorizontales !== '' ? String(lineasHorizontales).split(';') : false;
+  
+  function debeDelinearse(tr, td) {
+    
+    var encontrado = false;
+    
+    marcasEnTd2.forEach(function (linea) {
+      
+       if (linea[0] == (tr + 1) && linea[2] == (td + 1)) {
+        encontrado = true;
+        return;
+      }
+    });
+    return encontrado;
+  }
+  
   let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
     let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
@@ -450,18 +473,24 @@ function insertarTabla(config) {
         r += `<col width="${ancho}%"/>`;
       });
     }
+    
     for (var row = 0; row < table.length; row++) {
-      if (lineasHorizontales === '') {
-        r += '<tr>';
-      } else {
-        r += String(lineasHorizontales).split(',').includes(String(row + 1)) ? `<tr style="border-bottom: ${estiloLineaHorizontal};">` : '<tr>';
-      }
+      r += '<tr>';   
       for (var col = 0; col < table[row].length; col++) {
         if (destacado === '') {
           r += '<td>';
         } else {
           if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
+          } else {
+            r += '<td>';
+          }
+        }
+        if (lineasHorizontales === '') {
+          r += '<td>';
+        } else {
+          if (debeDelinearse(row, col)) {
+            r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
           } else {
             r += '<td>';
           }
@@ -483,52 +512,20 @@ function insertarTabla(config) {
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
-            var { tipoInput, maxLength, placeholder, anchoInput,
-              error0, error2, error3, error4, defaultError,
-              feed0, feed1, feed2, feed3, feed4, defaultFeed,
-              value1, value2, value3, value4 } = table[row][col].value;
-            var feedGenerico = regex(feed0, vars, vt);
-            var answers = [{
-              respuesta: regex(value1, vars, vt),
-              feedback: regex(feed1, vars, vt),
-              errFrec: null
-            }];
-            if (value2 !== '') {
-              answers[1] = {
-                respuesta: regex(value2, vars, vt),
-                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
-                errFrec: error0 === '' ? error2 : error0
-              }
-            }
-            if (value3 !== '') {
-              answers[2] = {
-                respuesta: regex(value3, vars, vt),
-                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
-                errFrec: error0 === '' ? error3 : error0
-              }
-            }
-            if (value4 !== '') {
-              answers[3] = {
-                respuesta: regex(value4, vars, vt),
-                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
-                errFrec: error0 === '' ? error4 : error0
-              }
-            }
+            var { anchoInput,correctas,idInput,maxLength,placeholder,tipoInput } = table[row][col].value;
             var dataContent = {
-              tipoInput,
-              answers,
-              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
-              errFrecDefecto: error0 === '' ? defaultError : error0
-            };
+              correctas: utf8_to_b64(regex(correctas, vars, vt)),
+              tipoInput
+            }
             switch (tipoInput) {
               case 'text':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
+                r += `<input type="text" id="${idInput}" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
+                r += `<input type="text" id="${idInput}" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />`;
                 break;
               case 'alfanumerico':
-                r += `<input type="text" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
+                r += `<input type="text" id="${idInput}" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputAlfanumerico(event)"/>`;
                 break;
             }
             break;
@@ -546,28 +543,28 @@ function insertarTabla(config) {
             if (value2 !== '') {
               answers[1] = {
                 respuesta: regex(value2, vars, vt),
-                feedback: feed0 === '' ? regex(feed2, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed2, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error2 : error0
               }
             }
             if (value3 !== '') {
               answers[2] = {
                 respuesta: regex(value3, vars, vt),
-                feedback: feed0 === '' ? regex(feed3, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed3, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error3 : error0
               }
             }
             if (value4 !== '') {
               answers[3] = {
                 respuesta: regex(value4, vars, vt),
-                feedback: feed0 === '' ? regex(feed4, vars, vt) : feedGenerico,
+                feedback: feed0 === '' ? regexFunctions(regex(feed4, vars, vt)) : feedGenerico,
                 errFrec: error0 === '' ? error4 : error0
               }
             }
             var dataContent = {
               tipoInput,
               answers,
-              feedbackDefecto: feed0 === '' ? regex(defaultFeed, vars, vt) : feedGenerico,
+              feedbackDefecto: feed0 === '' ? regexFunctions(regex(defaultFeed, vars, vt)) : feedGenerico,
               errFrecDefecto: error0 === '' ? defaultError : error0
             };
             var input;
