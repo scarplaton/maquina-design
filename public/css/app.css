@@ -23,7 +23,14 @@ svg {
 }
 
 p {
+  font-size: 18px;
+  font-family: 'opensans';
   margin-bottom: 10px;
+}
+
+li {
+  font-size: 18px;
+  font-family: 'opensans';
 }
 
 canvas {
@@ -53,36 +60,6 @@ table {
 @font-face {
   font-family: 'opensans';
   src: url('../fonts/OpenSans-Regular-webfont.woff');
-}
-
-@media only screen and (min-width: 1367px) {
-  p {
-    font-size: 22px;
-  }
-
-  label {
-    font-size: 22px;
-  }
-}
-
-@media only screen and (min-width: 1280px) and (max-width: 1366px) {
-  p {
-    font-size: 18px;
-  }
-
-  label {
-    font-size: 18px;
-  }
-}
-
-@media only screen and (max-width: 1279px) {
-  p {
-    font-size: 16px;
-  }
-
-  label {
-    font-size: 16px;
-  }
 }
 
 /*CONSIDERACIONES MOBILE*/
@@ -262,6 +239,12 @@ table {
     border-radius: 26px;
     height: 53px;
   }
+
+  .opcionradio input[type=radio] + label:hover {
+    background: #b9e8ff;
+    color: #1caff6;
+    padding: 8px 12px;
+  }
 }
 
 /*
@@ -323,10 +306,16 @@ hr.sidelinebar {
   background-color: #BFF199;
   color: #4d8b4b;
 }
-
+/* ANTES
 .pieIncorrecta {
   background-color: #F6B3B1;
   color: #d33131;
+}
+*/
+
+.pieIncorrecta {
+  color: #ff0000;
+  background-color: #fbdfe3;
 }
 
 #btnConsulta {
@@ -470,6 +459,7 @@ hr.sidelinebar {
   font-family: 'varela';
   color: #fff;
   font-size: 16px;
+  margin-top: 10px;
 }
 
 /*
@@ -499,27 +489,31 @@ hr.sidelinebar {
 }
 
 .input-numerador {
-  background-color: #CFE2F3;
-  border: 2px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  height: 90px;
-  font-size: 80px;
+  height: 60px;
+  font-size: 55px;
   text-align: center;
-  width: 70px;
+  width: 50px;
   margin: 2px;
+  border: 2px solid #cfcfcf;
+  border-radius: 8px;
+  padding: 5px;
+  background: transparent;
+  font-family:  'opensans';
+  color: #000000;
 }
 
 .input-num-y-den {
-  background-color: #CFE2F3;
-  border: 2px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  font-size: 40px;
+  font-size: 35px;
   text-align: center;
-  width: 70px;
-  height: 50px;
+  width: 45px;
+  height: 40px;
   margin: 2px;
+  border: 2px solid #cfcfcf;
+  border-radius: 8px;
+  padding: 5px;
+  background: transparent;
+  font-family:  'opensans';
+  color: #000000;
 }
 
 .opcionradio {
@@ -540,11 +534,27 @@ hr.sidelinebar {
   border-radius: 40px;
   width: 100%;
 }
-
+/* ANTES
 .opcionradio input[type=radio] + label:before {
   height: 20px;
   width: 20px;
   border: 2px solid #bfbfbf;
+  border-radius: 50%;
+  margin-right: 4px;
+  margin-top: 3px;
+  margin-bottom: -4px;
+  content: " ";
+  display: inline-block;
+  background-color: #fff;
+  transition: 0.3s;
+  cursor: pointer;
+}
+*/
+
+.opcionradio input[type=radio] + label:before {
+  height: 20px;
+  width: 20px;
+  border: 2px solid #000000;
   border-radius: 50%;
   margin-right: 4px;
   margin-top: 3px;

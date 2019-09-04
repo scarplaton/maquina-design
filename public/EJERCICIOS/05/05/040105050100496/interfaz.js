@@ -34,9 +34,6 @@ if(hiddenBarraDatos) {
 
 barraDeProgreso();
 $(document).ready(function(){
-	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
-		e.preventDefault();
- 	});
 	window.addEventListener("keyup", function(event){
 		event.preventDefault();
 		if(event.keyCode === 13) {

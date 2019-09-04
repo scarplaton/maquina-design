@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>index</title>
+  <style>
+  .contenedor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ejercicio {
+    border: 1px solid #000;
+    border-radius: 30px;
+  }
+
+  @media (min-width: 1280px) and (min-height: 620px) {
+    .ejercicio {
+      width: 1200px;
+      height: 600px;
+    }
+  }
+
+  @media (min-width: 577px) and (max-width:1279px), (max-height: 619px) and (min-width: 1279px) {
+    .ejercicio {
+      width: 82vw;
+      max-width: 1024px;
+      height: 100vh;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .ejercicio {
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+
+  </style>
+</head>
+<body>
+<div class="contenedor">
+  <iframe id="iframe" class="ejercicio" src="040101020100016_vt.html"></iframe>
+  <input id="barraProgreso" type="hidden" />
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script>
+  let progreso = {
+    tmpProgreso: [{
+      idasigejermat:00001,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00002,
+      correcto:true,
+      NUMEROINTENTOS:1
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    },{
+      idasigejermat:00003,
+      correcto:false,
+      NUMEROINTENTOS:2
+    }],
+    tmpTotal: 15
+  };
+  document.getElementById('barraProgreso').value = JSON.stringify(progreso);
+</script>
+</body>
+</html>

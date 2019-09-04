@@ -651,7 +651,7 @@ async function rectNumFn(config) {
   state.typeRect = rectType
   state.scale = {
     decimalScale: decimalScale === 'si' ? true : false,
-    divisions: Number(regex(scaleDivisions, vars, vt)),//eval(rectValuesDec) !== undefined ? eval(scaleDivisions) > eval(rectValuesDec) ? eval(scaleDivisions) + 1 : eval(rectValuesDec) + 2 : eval(scaleDivisions) + 1,
+    divisions: Number(regexFunctions(regex(scaleDivisions, vars, vt))),//eval(rectValuesDec) !== undefined ? eval(scaleDivisions) > eval(rectValuesDec) ? eval(scaleDivisions) + 1 : eval(rectValuesDec) + 2 : eval(scaleDivisions) + 1,
     value: /*state.typeRect !== 'enteros' ? 1 : */ eval(regex(scaleValue, vars, vt)) === 0 ? 1 : eval(regex(scaleValue, vars, vt)),
     width: c.width < 500 ? eval(scaleWidth) * 0.6 : eval(scaleWidth),
     color: scaleColor,

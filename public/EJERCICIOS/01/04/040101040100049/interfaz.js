@@ -9,7 +9,7 @@ ejeF = idEjercicio.substring(2, 4),
 errFre = '', 
 feed = '', 
 check = false;
-var _TIPO_INPUT_ = '';
+var _TIPO_INPUT_ = '', _VALIDACIONES_INPUT_TABLA_ = null;
 var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
@@ -34,15 +34,9 @@ if(hiddenBarraDatos) {
 
 barraDeProgreso();
 $(document).ready(function(){
-	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
 		e.preventDefault();
  	});
-	window.addEventListener("keyup", function(event){
-		event.preventDefault();
-		if(event.keyCode === 13) {
-			!btnRespuesta.disabled && btnRespuesta.click();
-		}
-	});
 });
 
 function validaRespuesta() { //Validar respuesta
@@ -60,12 +54,7 @@ function validaRespuesta() { //Validar respuesta
 			for(var input of inputs) {
 				coloreaInputTexto(input);
 			}
-			for(var input of inputs) {
-				evaluaInputTexto(input);
-				if(errFre !== null) {
-					break;
-				}
-			}
+			evaluaInputsEjercicio();
 		}
 	}
 }
@@ -76,72 +65,56 @@ function coloreaInputTexto(inputElement) {
 	switch(content.tipoInput){
 		case 'numero':
 			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
+			content.correctas.split(',').forEach(function(correcta){
+				if(resp === correcta) {
+					inputElement.classList.add('inputTexto-correcto');
 					match = true;
-					break;
 				}
-			}
+			})
 			break;
 		case 'texto':
 			var resp = inputElement.value;
-			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
+			content.correctas.split(',').forEach(function(correcta){
+				var numberArr = correcta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
 				if(checkWord(resp, numberArr)) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
-					match = true;
-					break;
+					inputElement.classList.add('inputTexto-correcto');
 				}
-			}
-			break;
+ 			});
 	}
 	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
 		inputElement.classList.add('inputTexto-incorrecto');
 	}
 }
 
-function evaluaInputTexto(inputElement) {
-	var content = JSON.parse(inputElement.getAttribute('data-content'));
-	var match = false;
-	switch(content.tipoInput){
-		case 'numero':
-			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
+function evaluaInputsEjercicio() {
+	let { respuestas, errFrecDefecto, feedbackDefecto } = _VALIDACIONES_INPUT_TABLA_;
+	for(let i = 0; i < respuestas.length; i++) {
+		let { validaciones, errFrec, feedback } = respuestas[i], coincidenTodas = true;
+	 	for(let val of validaciones) {
+			let input = document.getElementById(val.inputId);
+			let content = JSON.parse(input.getAttribute('data-content'))
+			switch(content.tipoInput){
+				case 'numero':
+					if(input.value.replace(/\s/g, '') !== val.valor && val.valor !== '-any-'){
+						coincidenTodas = false;
+					}
 					break;
-				}
+				case 'texto':
+					var numberArr = correcta.length === 3 ? ('0'+val.valor).split('') : val.valor.split('');
+					if(!checkWord(input.value, numberArr) && val.valor !== '-any-') {
+						coincidenTodas = false
+					}
 			}
+		}
+		if(coincidenTodas) {
+			feed = feedback;
+			errFre = errFrec;
 			break;
-		case 'texto':
-			var resp = inputElement.value;
-			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
-				if(checkWord(resp, numberArr)) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
-					break;
-				}
-			}
-			break;
+		}
 	}
-	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
+	if(errFre === '') {
+		feed = feedbackDefecto;
+		errFre = errFrecDefecto;
 	}
 }
 
@@ -332,10 +305,11 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 			$('section.contenido').find('input[type=text]').val('');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
+	
 }
 //handle modals
 function openModalFeedback(feedback, correcto) {
@@ -372,9 +346,15 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 		$('input:checked')[0].checked = false;
 		$('.radio-div__selected').removeClass('radio-div__selected');
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+		} else {
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
+	$('section.contenido.inputTexto-incorrecto').prop('disabled', false);
 	btnRespuesta.disabled = true;
 }
 
@@ -424,19 +404,10 @@ function cambiaInputTexto(e) {
 	}
 }
 function cambiaInputNumerico(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
-	}
-	var regex = /[0-9]|\./;
-	if( !regex.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
+	var validacion = e.keyCode >= 48 && e.keyCode <= 57
+	if(!validacion) {
+		e.preventDefault();
+		return false;
 	}
 }
 
