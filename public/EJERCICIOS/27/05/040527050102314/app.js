@@ -344,7 +344,10 @@ function dibujaHtml() {
   if (contenidoRespuestas.length > 0) {
     contenidoRespuestas = shuffle(contenidoBody['r']);
     contenidoRespuestas.forEach(function (item, index) {
+<<<<<<< HEAD
       console.log(item.params.feed)
+=======
+>>>>>>> upstream/produccion
       var dataContent = {
         feedback: espacioMilesRegex(regexFunctions(regex(item.params.feed, versionBody.vars, false))),
         respuesta: `Opción ${index + 1}`,
