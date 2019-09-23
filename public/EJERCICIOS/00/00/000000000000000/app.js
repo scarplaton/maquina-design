@@ -8,27 +8,27 @@ $(document).ready(function () {
   print();
 });
 
-function imagenEnTexto(imgsrc, alto, ancho){
+function imagenEnTexto(imgsrc, alto, ancho) {
   return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
 }
 
-function repeticiones(cantidad, numero, signo){
+function repeticiones(cantidad, numero, signo) {
   cantidad = Number(cantidad);
   let con = "";
-  for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${signo} `;
+  for (let i = 0; i < cantidad; i++) {
+    con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${signo} `;
   }
   return con;
 }
 
-function repeticionesImg(cantidad, imgsrc, alto, ancho, signo){
+function repeticionesImg(cantidad, imgsrc, alto, ancho, signo) {
   cantidad = Number(cantidad);
   let con = "";
-  for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
+  for (let i = 0; i < cantidad; i++) {
+    con += i + 1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
   }
   return con;
-  
+
 }
 
 function injectHtml(elemento, texto, styles) {
@@ -39,7 +39,7 @@ function b64_to_utf8(str) {
   return decodeURIComponent(escape(window.atob(str)));
 }
 
-function utf8_to_b64( str ) {
+function utf8_to_b64(str) {
   return window.btoa(unescape(encodeURIComponent(str)));
 }
 
@@ -72,26 +72,26 @@ function regex(theInput, theVariables, isTutorial) {
   return result;
 }
 
-function repeticiones(cantidad, numero, proceso){
+function repeticiones(cantidad, numero, proceso) {
   cantidad = Number(cantidad);
-  
+
   let con = "";
-  for(let i = 0; i < cantidad; i++){ 
-      con += i+1 === cantidad ?  ` ${numero} ` : ` ${numero} ${proceso} `;
+  for (let i = 0; i < cantidad; i++) {
+    con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${proceso} `;
   }
   return con;
 }
 
 function numeroAPartitivo(numero, plural) {
   let s = plural === 'si' ? 's' : ''
-  switch(numero) {
+  switch (numero) {
     case '2':
       return `medio${s}`
     case '3':
       return `tercio${s}`
     case '4':
       return `cuarto${s}`
-    case '5': 
+    case '5':
       return `quinto${s}`
     case '6':
       return `sexto${s}`
@@ -115,15 +115,15 @@ function numeroAPartitivo(numero, plural) {
 
 
 function regexFunctions(text) {
-  var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia){ //coincidencia => '{funcion()}' o '[latex]'
+  var result = text.replace(/\/\[.*?\/\]/g, function (coincidencia) { //coincidencia => '{funcion()}' o '[latex]'
     var final = coincidencia.length - 4;
-    var funcion = coincidencia.substr(2,final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    try { 
+    var funcion = coincidencia.substr(2, final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+    try {
       return eval(funcion)
-    } catch(error) {
-        /*console.log(error);
-        console.log(funcion)*/
-        return coincidencia;
+    } catch (error) {
+      /*console.log(error);
+      console.log(funcion)*/
+      return coincidencia;
     }
   })
   return result;
@@ -134,11 +134,11 @@ function espacioMilesRegex(texto) {
     let entero = coincidencia.split('.')[0]
     let decimal = coincidencia.split('.')[1]
     let enteroEspaciado = entero.length >= 4 ? '' : entero
-    if(entero.length >= 4) {
+    if (entero.length >= 4) {
       let enteroReverse = entero.split('').reverse()
       let count = 1
-      enteroReverse.forEach(function(numero){
-        if(count === 3) {
+      enteroReverse.forEach(function (numero) {
+        if (count === 3) {
           enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
           count = 1
         } else {
@@ -147,7 +147,7 @@ function espacioMilesRegex(texto) {
         }
       })
     }
-    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
+    return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
   })
 }
 function espacioMilesRegexx(texto) {
@@ -155,11 +155,11 @@ function espacioMilesRegexx(texto) {
     let entero = coincidencia.split('.')[0]
     let decimal = coincidencia.split('.')[1]
     let enteroEspaciado = entero.length >= 4 ? '' : entero
-    if(entero.length >= 4) {
+    if (entero.length >= 4) {
       let enteroReverse = entero.split('').reverse()
       let count = 1
-      enteroReverse.forEach(function(numero){
-        if(count === 3) {
+      enteroReverse.forEach(function (numero) {
+        if (count === 3) {
           enteroEspaciado = ' ' + numero + enteroEspaciado
           count = 1
         } else {
@@ -168,7 +168,7 @@ function espacioMilesRegexx(texto) {
         }
       })
     }
-    return `${enteroEspaciado}${decimal?',':''}${decimal?decimal:''}`
+    return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
   })
 }
 
@@ -191,7 +191,7 @@ function cargaFuente(nombre, src) {
     font.load().then(function (loadedFont) {
       document.fonts.add(loadedFont);
       loadedFont.load();
-      loadedFont.loaded.then(()=>{
+      loadedFont.loaded.then(() => {
         ////console.log('fuente ', nombre, ' cargada');
       }).catch(error => {
         ////console.log('errror al cargar imagen => ', error);
@@ -247,13 +247,14 @@ const FUNCIONES = [
     name: 'General', tag: 'general', fns: [
       { id: 'Insertar Texto', action: insertarTexto },
       { id: 'Insertar Input', action: insertarInput },
-      { id:'Insertar Input Fraccion', action: insertarInputFraccion },
+      { id: 'Insertar Input Fraccion', action: insertarInputFraccion },
       { id: 'Insertar Tabla', action: insertarTabla },
       { id: 'Insertar Imagen', action: insertarImagen }
     ]
-  },{
-    name: 'SVG', tag:'svg', fns:[
-      { id:'Recta', action:recta }
+  }, {
+    name: 'SVG', tag: 'svg', fns: [
+      { id: 'Recta', action: recta },
+      { id: 'Tabla Posicional V2', action: tabPos }
     ]
   }, {
     name: 'Numeracion', tag: 'numeracion', fns: [
@@ -326,7 +327,7 @@ function dibujaHtml() {
   contenidoBody['e'].forEach((m, i) => {
     contenidoHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-${m.width.xs} tag">`
     if (m.tag != 'general') {
-      if(m.tag == 'svg') {
+      if (m.tag == 'svg') {
         contenidoHtml += `<svg id="container-e${i}" class="img-fluid mx-auto d-block"></svg>`
       } else {
         contenidoHtml += `<canvas id="container-e${i}" class="img-fluid mx-auto d-block"></canvas>`
@@ -375,7 +376,7 @@ function dibujaHtml() {
     contenidoBody['r'].forEach(function (item, index) {
       respuestaHtml += `<div class="col-md-${item.width.md} col-sm-${item.width.sm} col-xs-${item.width.xs} tag">`
       if (item.tag != 'general') {
-        if(m.tag == 'svg') {
+        if (m.tag == 'svg') {
           contenidoHtml += `<svg id="container-r${index}" class="img-fluid mx-auto d-block"></svg>`
         } else {
           contenidoHtml += `<canvas id="container-r${index}" class="img-fluid mx-auto d-block"></canvas>`
@@ -394,7 +395,7 @@ function dibujaHtml() {
   contenidoBody['g'].forEach((m, i) => {
     glosaHtml += `<div class="col-md-${m.width.md} col-sm-${m.width.sm} col-xs-${m.width.xs} tag">`
     if (m.tag != 'general') {
-      if(m.tag == 'svg') {
+      if (m.tag == 'svg') {
         glosaHtml += `<svg id="container-g${i}" class="img-fluid mx-auto d-block"></svg>`
       } else {
         glosaHtml += `<canvas id="container-g${i}" class="img-fluid mx-auto d-block"></canvas>`
@@ -471,7 +472,7 @@ function insertarInput(config) {
     feedback: espacioMilesRegex(regexFunctions(regex(feed1, vars, vt))),
     errFrec: null
   }];
-  if(inputSize > 1) {
+  if (inputSize > 1) {
     answers[1] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
@@ -550,39 +551,39 @@ function insertarInput(config) {
 }
 
 function insertarInputFraccion(config) {
-	const { container, params, variables, versions, vt } = config;
-  const { enteroMaxLen,numeradorMaxLen,denominadorMaxLen,validaciones,enteroCorrecta,numeradorCorrecta,denominadorCorrecta } = params
+  const { container, params, variables, versions, vt } = config;
+  const { enteroMaxLen, numeradorMaxLen, denominadorMaxLen, validaciones, enteroCorrecta, numeradorCorrecta, denominadorCorrecta } = params
   let vars = vt ? variables : versions
   //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
   //_VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
-	let inputFraccion = `<table class="mx-auto d-block">
+  let inputFraccion = `<table class="mx-auto d-block">
 	<tbody>
 		<tr>
 			<td rowspan="2">
-				<input type="text" id="input1" name="answer" autocomplete="off" class="input-numerador" maxlength="${enteroMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(enteroCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />
+				<input type="text" id="input1" name="answer" autocomplete="off" class="input-numerador" maxlength="${enteroMaxLen}" data-content='${JSON.stringify({ correctas: utf8_to_b64(regex(enteroCorrecta, vars, vt)), tipoInput: 'numero' })}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />
 			</td>
 			<td style="border-bottom: 2px solid black;">
-				<input type="text" id="input2" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${numeradorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(numeradorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+				<input type="text" id="input2" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${numeradorMaxLen}" data-content='${JSON.stringify({ correctas: utf8_to_b64(regex(numeradorCorrecta, vars, vt)), tipoInput: 'numero' })}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<input type="text" id="input3" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${denominadorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(denominadorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+				<input type="text" id="input3" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${denominadorMaxLen}" data-content='${JSON.stringify({ correctas: utf8_to_b64(regex(denominadorCorrecta, vars, vt)), tipoInput: 'numero' })}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
 			</td>
 		</tr>
 	</tbody>
 </table>`
-	container.innerHTML = inputFraccion;
+  container.innerHTML = inputFraccion;
 }
 
 function insertarTabla(config) {
-  const { container, params, variables, versions, vt } = config, 
-    { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
+  const { container, params, variables, versions, vt } = config,
+    { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params,
     vars = vt ? variables : versions;
-    if(validaciones) {
-      //console.log(regex(b64_to_utf8(validaciones), vars, vt))
-      _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
-    }
+  if (validaciones) {
+    //console.log(regex(b64_to_utf8(validaciones), vars, vt))
+    _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+  }
   //_VALIDACIONES_INPUT_TABLA_ = validaciones != '' && JSON.parse(regex(validaciones, vars, vt));
   var marcasEnTd = destacado !== '' ? String(destacado).split(';') : false;
   function debeMarcarse(tr, td) {
@@ -596,21 +597,21 @@ function insertarTabla(config) {
     return encontrado;
   }
   var marcasEnTd2 = lineasHorizontales !== '' ? String(lineasHorizontales).split(';') : false;
-  
+
   function debeDelinearse(tr, td) {
-    
+
     var encontrado = false;
-    
+
     marcasEnTd2.forEach(function (linea) {
-      
-       if (linea[0] == (tr + 1) && linea[2] == (td + 1)) {
+
+      if (linea[0] == (tr + 1) && linea[2] == (td + 1)) {
         encontrado = true;
         return;
       }
     });
     return encontrado;
   }
-  
+
   let ancho = widthTabla !== '100%' ? `style="width: ${widthTabla};"` : "";
   if (container) {
     let r = `<table class="tabla ${cssclases}" ${ancho}><tbody>`;
@@ -620,7 +621,7 @@ function insertarTabla(config) {
         r += `<col width="${ancho}%"/>`;
       });
     }
-    
+
     for (var row = 0; row < table.length; row++) {
       r += '<tr>';
       for (var col = 0; col < table[row].length; col++) {
@@ -629,11 +630,11 @@ function insertarTabla(config) {
         } else if (destacado !== '' && lineasHorizontales === '') {
           if (debeMarcarse(row, col)) {
             r += `<td style="background:${estiloFondoTD};">`;
-          }else{r += '<td>';}
+          } else { r += '<td>'; }
         } else if (destacado === '' && lineasHorizontales !== '') {
           if (debeDelinearse(row, col)) {
             r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
-          }else{r += '<td>';}
+          } else { r += '<td>'; }
         } else if (destacado !== '' && lineasHorizontales !== '') {
           if (debeDelinearse(row, col)) {
             r += `<td style="border-bottom: ${estiloLineaHorizontal};">`;
@@ -646,10 +647,10 @@ function insertarTabla(config) {
             r += '<td>';
           }
         }
-        
+
         switch (table[row][col].type) {
           case 'text':
-            if(table[row][col].value.tachar) {
+            if (table[row][col].value.tachar) {
               var tachado = regexFunctions(regex(table[row][col].value.tachar, vars, vt)) === 'si' ? `class="strikethrough"` : '';
             } else {
               var tachado = ''
@@ -667,7 +668,7 @@ function insertarTabla(config) {
             r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
-            var { anchoInput,correctas,idInput,maxLength,placeholder,tipoInput } = table[row][col].value;
+            var { anchoInput, correctas, idInput, maxLength, placeholder, tipoInput } = table[row][col].value;
             var dataContent = {
               correctas: utf8_to_b64(regex(correctas, vars, vt)),
               tipoInput
@@ -1339,7 +1340,7 @@ async function rectNumFn(config) {
     const { xIni, centroY, segmento, escalaValor } = dataRecta;
     Promise.all(figures.imagenes.map(x => x ? cargaImagen(x.src) : null)).then((imagen) => {
       imagen.forEach((imagen, index) => {
-        if(!figures.imagenes[index]) {
+        if (!figures.imagenes[index]) {
           return;
         }
         figures.imagenes[index].imagenRecta = imagen;
@@ -1403,12 +1404,12 @@ async function rectNumFn(config) {
     const { inicio, fin, color, alto, texto, forma, altura } = tramoLLave;
     const { initValue } = chart.values
     const { xIni, centroY, segmento, escalaValor } = dataRecta;
-    
+
     let radio = 15;
     let datosInicio = valores.find(x => x.valor === inicio);
     let datosFin = valores.find(x => x.valor === fin);
     let xInicio, xFin;
-    if(datosInicio && datosFin) {
+    if (datosInicio && datosFin) {
       xInicio = forma === 'igual' ? datosInicio.xPos : forma === 'incluido' ? datosInicio.xPos - 5 : datosInicio.xPos + 5;
       xFin = forma === 'igual' ? datosFin.xPos : forma === 'incluido' ? datosFin.xPos + 5 : datosFin.xPos - 5;
     } else {
@@ -2460,7 +2461,7 @@ function tablaPosicional(config) {
               }
               break;
             case 3:
-              if(tipoRepeticion === 'bloques') {
+              if (tipoRepeticion === 'bloques') {
                 dibujaBloqueEnPosicionTres(numero, image, cx, cy, altoImgRep);
               } else {
                 dibujaRepeticionDado(numero, anchoSeparacion, altoCuadro, image, cx, cy, altoImgRep);
@@ -2637,7 +2638,7 @@ function tablaPosicional(config) {
         }
 
         function dibujaBloqueEnPosicionNueve(posicion, image, altoImg, anchoImg, cx, cy, separacion) { //posicion 1-9
-          separacion = altoImg == 6 ? separacion*4 : separacion;
+          separacion = altoImg == 6 ? separacion * 4 : separacion;
           var x, y;
           if (posicion == 1 || posicion == 4 || posicion == 7) {
             x = cx - (anchoImg * 1.5) - separacion;
@@ -2664,21 +2665,21 @@ function tablaPosicional(config) {
         numero = Number(numero)
         var x, y;
         altoImg = Number(altoImg);
-        if(numero === 1) {
-          x = cx - anchoImg/2;
-          y = cy - altoImg/2;
+        if (numero === 1) {
+          x = cx - anchoImg / 2;
+          y = cy - altoImg / 2;
           ctx.drawImage(image, x, y, anchoImg, altoImg);
-        } else if(numero === 2) {
-          x = cx - (anchoImg+anchoImg/2)/2;
-          y = cy - (altoImg+altoImg/2)/2;
+        } else if (numero === 2) {
+          x = cx - (anchoImg + anchoImg / 2) / 2;
+          y = cy - (altoImg + altoImg / 2) / 2;
           ctx.drawImage(image, x, y, anchoImg, altoImg);
-          x = x + anchoImg/2;
-          y = y + altoImg/2;
+          x = x + anchoImg / 2;
+          y = y + altoImg / 2;
           ctx.drawImage(image, x, y, anchoImg, altoImg);
-        } else if(numero === 3) {
-          x = cx - anchoImg/2;
-          y = cy - altoImg/2;
-          ctx.drawImage(image, x-anchoImg/2, y-altoImg/2, anchoImg, altoImg);
+        } else if (numero === 3) {
+          x = cx - anchoImg / 2;
+          y = cy - altoImg / 2;
+          ctx.drawImage(image, x - anchoImg / 2, y - altoImg / 2, anchoImg, altoImg);
           ctx.drawImage(image, x, y, anchoImg, altoImg);
           ctx.drawImage(image, cx, cy, anchoImg, altoImg);
         }
@@ -2772,7 +2773,7 @@ function tablaPosicional(config) {
     let altoCanvas = altoImagen + // alto de la imagen de la tabla
       altoFlechas * flechas + //alto de las imagenes de flechas
       separaciones * _separacionElementos + // alto de las separaciones
-      texto+10; //alto de la fuente de los textos
+      texto + 10; //alto de la fuente de los textos
     return { altoCanvas, altoImagen };
   }
 }
@@ -3063,7 +3064,7 @@ function repeticionPic(config) {
             //console.log(repeticion);
             break;
         }
-       
+
       }
       posicicionesInicio.push(xStart);
     }
@@ -3486,29 +3487,29 @@ function repeticionPic(config) {
 }
 
 function cardinalAOrdinal(numero, genero) {//M o F
-  switch(numero){
-      case '1':
-          return genero === 'M' ? 'primer' : 'primera';
-      case '2':
-          return genero === 'M' ? 'segundo' : 'segunda';
-      case '3':
-          return genero === 'M' ? 'tercer' : 'tercera';
-      case '4':
-          return genero === 'M' ? 'cuarto' : 'tercera';
-      case '5':
-          return genero === 'M' ? 'quinto' : 'quinta';
-      case '6':
-          return genero === 'M' ? 'sexto' : 'sexta';
-      case '7':
-          return genero === 'M' ? 'séptimo' : 'séptima';
-      case '8':
-          return genero === 'M' ? 'octavo' : 'octava';
-      case '9':
-          return genero === 'M' ? 'noveno' : 'novena';
-      case '10':
-          return genero === 'M' ? 'décimo' : 'décima';
-      default:
-          return '';
+  switch (numero) {
+    case '1':
+      return genero === 'M' ? 'primer' : 'primera';
+    case '2':
+      return genero === 'M' ? 'segundo' : 'segunda';
+    case '3':
+      return genero === 'M' ? 'tercer' : 'tercera';
+    case '4':
+      return genero === 'M' ? 'cuarto' : 'tercera';
+    case '5':
+      return genero === 'M' ? 'quinto' : 'quinta';
+    case '6':
+      return genero === 'M' ? 'sexto' : 'sexta';
+    case '7':
+      return genero === 'M' ? 'séptimo' : 'séptima';
+    case '8':
+      return genero === 'M' ? 'octavo' : 'octava';
+    case '9':
+      return genero === 'M' ? 'noveno' : 'novena';
+    case '10':
+      return genero === 'M' ? 'décimo' : 'décima';
+    default:
+      return '';
   }
 }
 
@@ -3675,7 +3676,7 @@ function multiplicacionPic(config) {
   let repgrupos = _mostrarValores === 'si' ? Number(regex(_repeticiones, vars, vt)) + 1 : Number(regex(_repeticiones, vars, vt));
   let separacionElem = Number(_separacion);
 
-  
+
 
   datos = datos.map(function (dato, index) {
     switch (dato.formaRepeticion) {
@@ -3691,7 +3692,7 @@ function multiplicacionPic(config) {
           altoValorFinal: Number(dato.altoValorFinal),
           colorValorFinal: dato.colorValorFinal
         };
-      case 'horVert':    
+      case 'horVert':
         return {
           formaRepeticion: dato.formaRepeticion,
           src: regex(dato.src, vars, vt).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'),
@@ -3768,12 +3769,12 @@ function multiplicacionPic(config) {
         let centroY = yStart;
         ctx.save();//dibuja llave de agrupacion de pictoriocos
         ctx.beginPath();
-        ctx.arc(centro-(anchoMaximo/2), yStart+separacionImg+separacionElem+20, 20, 1.5*Math.PI, 0, false);
-        ctx.lineTo(centro-(anchoMaximo/2)+20, yStart+(altoTotal/2)-20);
-        ctx.arc(centro-(anchoMaximo/2)+40, yStart+(altoTotal/2)-20, 20, Math.PI, .5*Math.PI, true)
-        ctx.arc(centro-(anchoMaximo/2)+40, yStart+(altoTotal/2)+20, 20, 1.5*Math.PI, Math.PI, true)
-        ctx.lineTo(centro-(anchoMaximo/2)+20, yStart+altoTotal-40);
-        ctx.arc(centro-(anchoMaximo/2), yStart+altoTotal-separacionImg-separacionElem-20, 20, 0, .5*Math.PI, false);
+        ctx.arc(centro - (anchoMaximo / 2), yStart + separacionImg + separacionElem + 20, 20, 1.5 * Math.PI, 0, false);
+        ctx.lineTo(centro - (anchoMaximo / 2) + 20, yStart + (altoTotal / 2) - 20);
+        ctx.arc(centro - (anchoMaximo / 2) + 40, yStart + (altoTotal / 2) - 20, 20, Math.PI, .5 * Math.PI, true)
+        ctx.arc(centro - (anchoMaximo / 2) + 40, yStart + (altoTotal / 2) + 20, 20, 1.5 * Math.PI, Math.PI, true)
+        ctx.lineTo(centro - (anchoMaximo / 2) + 20, yStart + altoTotal - 40);
+        ctx.arc(centro - (anchoMaximo / 2), yStart + altoTotal - separacionImg - separacionElem - 20, 20, 0, .5 * Math.PI, false);
         ctx.strokeStyle = "#808080";
         ctx.stroke();
         ctx.restore();//fin llave de agrupacion de pictoriocos
@@ -3885,7 +3886,7 @@ function abaco(config) {
   var vars = vt ? variables : versions;
 
   let datosfn = datos.map(obj => {
-    switch(obj.tipo) {
+    switch (obj.tipo) {
       case 'abaco':
         return {
           tipo: obj.tipo,
@@ -3895,7 +3896,7 @@ function abaco(config) {
           centena: obj.numComp !== '0' ? Number(regex(obj.numComp, vars, vt)[0]) : Number(regex(obj.centena, vars, vt)),
           numComp: Number(regex(obj.numComp, vars, vt)),
           esAgrupado: obj.esAgrupado === 'si' ? true : false,
-          grupos: Number(regex(obj.grupos, vars, vt)),          
+          grupos: Number(regex(obj.grupos, vars, vt)),
           agrupar: obj.agrupar === 'si' ? true : false,
           numerosArriba: obj.numerosArriba === 'si' ? true : false,
           agruparCanje: obj.agruparCanje === 'si' ? true : false
@@ -3938,46 +3939,46 @@ function abaco(config) {
     cargaImagen(srcImagenFicha),
     cargaFuente('larkneuethin', 'https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/LarkeNeueThin.ttf'),
     ...datosfn.map(x => x.tipo === 'imagen' ? cargaImagen(x.src) : null)
-  ]).then(function(imagenes){
+  ]).then(function (imagenes) {
     let imagenAbaco = imagenes[0];
     let imagenFicha = imagenes[1];
     let anchoTotal = 0;
-    for(let i = 3; i < imagenes.length; i++) {
-      if(datosfn[i-3].tipo === 'imagen') {
-        datosfn[i-3].imagen = imagenes[i];
-        datosfn[i-3].ancho = Number(datosfn[i-3].altoImg) * imagenes[i].width / imagenes[i].height;
-      } else if(datosfn[i-3].tipo === 'abaco') {
-        datosfn[i-3].ancho = Number(datosfn[i-3].altoImg) * imagenAbaco.width / imagenAbaco.height;
+    for (let i = 3; i < imagenes.length; i++) {
+      if (datosfn[i - 3].tipo === 'imagen') {
+        datosfn[i - 3].imagen = imagenes[i];
+        datosfn[i - 3].ancho = Number(datosfn[i - 3].altoImg) * imagenes[i].width / imagenes[i].height;
+      } else if (datosfn[i - 3].tipo === 'abaco') {
+        datosfn[i - 3].ancho = Number(datosfn[i - 3].altoImg) * imagenAbaco.width / imagenAbaco.height;
       } else {
         ctx.save();
-        ctx.font = `${datosfn[i-3].altoTexto}px larkneuethin`;
-        datosfn[i-3].ancho = Math.max(
-          ctx.measureText(datosfn[i-3].texto1).width,
-          ctx.measureText(datosfn[i-3].texto2).width,
-          ctx.measureText(datosfn[i-3].texto3).width,
-          ctx.measureText(datosfn[i-3].texto4).width
+        ctx.font = `${datosfn[i - 3].altoTexto}px larkneuethin`;
+        datosfn[i - 3].ancho = Math.max(
+          ctx.measureText(datosfn[i - 3].texto1).width,
+          ctx.measureText(datosfn[i - 3].texto2).width,
+          ctx.measureText(datosfn[i - 3].texto3).width,
+          ctx.measureText(datosfn[i - 3].texto4).width
         );
         ctx.restore();
       }
-      anchoTotal += datosfn[i-3].ancho + ((i+1) === imagenes.length ? 0 : separacion);
+      anchoTotal += datosfn[i - 3].ancho + ((i + 1) === imagenes.length ? 0 : separacion);
     }
-    
-    for(let j = 0, centroX, anchoImg, xImg, yImg, anchoAcu = 0; j < datosfn.length; j++) {
-      anchoAcu += (j === 0) ? 0 : datosfn[j-1].ancho;
+
+    for (let j = 0, centroX, anchoImg, xImg, yImg, anchoAcu = 0; j < datosfn.length; j++) {
+      anchoAcu += (j === 0) ? 0 : datosfn[j - 1].ancho;
       centroX = (anchoCanvas / 2 - anchoTotal / 2) + anchoAcu + (datosfn[j].ancho / 2) + (separacion * j)
-      switch(datosfn[j].tipo) {
+      switch (datosfn[j].tipo) {
         case 'abaco':
           anchoImg = imagenAbaco.width * datosfn[j].altoImg / imagenAbaco.height;
-          xImg = centroX - (anchoImg/2);
-          yImg = altoCanvas/2 - datosfn[j].altoImg/2;
+          xImg = centroX - (anchoImg / 2);
+          yImg = altoCanvas / 2 - datosfn[j].altoImg / 2;
           ctx.drawImage(imagenAbaco, xImg, yImg, anchoImg, datosfn[j].altoImg);
-          
-          let xCentena = centroX - anchoImg/2 + anchoImg*.135;
-          let xDecena = centroX;
-          let xUnidad = centroX + anchoImg/2 - anchoImg*.135;
 
-          if(datosfn[j].numerosArriba) {
-            let yTextoArriba =  altoCanvas/2 - datosfn[j].altoImg/2 - 5;
+          let xCentena = centroX - anchoImg / 2 + anchoImg * .135;
+          let xDecena = centroX;
+          let xUnidad = centroX + anchoImg / 2 - anchoImg * .135;
+
+          if (datosfn[j].numerosArriba) {
+            let yTextoArriba = altoCanvas / 2 - datosfn[j].altoImg / 2 - 5;
             ctx.save();
             ctx.textAlign = 'center';
             ctx.font = `15px larkneuethin`;
@@ -3987,202 +3988,202 @@ function abaco(config) {
             ctx.fillText(datosfn[j].centena, xCentena, yTextoArriba);
             ctx.restore();
           } else {
-            let yInicio = altoCanvas/2 + datosfn[j].altoImg/2 - datosfn[j].altoImg*.125;
+            let yInicio = altoCanvas / 2 + datosfn[j].altoImg / 2 - datosfn[j].altoImg * .125;
             let altoImgFicha = datosfn[j].altoImg * .05;
             let anchoImgFicha = imagenFicha.width * altoImgFicha / imagenFicha.height;
-            if(datosfn[j].esAgrupado) {
-              let espacioFichas = datosfn[j].altoImg - datosfn[j].altoImg*.125
+            if (datosfn[j].esAgrupado) {
+              let espacioFichas = datosfn[j].altoImg - datosfn[j].altoImg * .125
               let altoDiviciones = espacioFichas / datosfn[j].grupos;
               let contadorUnidades = 0, contadorDecenas = 0, yDecimaUnidad = 0, yDecimaCentena = 0;
-              for(let grupo = 0, centroGrupo, yStartUnidades, yStartDecenas, yStartCentenas; grupo < datosfn[j].grupos; grupo++) {
+              for (let grupo = 0, centroGrupo, yStartUnidades, yStartDecenas, yStartCentenas; grupo < datosfn[j].grupos; grupo++) {
                 //centroGrupo = yInicio - altoDiviciones - altoDiviciones*grupo + altoDiviciones/2;
-                centroGrupo = yImg + altoDiviciones*grupo + altoDiviciones/2;
-                yStartUnidades = centroGrupo - (datosfn[j].unidad * altoImgFicha)/2;
-                yStartDecenas = centroGrupo - (datosfn[j].decena * altoImgFicha)/2;
-                yStartCentenas = centroGrupo - (datosfn[j].centena * altoImgFicha)/2
+                centroGrupo = yImg + altoDiviciones * grupo + altoDiviciones / 2;
+                yStartUnidades = centroGrupo - (datosfn[j].unidad * altoImgFicha) / 2;
+                yStartDecenas = centroGrupo - (datosfn[j].decena * altoImgFicha) / 2;
+                yStartCentenas = centroGrupo - (datosfn[j].centena * altoImgFicha) / 2
 
-                for(let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
-                  yUnidad = yStartUnidades + altoImgFicha*u;
-                  ctx.drawImage(imagenFicha, xUnidad-anchoImgFicha/2, yUnidad, anchoImgFicha, altoImgFicha);
+                for (let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
+                  yUnidad = yStartUnidades + altoImgFicha * u;
+                  ctx.drawImage(imagenFicha, xUnidad - anchoImgFicha / 2, yUnidad, anchoImgFicha, altoImgFicha);
                   contadorUnidades++;
-                  if(contadorUnidades === 10) {
-                    yDecimaUnidad = yUnidad+altoImgFicha;
+                  if (contadorUnidades === 10) {
+                    yDecimaUnidad = yUnidad + altoImgFicha;
                   }
                 }
-                for(let d = 0, yDecena; d < datosfn[j].decena; d++) {
-                  yDecena = yStartDecenas + altoImgFicha*d;
-                  ctx.drawImage(imagenFicha, xDecena-anchoImgFicha/2, yDecena, anchoImgFicha, altoImgFicha);
+                for (let d = 0, yDecena; d < datosfn[j].decena; d++) {
+                  yDecena = yStartDecenas + altoImgFicha * d;
+                  ctx.drawImage(imagenFicha, xDecena - anchoImgFicha / 2, yDecena, anchoImgFicha, altoImgFicha);
                   contadorDecenas++;
-                  if(contadorDecenas === 10) {
-                    yDecimaCentena = yDecena+altoImgFicha;
+                  if (contadorDecenas === 10) {
+                    yDecimaCentena = yDecena + altoImgFicha;
                   }
                 }
-                for(let c = 0, yCentena; c < datosfn[j].centena; c++) {
-                  yCentena = yStartCentenas + altoImgFicha*c;
-                  ctx.drawImage(imagenFicha, xCentena-anchoImgFicha/2, yCentena, anchoImgFicha, altoImgFicha);
+                for (let c = 0, yCentena; c < datosfn[j].centena; c++) {
+                  yCentena = yStartCentenas + altoImgFicha * c;
+                  ctx.drawImage(imagenFicha, xCentena - anchoImgFicha / 2, yCentena, anchoImgFicha, altoImgFicha);
                 }
-                
-                if(datosfn[j].agrupar) {
-                  let maxHeight = Math.max((datosfn[j].unidad * altoImgFicha),(datosfn[j].decena * altoImgFicha),(datosfn[j].centena * altoImgFicha))
+
+                if (datosfn[j].agrupar) {
+                  let maxHeight = Math.max((datosfn[j].unidad * altoImgFicha), (datosfn[j].decena * altoImgFicha), (datosfn[j].centena * altoImgFicha))
                   ctx.save();
                   ctx.strokeStyle = "#ff0000";
                   ctx.beginPath();
-                  ctx.rect(xImg+5, centroGrupo-maxHeight/2, anchoImg-10, maxHeight);
+                  ctx.rect(xImg + 5, centroGrupo - maxHeight / 2, anchoImg - 10, maxHeight);
                   ctx.stroke();
                   ctx.restore();
                 }
               }
-              if(datosfn[j].agruparCanje) {
-                if(datosfn[j].unidad * datosfn[j].grupos >= 10) { 
-                  let yInicio = yImg + (altoDiviciones/2) - datosfn[j].unidad*(altoImgFicha/2);
+              if (datosfn[j].agruparCanje) {
+                if (datosfn[j].unidad * datosfn[j].grupos >= 10) {
+                  let yInicio = yImg + (altoDiviciones / 2) - datosfn[j].unidad * (altoImgFicha / 2);
                   let yFin = yDecimaUnidad - yInicio;
-                  
+
                   ctx.save();
                   ctx.strokeStyle = "#ff0000";
                   ctx.beginPath();
-                  ctx.rect(xUnidad-anchoImgFicha/2-5, yInicio, anchoImgFicha+10, yFin);
+                  ctx.rect(xUnidad - anchoImgFicha / 2 - 5, yInicio, anchoImgFicha + 10, yFin);
                   ctx.stroke();
 
                   //dibuja arco por sobre el abaco
-                  let rArc = (xUnidad-xDecena)/2;
+                  let rArc = (xUnidad - xDecena) / 2;
                   let xArc = xDecena + rArc;
-                  let yArc = yImg+rArc*0.8;
+                  let yArc = yImg + rArc * 0.8;
                   ctx.beginPath();
-                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.arc(xArc, yArc, rArc + 10, 1.25 * Math.PI, 1.75 * Math.PI);
                   ctx.stroke();
                   //dibuja linea hacia arriba de la flecha
-                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
-                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                  let difX = Math.cos(0.25 * Math.PI) * rArc + 10 * 0.8;
+                  let difY = Math.sin(0.25 * Math.PI) * rArc + 10 * 0.8;
                   let xPuntoInicial = xArc - difX;
                   let yPuntoInicial = yArc - difY;
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial + 10, yPuntoInicial);
                   ctx.stroke();
                   //dibuja linea hacia la derecha de la flecha
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial - 10);
                   ctx.stroke();
                   ctx.restore();
 
-                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                  ctx.drawImage(imagenFicha, xArc - anchoImgFicha / 2, yImg - (rArc * 0.8) - altoImgFicha, anchoImgFicha, altoImgFicha);
                 }
-                if(datosfn[j].decena * datosfn[j].grupos >= 10) { 
-                  let yInicio = yImg + (altoDiviciones/2) - datosfn[j].decena*(altoImgFicha/2);
+                if (datosfn[j].decena * datosfn[j].grupos >= 10) {
+                  let yInicio = yImg + (altoDiviciones / 2) - datosfn[j].decena * (altoImgFicha / 2);
                   let yFin = yDecimaCentena - yInicio;
-                  
+
                   ctx.save();
                   ctx.strokeStyle = "#ff0000";
                   ctx.beginPath();
-                  ctx.rect(xDecena-anchoImgFicha/2-5, yInicio, anchoImgFicha+10, yFin);
+                  ctx.rect(xDecena - anchoImgFicha / 2 - 5, yInicio, anchoImgFicha + 10, yFin);
                   ctx.stroke();
 
-                  let rArc = (xDecena-xCentena)/2;
+                  let rArc = (xDecena - xCentena) / 2;
                   let xArc = xCentena + rArc;
-                  let yArc = yImg+rArc*0.8;
+                  let yArc = yImg + rArc * 0.8;
                   ctx.beginPath();
-                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.arc(xArc, yArc, rArc + 10, 1.25 * Math.PI, 1.75 * Math.PI);
                   ctx.stroke();
-                  
-                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
-                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+
+                  let difX = Math.cos(0.25 * Math.PI) * rArc + 10 * 0.8;
+                  let difY = Math.sin(0.25 * Math.PI) * rArc + 10 * 0.8;
                   let xPuntoInicial = xArc - difX;
                   let yPuntoInicial = yArc - difY;
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial + 10, yPuntoInicial);
                   ctx.stroke();
 
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial - 10);
                   ctx.stroke();
                   ctx.restore();
 
-                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
-                }                
+                  ctx.drawImage(imagenFicha, xArc - anchoImgFicha / 2, yImg - (rArc * 0.8) - altoImgFicha, anchoImgFicha, altoImgFicha);
+                }
               }
-              
+
             } else {
-              for(let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
-                yUnidad = yInicio - altoImgFicha - altoImgFicha*u;
-                ctx.drawImage(imagenFicha, xUnidad-anchoImgFicha/2, yUnidad, anchoImgFicha, altoImgFicha);
+              for (let u = 0, yUnidad; u < datosfn[j].unidad; u++) {
+                yUnidad = yInicio - altoImgFicha - altoImgFicha * u;
+                ctx.drawImage(imagenFicha, xUnidad - anchoImgFicha / 2, yUnidad, anchoImgFicha, altoImgFicha);
               }
-              for(let d = 0, yDecena; d < datosfn[j].decena; d++) {
-                yDecena = yInicio - altoImgFicha - altoImgFicha*d;
-                ctx.drawImage(imagenFicha, xDecena-anchoImgFicha/2, yDecena, anchoImgFicha, altoImgFicha);
+              for (let d = 0, yDecena; d < datosfn[j].decena; d++) {
+                yDecena = yInicio - altoImgFicha - altoImgFicha * d;
+                ctx.drawImage(imagenFicha, xDecena - anchoImgFicha / 2, yDecena, anchoImgFicha, altoImgFicha);
               }
-              for(let c = 0, yCentena; c < datosfn[j].centena; c++) {
-                yCentena = yInicio - altoImgFicha - altoImgFicha*c;
-                ctx.drawImage(imagenFicha, xCentena-anchoImgFicha/2, yCentena, anchoImgFicha, altoImgFicha);
+              for (let c = 0, yCentena; c < datosfn[j].centena; c++) {
+                yCentena = yInicio - altoImgFicha - altoImgFicha * c;
+                ctx.drawImage(imagenFicha, xCentena - anchoImgFicha / 2, yCentena, anchoImgFicha, altoImgFicha);
               }
-              if(datosfn[j].agruparCanje) {
-                let yUltimaUnidad = yInicio - datosfn[j].unidad*altoImgFicha;
-                let yUltimaDecena = yInicio - datosfn[j].decena*altoImgFicha;
-                if(datosfn[j].unidad >= 10) {
+              if (datosfn[j].agruparCanje) {
+                let yUltimaUnidad = yInicio - datosfn[j].unidad * altoImgFicha;
+                let yUltimaDecena = yInicio - datosfn[j].decena * altoImgFicha;
+                if (datosfn[j].unidad >= 10) {
                   //dibuja rectangulo de agrupacion de 10
                   ctx.save();
                   ctx.strokeStyle = "#ff0000";
                   ctx.beginPath();
-                  ctx.rect(xUnidad-anchoImgFicha/2-5, yUltimaUnidad, anchoImgFicha+10, altoImgFicha*10);
+                  ctx.rect(xUnidad - anchoImgFicha / 2 - 5, yUltimaUnidad, anchoImgFicha + 10, altoImgFicha * 10);
                   ctx.stroke();
                   //dibuja arco por sobre el abaco
-                  let rArc = (xUnidad-xDecena)/2;
+                  let rArc = (xUnidad - xDecena) / 2;
                   let xArc = xDecena + rArc;
-                  let yArc = yImg+rArc*0.8;
+                  let yArc = yImg + rArc * 0.8;
                   ctx.beginPath();
-                  ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                  ctx.arc(xArc, yArc, rArc + 10, 1.25 * Math.PI, 1.75 * Math.PI);
                   ctx.stroke();
                   //dibuja linea hacia arriba de la flecha
-                  let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
-                  let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+                  let difX = Math.cos(0.25 * Math.PI) * rArc + 10 * 0.8;
+                  let difY = Math.sin(0.25 * Math.PI) * rArc + 10 * 0.8;
                   let xPuntoInicial = xArc - difX;
                   let yPuntoInicial = yArc - difY;
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                  ctx.lineTo(xPuntoInicial + 10, yPuntoInicial);
                   ctx.stroke();
                   //dibuja linea hacia la derecha de la flecha
                   ctx.beginPath();
                   ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                  ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                  ctx.lineTo(xPuntoInicial, yPuntoInicial - 10);
                   ctx.stroke();
                   ctx.restore();
 
-                  ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+                  ctx.drawImage(imagenFicha, xArc - anchoImgFicha / 2, yImg - (rArc * 0.8) - altoImgFicha, anchoImgFicha, altoImgFicha);
                 }
-                if(datosfn[j].decena >= 10) {
-                  if(datosfn[j].unidad >= 10) {
+                if (datosfn[j].decena >= 10) {
+                  if (datosfn[j].unidad >= 10) {
                     ctx.save();
                     ctx.strokeStyle = "#ff0000";
                     ctx.beginPath();
-                    ctx.rect(xDecena-anchoImgFicha/2-5, yUltimaDecena, anchoImgFicha+10, altoImgFicha*10);
+                    ctx.rect(xDecena - anchoImgFicha / 2 - 5, yUltimaDecena, anchoImgFicha + 10, altoImgFicha * 10);
                     ctx.stroke();
-  
-                    let rArc = (xDecena-xCentena)/2;
+
+                    let rArc = (xDecena - xCentena) / 2;
                     let xArc = xCentena + rArc;
-                    let yArc = yImg+rArc*0.8;
+                    let yArc = yImg + rArc * 0.8;
                     ctx.beginPath();
-                    ctx.arc(xArc, yArc, rArc+10, 1.25*Math.PI, 1.75*Math.PI);
+                    ctx.arc(xArc, yArc, rArc + 10, 1.25 * Math.PI, 1.75 * Math.PI);
                     ctx.stroke();
-                    
-                    let difX = Math.cos(0.25*Math.PI) * rArc+10*0.8;
-                    let difY = Math.sin(0.25*Math.PI) * rArc+10*0.8;
+
+                    let difX = Math.cos(0.25 * Math.PI) * rArc + 10 * 0.8;
+                    let difY = Math.sin(0.25 * Math.PI) * rArc + 10 * 0.8;
                     let xPuntoInicial = xArc - difX;
                     let yPuntoInicial = yArc - difY;
                     ctx.beginPath();
                     ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                    ctx.lineTo(xPuntoInicial+10, yPuntoInicial);
+                    ctx.lineTo(xPuntoInicial + 10, yPuntoInicial);
                     ctx.stroke();
-  
+
                     ctx.beginPath();
                     ctx.moveTo(xPuntoInicial, yPuntoInicial);
-                    ctx.lineTo(xPuntoInicial, yPuntoInicial-10);
+                    ctx.lineTo(xPuntoInicial, yPuntoInicial - 10);
                     ctx.stroke();
                     ctx.restore();
-  
-                    ctx.drawImage(imagenFicha, xArc-anchoImgFicha/2, yImg-(rArc*0.8)-altoImgFicha, anchoImgFicha, altoImgFicha);
+
+                    ctx.drawImage(imagenFicha, xArc - anchoImgFicha / 2, yImg - (rArc * 0.8) - altoImgFicha, anchoImgFicha, altoImgFicha);
                   }
                 }
               }
@@ -4191,23 +4192,23 @@ function abaco(config) {
           break;
         case 'imagen':
           anchoImg = datosfn[j].imagen.width * datosfn[j].altoImg / datosfn[j].imagen.height;
-          xImg = centroX - (anchoImg/2);
-          yImg = altoCanvas/2 - datosfn[j].altoImg/2;
+          xImg = centroX - (anchoImg / 2);
+          yImg = altoCanvas / 2 - datosfn[j].altoImg / 2;
           ctx.drawImage(datosfn[j].imagen, xImg, yImg, anchoImg, datosfn[j].altoImg);
           ctx.save();
           ctx.textAlign = 'center';
           ctx.font = `${datosfn[j].altoTexto}px larkneuethin`;
           ctx.fillStyle = datosfn[j].colorTexto;
-          if(datosfn[j].texto1) {
+          if (datosfn[j].texto1) {
             ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
           }
-          if(datosfn[j].texto2) {
+          if (datosfn[j].texto2) {
             ctx.fillText(datosfn[j].texto2, centroX, datosfn[j].yTexto2);
           }
-          if(datosfn[j].texto3) {
+          if (datosfn[j].texto3) {
             ctx.fillText(datosfn[j].texto3, centroX, datosfn[j].yTexto3);
           }
-          if(datosfn[j].texto4) {
+          if (datosfn[j].texto4) {
             ctx.fillText(datosfn[j].texto4, centroX, datosfn[j].yTexto4);
           }
           ctx.save();
@@ -4217,16 +4218,16 @@ function abaco(config) {
           ctx.textAlign = 'center';
           ctx.font = `${datosfn[j].altoTexto}px larkneuethin`;
           ctx.fillStyle = datosfn[j].colorTexto;
-          if(datosfn[j].texto1) {
+          if (datosfn[j].texto1) {
             ctx.fillText(datosfn[j].texto1, centroX, datosfn[j].yTexto1);
           }
-          if(datosfn[j].texto2) {
+          if (datosfn[j].texto2) {
             ctx.fillText(datosfn[j].texto2, centroX, datosfn[j].yTexto2);
           }
-          if(datosfn[j].texto3) {
+          if (datosfn[j].texto3) {
             ctx.fillText(datosfn[j].texto3, centroX, datosfn[j].yTexto3);
           }
-          if(datosfn[j].texto4) {
+          if (datosfn[j].texto4) {
             ctx.fillText(datosfn[j].texto4, centroX, datosfn[j].yTexto4);
           }
           ctx.save();
@@ -4236,7 +4237,7 @@ function abaco(config) {
           break;
       }
     }
-  }).catch(function(error){
+  }).catch(function (error) {
     //console.log(error);
   });
 }
@@ -4259,7 +4260,7 @@ async function multiplicacionElem(config) {
   let altoDiviciones = _altoCanvas / datos.length;
 
   async function getObject(dato) {
-    switch(dato.tipo) {
+    switch (dato.tipo) {
       case 'repeticion':
         return {
           tipo: dato.tipo,
@@ -4277,11 +4278,11 @@ async function multiplicacionElem(config) {
             altoTextoVF: dato.valorFinal.altoTextoVF,
             colorTextoVF: dato.valorFinal.colorTextoVF
           } : {
-            tipoVF: dato.valorFinal.tipoVF,
-            srcImgVF: dato.valorFinal.srcImgVF,
-            imgVF: await cargaImagen(regex(dato.valorFinal.srcImgVF.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt)),
-            altoImgVF: Number(dato.valorFinal.altoImgVF)
-          }
+              tipoVF: dato.valorFinal.tipoVF,
+              srcImgVF: dato.valorFinal.srcImgVF,
+              imgVF: await cargaImagen(regex(dato.valorFinal.srcImgVF.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../'), vars, vt)),
+              altoImgVF: Number(dato.valorFinal.altoImgVF)
+            }
         };
       case 'seccion':
         return {
@@ -4298,23 +4299,23 @@ async function multiplicacionElem(config) {
     let divs, yCentro, divicionesRepeticiones = [];
     reps.forEach((dato, index) => {
       yCentro = altoDiviciones * index + altoDiviciones / 2;
-      switch(dato.tipo) {
+      switch (dato.tipo) {
         case 'repeticion':
           divs = dato.cantidadPrinc + (_mostrarValores ? 1 : 0);
           let anchoDiviciones = _anchoCanvas / divs;
           let anchoImgPrinc = dato.altoImgPrinc * dato.imagenPrinc.width / dato.imagenPrinc.height;
           divicionesRepeticiones.push(anchoDiviciones);
-          for(let i = 0, xCentro, xImg, yImg; i < divs; i++) {
+          for (let i = 0, xCentro, xImg, yImg; i < divs; i++) {
             xCentro = anchoDiviciones * i + anchoDiviciones / 2;
-            if(i+1 === divs && _mostrarValores) {
-              if(dato.valorFinal.tipoVF === 'texto') {
+            if (i + 1 === divs && _mostrarValores) {
+              if (dato.valorFinal.tipoVF === 'texto') {
                 ctx.save();
                 ctx.fillStyle = dato.valorFinal.colorTextoVF;
                 ctx.font = `${dato.valorFinal.altoTextoVF}px Open-Sans-Reg`;
                 ctx.textAlign = "center";
-                ctx.fillText(dato.valorFinal.textoVF, xCentro, yCentro+dato.valorFinal.altoTextoVF/2);
+                ctx.fillText(dato.valorFinal.textoVF, xCentro, yCentro + dato.valorFinal.altoTextoVF / 2);
                 ctx.restore();
-              } else if(dato.valorFinal.tipoVF === 'imagen') {
+              } else if (dato.valorFinal.tipoVF === 'imagen') {
                 let anchoImgVF = dato.valorFinal.altoImgVF * dato.valorFinal.imgVF.width / dato.valorFinal.imgVF.height;
                 xImg = xCentro - anchoImgVF / 2;
                 yImg = yCentro - dato.valorFinal.altoImgVF / 2;
@@ -4329,11 +4330,11 @@ async function multiplicacionElem(config) {
           break;
         case 'seccion':
           let anchoDivMaximo = Math.min(...divicionesRepeticiones);
-          let anchoImagenUltimaRep = (reps[index-1].altoImgPrinc * reps[index-1].imagenPrinc.width / reps[index-1].imagenPrinc.height) / 2;
+          let anchoImagenUltimaRep = (reps[index - 1].altoImgPrinc * reps[index - 1].imagenPrinc.width / reps[index - 1].imagenPrinc.height) / 2;
           let xInicio = anchoDivMaximo / 2 - anchoImagenUltimaRep;
           let xFin = _anchoCanvas - anchoDivMaximo / 2 - (_mostrarValores ? anchoDivMaximo : 0) + anchoImagenUltimaRep;
           let xMitad = (xInicio + xFin) / 2;
-          if(dato.llave) {
+          if (dato.llave) {
             let radio = 10;
             let yTramo = yCentro - altoDiviciones / 2;
             let yTramoInicio = yTramo - radio;
@@ -4356,7 +4357,7 @@ async function multiplicacionElem(config) {
             ctx.arc(xFin - radio, yTramoInicio, radio, -1.5 * Math.PI, 0, true);
             ctx.stroke();
           }
-          if(dato.texto) {
+          if (dato.texto) {
             ctx.save();
             ctx.fillStyle = dato.colorTexto;
             ctx.textAlign = "center";
@@ -4364,7 +4365,7 @@ async function multiplicacionElem(config) {
             ctx.fillText(dato.texto, xMitad, yCentro);
             ctx.restore();
           }
-          
+
           break;
       }
     });
@@ -4377,10 +4378,10 @@ async function multiplicacionElem(config) {
 
 async function repeticionPicV2(config) {
   const { container, params, variables, versions, vt } = config;
-  const { datos,_titulo,_separacion,_separaciones,_altoRepeticiones,_anchoCanvas,
-    _mostrarVP1,_mostrarVP2,_mostrarRes,_altoVP1,_altoVP2,_altoRes,_res,
-    _flechaRes,_flechaVP1,_flechaVP2,_srcFlecha,_altoImgFlecha,
-    _altoImgSignoMas,_srcImgSignoMas,_signoMasVP1,_signoMasVP2 } = params
+  const { datos, _titulo, _separacion, _separaciones, _altoRepeticiones, _anchoCanvas,
+    _mostrarVP1, _mostrarVP2, _mostrarRes, _altoVP1, _altoVP2, _altoRes, _res,
+    _flechaRes, _flechaVP1, _flechaVP2, _srcFlecha, _altoImgFlecha,
+    _altoImgSignoMas, _srcImgSignoMas, _signoMasVP1, _signoMasVP2 } = params
   await cargaFuente('Open-Sans-Reg', '../../../../fonts/OpenSans-Regular-webfont.woff');
   let vars = vt ? variables : versions;
   let titulo = regexFunctions(regex(_titulo, vars, vt)), //titulo arriba de la repeticion
@@ -4422,16 +4423,16 @@ async function repeticionPicV2(config) {
     anchoImgSignoMas = (mostrarSignoMasVP1 || mostrarSignoMasVP2) ? imgSignoMas.width * altoImgSignoMas / imgSignoMas.height : 0,
 
     separaciones = _separaciones.trim().length > 0 ? _separaciones.split(';').map(x => x.split('-')).map(x => ({ inicio: Number(x[0]), fin: Number(x[1]) })) : undefined;
-  
-    //console.log(_res, res)
-  container.height = altoRepeticiones+altoVP1+altoVP2+altoRes;
+
+  //console.log(_res, res)
+  container.height = altoRepeticiones + altoVP1 + altoVP2 + altoRes;
   container.width = anchoCanvas;
   let ctx = container.getContext('2d');
 
 
   async function getObject(dato) {
-    let srcImgVP1 = '', srcImgVP2 = ''; 
-    switch(dato.tipo) {
+    let srcImgVP1 = '', srcImgVP2 = '';
+    switch (dato.tipo) {
       case 'repeticion':
         let srcImgRepSrc = regexFunctions(regex(dato.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
         srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
@@ -4451,22 +4452,22 @@ async function repeticionPicV2(config) {
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
-            tipo: dato.vp1.tipo,
-            srcImg: srcImgVP1,
-            img: await cargaImagen(srcImgVP1),
-            altoImg: Number(dato.vp1.altoImg)
-          } : undefined,
+              tipo: dato.vp1.tipo,
+              srcImg: srcImgVP1,
+              img: await cargaImagen(srcImgVP1),
+              altoImg: Number(dato.vp1.altoImg)
+            } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
             tipo: dato.vp2.tipo,
             texto: regexFunctions(regex(dato.vp2.texto, vars, vt)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            srcImg: srcImgVP2,
-            img: await cargaImagen(srcImgVP2),
-            altoImg: Number(dato.vp2.altoImg)
-          } : undefined
+              tipo: dato.vp2.tipo,
+              srcImg: srcImgVP2,
+              img: await cargaImagen(srcImgVP2),
+              altoImg: Number(dato.vp2.altoImg)
+            } : undefined
         }
       case 'texto':
         srcImgVP1 = mostrarVP1 ? dato.vp1.tipo === 'imagen' ? await regexFunctions(regex(dato.vp1.srcImg, vars, vt)).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../') : null : null;
@@ -4482,62 +4483,62 @@ async function repeticionPicV2(config) {
             altoTexto: Number(dato.vp1.altoTexto),
             colorTexto: dato.vp1.colorTexto
           } : { // si el valor posicional 1 es imagen
-            tipo: dato.vp1.tipo,
-            srcImg: srcImgVP1,
-            img: await cargaImagen(srcImgVP1),
-            altoImg: Number(dato.vp1.altoImg)
-          } : undefined,
+              tipo: dato.vp1.tipo,
+              srcImg: srcImgVP1,
+              img: await cargaImagen(srcImgVP1),
+              altoImg: Number(dato.vp1.altoImg)
+            } : undefined,
           vp2: mostrarVP2 ? dato.vp2.tipo === 'texto' ? { // si el valor posicional 2 es texto
             tipo: dato.vp2.tipo,
             texto: regexFunctions(regex(dato.vp2.texto)),
             altoTexto: Number(dato.vp2.altoTexto),
             colorTexto: dato.vp2.colorTexto
           } : { // si el valor posicional 2 es texto
-            tipo: dato.vp2.tipo,
-            srcImg: srcImgVP2,
-            img: await cargaImagen(srcImgVP2),
-            altoImg: Number(dato.vp2.altoImg)
-          } : undefined
+              tipo: dato.vp2.tipo,
+              srcImg: srcImgVP2,
+              img: await cargaImagen(srcImgVP2),
+              altoImg: Number(dato.vp2.altoImg)
+            } : undefined
         }
     }
   }
 
   function calculaDimencionesRepeticion(formaRepeticiones, altoImg, anchoImg, sepX, sepY, cantidadRepeticiones) {
-    switch(formaRepeticiones) {
+    switch (formaRepeticiones) {
       case 'diagonal/apilado':
-        if(cantidadRepeticiones > 5) {
+        if (cantidadRepeticiones > 5) {
           return {
-            ancho: anchoImg + (sepX[0] * 5) + anchoImg + ((cantidadRepeticiones-6) * sepX[0]),
+            ancho: anchoImg + (sepX[0] * 5) + anchoImg + ((cantidadRepeticiones - 6) * sepX[0]),
             alto: altoImg + (sepY[0] * 4)
           };
         } else {
           return {
-            ancho: anchoImg + ((cantidadRepeticiones-1) * sepX[0]),
-            alto: altoImg + ((cantidadRepeticiones-1) * sepY[0])
+            ancho: anchoImg + ((cantidadRepeticiones - 1) * sepX[0]),
+            alto: altoImg + ((cantidadRepeticiones - 1) * sepY[0])
           };
         }
       case 'diagonal':
         return {
-          ancho: anchoImg +  (sepX[0] > 0 ? cantidadRepeticiones * anchoImg : 0) + ((cantidadRepeticiones-1) * sepX[0]),
-          alto: altoImg + (sepY[0] > 0 ? cantidadRepeticiones * altoImg : 0) + ((cantidadRepeticiones-1) * sepY[0])
+          ancho: anchoImg + (sepX[0] > 0 ? cantidadRepeticiones * anchoImg : 0) + ((cantidadRepeticiones - 1) * sepX[0]),
+          alto: altoImg + (sepY[0] > 0 ? cantidadRepeticiones * altoImg : 0) + ((cantidadRepeticiones - 1) * sepY[0])
         };
       case 'dado':
-        if(cantidadRepeticiones === 1) {
+        if (cantidadRepeticiones === 1) {
           return {
             ancho: anchoImg,
             alto: altoImg
           };
-        } else if(cantidadRepeticiones === 2 || cantidadRepeticiones === 4) {
+        } else if (cantidadRepeticiones === 2 || cantidadRepeticiones === 4) {
           return {
             ancho: anchoImg * 2 + sepX[0],
             alto: altoImg * 2 + sepY[0]
           };
-        } else if(cantidadRepeticiones === 3 || cantidadRepeticiones === 5 || cantidadRepeticiones > 6) {
+        } else if (cantidadRepeticiones === 3 || cantidadRepeticiones === 5 || cantidadRepeticiones > 6) {
           return {
             ancho: anchoImg * 3 + sepX[0] * 2,
             alto: altoImg * 3 + sepY[0] * 2
           };
-        } else if(cantidadRepeticiones === 6) {
+        } else if (cantidadRepeticiones === 6) {
           return {
             ancho: anchoImg * 2 + sepX[0],
             alto: altoImg * 3 + sepY[0] * 2
@@ -4545,8 +4546,8 @@ async function repeticionPicV2(config) {
         }
       case 'izq/der':
         return {
-          ancho: sepX[1] > cantidadRepeticiones ? cantidadRepeticiones * anchoImg + (cantidadRepeticiones-1) * sepX[0] : sepX[1] * anchoImg + (sepX[1]-1) * sepX[0],
-          alto: Math.ceil(cantidadRepeticiones / sepX[1]) * altoImg + (Math.ceil(cantidadRepeticiones / sepX[1])-1) * sepY[0]
+          ancho: sepX[1] > cantidadRepeticiones ? cantidadRepeticiones * anchoImg + (cantidadRepeticiones - 1) * sepX[0] : sepX[1] * anchoImg + (sepX[1] - 1) * sepX[0],
+          alto: Math.ceil(cantidadRepeticiones / sepX[1]) * altoImg + (Math.ceil(cantidadRepeticiones / sepX[1]) - 1) * sepY[0]
         };
       default:
         return {
@@ -4557,19 +4558,19 @@ async function repeticionPicV2(config) {
   }
 
   let elementos = await Promise.all([
-    ...datos.filter(function(x){
-      if(x.tipo === 'texto') {
+    ...datos.filter(function (x) {
+      if (x.tipo === 'texto') {
         return true;
-      } else if(x.tipo === 'repeticion') {
+      } else if (x.tipo === 'repeticion') {
         return Number(regexFunctions(regex(x.cantidadRepeticiones, vars, vt))) > 0
       }
-    }).map(x=>getObject(x)),
-    mostrarRes?res:null
+    }).map(x => getObject(x)),
+    mostrarRes ? res : null
   ]);
   let anchoTotal = separacion, posicicionesInicio = [];
-  for(let i = 0; i < elementos.length; i++) {
-    if(elementos[i]) {
-      switch(elementos[i].tipo) {
+  for (let i = 0; i < elementos.length; i++) {
+    if (elementos[i]) {
+      switch (elementos[i].tipo) {
         case 'repeticion':
           var { img, altoImg, formaRepeticiones, sepX, sepY, cantidadRepeticiones } = elementos[i];
           elementos[i].anchoImg = altoImg * img.width / img.height;
@@ -4587,11 +4588,11 @@ async function repeticionPicV2(config) {
           ctx.font = `${altoTexto}px Open-Sans-Reg`;
           elementos[i].anchoTexto = ctx.measureText(texto).width;
           ctx.restore();
-          anchoTotal += (i+1) === elementos.length ? 0 : elementos[i].anchoTexto + separacion;
+          anchoTotal += (i + 1) === elementos.length ? 0 : elementos[i].anchoTexto + separacion;
           break;
       }
-      if(mostrarVP1 && !((i+1) === elementos.length)) {
-        if(elementos[i].vp1.tipo === 'texto') {
+      if (mostrarVP1 && !((i + 1) === elementos.length)) {
+        if (elementos[i].vp1.tipo === 'texto') {
           var { texto, altoTexto } = elementos[i].vp1;
           ctx.save();
           ctx.font = `${altoTexto}px Open-Sans-Reg`;
@@ -4602,8 +4603,8 @@ async function repeticionPicV2(config) {
           elementos[i].vp1.anchoImg = altoImg * img.width / img.height;
         }
       }
-      if(mostrarVP2 && !((i+1) === elementos.length)) {
-        if(elementos[i].vp2.tipo === 'texto') {
+      if (mostrarVP2 && !((i + 1) === elementos.length)) {
+        if (elementos[i].vp2.tipo === 'texto') {
           var { texto, altoTexto } = elementos[i].vp1;
           ctx.save();
           ctx.font = `${altoTexto}px Open-Sans-Reg`;
@@ -4624,33 +4625,33 @@ async function repeticionPicV2(config) {
     yCentroRes = altoRepeticiones + altoVP1 + altoVP2 + altoRes / 2,
     datosResultado = elementos.pop();
 
-  if(mostrarRes && elementos.length > 1) {
+  if (mostrarRes && elementos.length > 1) {
     let { tipo, texto, altoTexto, colorTexto, srcImg, altoImg } = datosResultado
-    let primerCentro = xInicio + elementos[0].dimenciones.ancho/2
-    let ultimoCentro = xInicio + anchoTotal - (elementos[elementos.length-1].tipo === 'repeticion' ? 
-      elementos[elementos.length-1].dimenciones.ancho/2 : 
-      elementos[elementos.length-1].anchoTexto/2)-separacion*2
-    let centroRespuesta = primerCentro+((ultimoCentro-primerCentro)/2)
-    if(tipo == 'texto') {
+    let primerCentro = xInicio + elementos[0].dimenciones.ancho / 2
+    let ultimoCentro = xInicio + anchoTotal - (elementos[elementos.length - 1].tipo === 'repeticion' ?
+      elementos[elementos.length - 1].dimenciones.ancho / 2 :
+      elementos[elementos.length - 1].anchoTexto / 2) - separacion * 2
+    let centroRespuesta = primerCentro + ((ultimoCentro - primerCentro) / 2)
+    if (tipo == 'texto') {
       ctx.save();
       ctx.font = `${altoTexto}px Open-Sans-Reg`;
       ctx.fillStyle = colorTexto;
       ctx.textAlign = 'center';
-      ctx.fillText(texto, centroRespuesta, yCentroRes+altoTexto/2);
+      ctx.fillText(texto, centroRespuesta, yCentroRes + altoTexto / 2);
       ctx.restore();
     } else {
       let anchoImg = altoImg * srcImg.width / srcImg.height;
       //console.log({ yRes: yCentroRes-altoImg/2, yCentroRes, altoImg, datosResultado });
-      ctx.drawImage(srcImg, anchoCanvas/2-anchoImg/2, yCentroRes-altoImg/2, anchoImg, altoImg);
+      ctx.drawImage(srcImg, anchoCanvas / 2 - anchoImg / 2, yCentroRes - altoImg / 2, anchoImg, altoImg);
     }
-    if(mostrarFlechaRes) {
-      ctx.drawImage(imgFlecha, centroRespuesta-anchoImgFlecha/2, yCentroRes-altoRes/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+    if (mostrarFlechaRes) {
+      ctx.drawImage(imgFlecha, centroRespuesta - anchoImgFlecha / 2, yCentroRes - altoRes / 2 - altoImgFlecha / 2, anchoImgFlecha, altoImgFlecha)
     }
   }
 
-  elementos.forEach(function(elemento, index) {
+  elementos.forEach(function (elemento, index) {
     let anchoElemento = 0
-    switch(elemento.tipo) {
+    switch (elemento.tipo) {
       case 'repeticion':
         let { formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones } = elemento;
         posicicionesInicio.push({ xInicio, anchoTotal: dimenciones.ancho, altoTotal: dimenciones.alto });
@@ -4667,89 +4668,89 @@ async function repeticionPicV2(config) {
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
         ctx.fillStyle = colorTexto;
         ctx.textAlign = 'center';
-        ctx.fillText(texto, xCentro, yCentroRepeticiones+altoTexto/2);
+        ctx.fillText(texto, xCentro, yCentroRepeticiones + altoTexto / 2);
         ctx.restore();
         xInicio += anchoTexto + separacion;
         anchoElemento = anchoTexto
         break;
     }
-    if(mostrarVP1) {
-      if(elemento.vp1.tipo === 'texto') {
+    if (mostrarVP1) {
+      if (elemento.vp1.tipo === 'texto') {
         let { texto, altoTexto, colorTexto } = elemento.vp1;
         ctx.save();
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
         ctx.fillStyle = colorTexto;
         ctx.textAlign = 'center';
-        ctx.fillText(texto, xCentro, yCentroVP1+altoTexto/2);
+        ctx.fillText(texto, xCentro, yCentroVP1 + altoTexto / 2);
         ctx.restore();
       } else {
-        let { img, altoImg, anchoImg,  } = elemento.vp1;
-        ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP1-altoImg/2, anchoImg, altoImg);
+        let { img, altoImg, anchoImg, } = elemento.vp1;
+        ctx.drawImage(img, xCentro - anchoImg / 2, yCentroVP1 - altoImg / 2, anchoImg, altoImg);
       }
-      if(mostrarFlechaVP1) {
-        ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP1-altoVP1/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+      if (mostrarFlechaVP1) {
+        ctx.drawImage(imgFlecha, xCentro - anchoImgFlecha / 2, yCentroVP1 - altoVP1 / 2 - altoImgFlecha / 2, anchoImgFlecha, altoImgFlecha)
       }
-      if(mostrarSignoMasVP1 && (index+1)<elementos.length) {
-        let siguienteCentro = xCentro + anchoElemento/2 + (elementos[index+1].tipo === 'repeticion' ? 
-          elementos[index+1].dimenciones.ancho/2 : 
-          elementos[index+1].anchoTexto/2) + separacion
-        let xImgSignoMas = xCentro + (siguienteCentro-xCentro)/2 - anchoImgSignoMas/2
-        let yImgSignoMas = yCentroVP1-altoImgSignoMas/2;
+      if (mostrarSignoMasVP1 && (index + 1) < elementos.length) {
+        let siguienteCentro = xCentro + anchoElemento / 2 + (elementos[index + 1].tipo === 'repeticion' ?
+          elementos[index + 1].dimenciones.ancho / 2 :
+          elementos[index + 1].anchoTexto / 2) + separacion
+        let xImgSignoMas = xCentro + (siguienteCentro - xCentro) / 2 - anchoImgSignoMas / 2
+        let yImgSignoMas = yCentroVP1 - altoImgSignoMas / 2;
         ctx.drawImage(imgSignoMas, xImgSignoMas, yImgSignoMas, anchoImgSignoMas, altoImgSignoMas)
       }
     }
-    if(mostrarVP2) {
-      if(elemento.vp2.tipo === 'texto') {
+    if (mostrarVP2) {
+      if (elemento.vp2.tipo === 'texto') {
         let { texto, altoTexto, colorTexto } = elemento.vp2;
         ctx.save();
         ctx.font = `${altoTexto}px Open-Sans-Reg`;
         ctx.fillStyle = colorTexto;
         ctx.textAlign = 'center';
-        ctx.fillText(texto, xCentro, yCentroVP2+altoTexto/2);
+        ctx.fillText(texto, xCentro, yCentroVP2 + altoTexto / 2);
         ctx.restore();
       } else {
         let { img, altoImg, anchoImg } = elemento.vp2;
-        ctx.drawImage(img, xCentro-anchoImg/2, yCentroVP2-altoImg/2, anchoImg, altoImg);
+        ctx.drawImage(img, xCentro - anchoImg / 2, yCentroVP2 - altoImg / 2, anchoImg, altoImg);
       }
-      if(mostrarFlechaVP2) {
-        ctx.drawImage(imgFlecha, xCentro-anchoImgFlecha/2, yCentroVP2-altoVP2/2-altoImgFlecha/2, anchoImgFlecha, altoImgFlecha)
+      if (mostrarFlechaVP2) {
+        ctx.drawImage(imgFlecha, xCentro - anchoImgFlecha / 2, yCentroVP2 - altoVP2 / 2 - altoImgFlecha / 2, anchoImgFlecha, altoImgFlecha)
       }
-      if(mostrarSignoMasVP2 && (index+1)<elementos.length) {
-        let siguienteCentro = xCentro + anchoElemento/2 + (elementos[index+1].tipo === 'repeticion' ? 
-          elementos[index+1].dimenciones.ancho/2 : 
-          elementos[index+1].anchoTexto/2) + separacion
-        let xImgSignoMas = xCentro + (siguienteCentro-xCentro)/2 - anchoImgSignoMas/2
-        let yImgSignoMas = yCentroVP2-altoImgSignoMas/2;
+      if (mostrarSignoMasVP2 && (index + 1) < elementos.length) {
+        let siguienteCentro = xCentro + anchoElemento / 2 + (elementos[index + 1].tipo === 'repeticion' ?
+          elementos[index + 1].dimenciones.ancho / 2 :
+          elementos[index + 1].anchoTexto / 2) + separacion
+        let xImgSignoMas = xCentro + (siguienteCentro - xCentro) / 2 - anchoImgSignoMas / 2
+        let yImgSignoMas = yCentroVP2 - altoImgSignoMas / 2;
         ctx.drawImage(imgSignoMas, xImgSignoMas, yImgSignoMas, anchoImgSignoMas, altoImgSignoMas)
       }
     }
   });
 
   function dibujaRepeticion(formaRepeticiones, img, altoImg, anchoImg, cantidadRepeticiones, sepX, sepY, dimenciones, xCentro, yCentroRepeticiones) {
-    switch(formaRepeticiones) {
+    switch (formaRepeticiones) {
       case 'diagonal/apilado':
-        for(let i = 0, x, y; i < cantidadRepeticiones; i++) {
-          if(i <= 4) {
+        for (let i = 0, x, y; i < cantidadRepeticiones; i++) {
+          if (i <= 4) {
             x = xCentro - (dimenciones.ancho / 2) + (i * sepX[0]);
             y = yCentroRepeticiones - (dimenciones.alto / 2) + (i * sepY[0]);
           } else {
             x = xCentro - (dimenciones.ancho / 2) + anchoImg + (i * sepX[0]);
-            y = yCentroRepeticiones - (dimenciones.alto / 2) + ((i-5) * sepY[0]);
+            y = yCentroRepeticiones - (dimenciones.alto / 2) + ((i - 5) * sepY[0]);
           }
           ctx.drawImage(img, x, y, anchoImg, altoImg);
         }
         break;
       case 'diagonal':
-        for(let i = 0, x, y; i < cantidadRepeticiones; i++) {
+        for (let i = 0, x, y; i < cantidadRepeticiones; i++) {
           x = xCentro - (dimenciones.ancho / 2) + (sepX[0] > 0 ? i * anchoImg : 0) + (i * sepX[0]);
-          y = yCentroRepeticiones - (dimenciones.alto / 2)+ (sepY[0] > 0 ? i * altoImg : 0) + (i * sepY[0]);
+          y = yCentroRepeticiones - (dimenciones.alto / 2) + (sepY[0] > 0 ? i * altoImg : 0) + (i * sepY[0]);
           ctx.drawImage(img, x, y, anchoImg, altoImg);
         }
         break;
       case 'izq/der':
-        for (let i = 0, posX = 1, posY, x,y; i < cantidadRepeticiones; i++) {
+        for (let i = 0, posX = 1, posY, x, y; i < cantidadRepeticiones; i++) {
           posY = Math.floor(i / sepX[1]);
-          x = xCentro - (dimenciones.ancho / 2) + anchoImg * (posX-1) + sepX[0] * (posX-1);
+          x = xCentro - (dimenciones.ancho / 2) + anchoImg * (posX - 1) + sepX[0] * (posX - 1);
           y = yCentroRepeticiones - (dimenciones.alto / 2) + altoImg * posY + sepY[0] * posY;
           ctx.drawImage(img, x, y, anchoImg, altoImg);
           if (posX === sepX[1]) {
@@ -4760,7 +4761,7 @@ async function repeticionPicV2(config) {
         }
         break;
       case 'dado':
-        switch(cantidadRepeticiones) {
+        switch (cantidadRepeticiones) {
           case 1:
             poneImagenEnPosicionDado9(5, img, anchoImg, altoImg, xCentro, yCentroRepeticiones, sepX[0], sepY[0])
             break;
@@ -4827,14 +4828,14 @@ async function repeticionPicV2(config) {
         }
         function poneImagenEnPosicionDado9(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
           let x, y;
-          if(numero == 1 || numero == 4 || numero == 7) {
+          if (numero == 1 || numero == 4 || numero == 7) {
             x = xCentro - (anchoImg * 1.5) - sepX
-          } else if(numero == 2 || numero == 5 || numero == 8) {
+          } else if (numero == 2 || numero == 5 || numero == 8) {
             x = xCentro - (anchoImg / 2)
           } else {
             x = xCentro + (anchoImg / 2) + sepX
           }
-          if(numero == 1 || numero == 2 || numero == 3) {
+          if (numero == 1 || numero == 2 || numero == 3) {
             y = yCentro - (altoImg * 1.5) - sepY
           } else if (numero == 4 || numero == 5 || numero == 6) {
             y = yCentro - (altoImg / 2)
@@ -4845,12 +4846,12 @@ async function repeticionPicV2(config) {
         }
         function poneImagenEnPosicionDado6(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
           let x, y;
-          if(numero == 1 || numero == 3 || numero == 5) {
+          if (numero == 1 || numero == 3 || numero == 5) {
             x = xCentro - (sepX / 2) - anchoImg
           } else {
             x = xCentro + (sepX / 2)
           }
-          if(numero == 1 || numero == 2 || numero == 3) {
+          if (numero == 1 || numero == 2 || numero == 3) {
             y = yCentro - (altoImg * 1.5) - sepY
           } else if (numero == 4 || numero == 5 || numero == 6) {
             y = yCentro - (altoImg / 2)
@@ -4861,12 +4862,12 @@ async function repeticionPicV2(config) {
         }
         function poneImagenEnPosicionDado4(numero, img, anchoImg, altoImg, xCentro, yCentro, sepX, sepY) {
           let x, y;
-          if(numero == 1 || numero == 3) {
+          if (numero == 1 || numero == 3) {
             x = xCentro - (sepX / 2) - anchoImg
           } else {
             x = xCentro + (sepX / 2)
           }
-          if(numero == 1 || numero == 2) {
+          if (numero == 1 || numero == 2) {
             y = yCentro - (sepY / 2) - altoImg
           } else {
             y = yCentro + (sepY / 2)
@@ -4890,9 +4891,9 @@ async function repeticionPicV2(config) {
     container.parentNode.insertBefore(tituloObj, container);
   }
 
-  if(separaciones) { // dibuja separaciones
-    let heightRect = Math.max(...posicicionesInicio.map(x => x.altoTotal))+(separacion/2)
-    let yRect = yCentroRepeticiones - heightRect/2
+  if (separaciones) { // dibuja separaciones
+    let heightRect = Math.max(...posicicionesInicio.map(x => x.altoTotal)) + (separacion / 2)
+    let yRect = yCentroRepeticiones - heightRect / 2
     separaciones.forEach(function (agrupacion) {
       let xRect = posicicionesInicio[agrupacion.inicio - 1].xInicio - (separacion / 4);
       let widthRect = posicicionesInicio[agrupacion.fin - 1].xInicio + posicicionesInicio[agrupacion.fin - 1].anchoTotal - (separacion * 3 / 4) + separacion - xRect;
@@ -4905,619 +4906,619 @@ async function repeticionPicV2(config) {
 }
 
 async function recta(config, tipo) {
-	const { container, params, variables, versions, vt } = config
-	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
-	//container.style.border = '1px solid #000'
-	let vars = vt ? variables : versions
+  const { container, params, variables, versions, vt } = config
+  //container.innerHTML = '' //quitar linea en funcionalidad de app.js
+  //container.style.border = '1px solid #000'
+  let vars = vt ? variables : versions
 
-	let { altoRecta,anchoRecta, 
-		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize,colorFuente, //diseño recta numerica
-		formato,valorInicialRecta,valorFinalRecta,valorEscalaRecta,divicionesRecta, //valores para pintar recta
-		marcas,extremos,valores,valorInicioMostrar,valorFinalMostrar,
-		formatoSubescala,divicionesSubescala,marcasSubescala,marcaInicioMostrarSubescala,marcaFinMostrarSubescala,valoresSubescala,valorInicioMostrarSubescala,valorFinMostrarSubescala,
-		valoresEspecificos, //valores a mostrar en recta
-		imagenes, //aqui se agregan las imagenes de la recta
-		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,//datos de tramos
-		arcos, //datos de arcos
-		textos, //datos de texto
-		puntos,
-		encerrarValores } = params //puntos de la recta para marcar
-	//reemplaza valores para calcular datos de recta
-	valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
-	divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
-	valorFinalRecta = valorFinalRecta ? 
-		Number(regexFunctions(regex(valorFinalRecta, vars, vt))) : 
-		valorInicialRecta + Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) * divicionesRecta
-	valorEscalaRecta = valorEscalaRecta ? 
-		Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) : 
-		(valorFinalRecta - valorInicialRecta) / divicionesRecta
-	//valores para mostrar en recta numerica
-	valoresEspecificos = valoresEspecificos ? await Promise.all(valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x))) : []
-	//subdiviciones de recta numerica
-	divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
-	//puntos de la recta para marcar
-	puntos = puntos.length > 0 ? regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
-		posicion: valorRectaACoordenadaX(Number(x[0])),
-		color: x[1]
-	})) : []
-	//valores para ecerrar en recta numerica
-	encerrarValores = encerrarValores.length > 0 ? regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
-		posicion: valorRectaACoordenadaX(Number(x[0])),
-		ancho: Number(x[1]),
-		alto: Number(x[2]),
-		color: x[3]
-	})) : []
-	//imagenes para mostrar en recta numerica
-	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
-	//arcos para mostrar en la recta numerica
-	arcos = arcos ? await Promise.all(arcos.map(x => getArcoObj(x))) : []
-	//texto para mostrar en la recta numerica
-	textos = textos ? await Promise.all(textos.map(x => getTextoObj(x))) : []
-	//parsea los textos y los numeros reemplazando variables y funciones
-	grosorRecta = Number(grosorRecta)
-	grosorMarcas = Number(grosorMarcas)
-	largoFlechas = Number(largoFlechas)
-	largoMarcas = Number(largoMarcas)
-	fontSize = Number(fontSize)
-	inicioTramo = Number(Number(regexFunctions(regex(inicioTramo, vars, vt))).toFixed(10))
-	finTramo = Number(Number(regexFunctions(regex(finTramo, vars, vt))).toFixed(10))
-	separacionTramo = Number(separacionTramo)
-	valorInicioMostrar = Number(Number(regexFunctions(regex(valorInicioMostrar, vars, vt))).toFixed(10))
-	valorFinalMostrar = Number(Number(regexFunctions(regex(valorFinalMostrar, vars, vt))).toFixed(10))
-	//setea valores de dimensiones de recta
-	container.setAttributeNS(null, 'height', altoRecta)
-	container.setAttributeNS(null, 'width', anchoRecta)
-	container.setAttributeNS(null, 'viewBox', `0 0 ${anchoRecta} ${altoRecta}`)
-	let _centroYRecta = altoRecta/2-grosorRecta/2,
-		_anchoSeparaciones = anchoRecta / (divicionesRecta + 2),
-		_posicionesEnRecta = []
-	//importa fuente opensans para ser utilizada en los elementos de texto
-	let defs = crearElemento('defs', {})
-	let styles = document.createElement('style')
-	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
-	defs.appendChild(styles)
-	container.appendChild(defs)
-	//dibuja recta numerica (linea base y flechas)
-	container.appendChild(crearElemento('rect', { //dibuja linea principal
-		x: 0,
-		y: _centroYRecta,
-		width: anchoRecta,
-		height: grosorRecta,
-		fill: colorRecta,
-		rx: 2,
-		ry: 2
-	}))
-	container.appendChild(crearElemento('rect', { //dibuja flecha inicial
-		x: grosorRecta/2,
-		y: _centroYRecta,
-		width: largoFlechas,
-		height: grosorRecta,
-		fill: colorRecta,
-		transform: `rotate(30 ${0},${_centroYRecta})`,
-		rx: 2,
-		ry: 2
-	}))
-	container.appendChild(crearElemento('rect', { //dibuja flecha inicial
-		x: 0,
-		y: _centroYRecta,
-		width: largoFlechas,
-		height: grosorRecta,
-		fill: colorRecta,
-		transform: `rotate(-30 ${0},${_centroYRecta})`,
-		rx: 2,
-		ry: 2
-	}))
-	container.appendChild(crearElemento('rect', { //dibuja flecha final
-		x: anchoRecta-largoFlechas,
-		y: _centroYRecta,
-		width: largoFlechas,
-		height: grosorRecta,
-		fill: colorRecta,
-		transform: `rotate(30 ${anchoRecta},${_centroYRecta})`,
-		rx: 2,
-		ry: 2
-	}))
-	container.appendChild(crearElemento('rect', { //dibuja flecha final
-		x: anchoRecta-largoFlechas-grosorRecta/2,
-		y: _centroYRecta,
-		width: largoFlechas,
-		height: grosorRecta,
-		fill: colorRecta,
-		transform: `rotate(-30 ${anchoRecta},${_centroYRecta})`,
-		rx: 2,
-		ry: 2
-	}))
-	//calcula los valores a posicionar en la recta numerica y sus posiciones en el eje x
-	_posicionesEnRecta = await Promise.all([{ 
-			numero: valorInicialRecta,
-			posicion: _anchoSeparaciones - grosorMarcas/2
-		}]
-		.concat(Array(divicionesRecta)
-		.fill()
-		.map((x,index) => ({
-			numero: Number((valorInicialRecta + valorEscalaRecta * (index+1)).toFixed(10)),
-			posicion: _anchoSeparaciones + _anchoSeparaciones*(index+1) - grosorMarcas/2
-		}))))
-	//dibuja marcas y numeros en recta numerica 
-	////console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
-	_posicionesEnRecta.forEach(({ numero, posicion }, index) => {
-		//dibuja las marcas por si solas
-		if((index == 0 || index == divicionesRecta) || marcas === 'todas') {
-			dibujarMarca(posicion)
-		}
-		//dibuja el numero asociado a la marca
-		if(index == 0  && (extremos == 'ambos' || extremos == 'inicial')) { // dibuja primer valor
-			dibujaValorDeMarca(numero, posicion, index)
-		} else if(index == divicionesRecta && (extremos == 'ambos' || extremos == 'final')) { //dibuja ultimo valor
-			dibujaValorDeMarca(numero, posicion, index)
-		}
-		if(index != 0 && index != divicionesRecta && valores === 'todos') { //dibuja todos los valores de recta
-			dibujaValorDeMarca(numero, posicion, index)
-		}
-	})
+  let { altoRecta, anchoRecta,
+    grosorRecta, grosorMarcas, colorRecta, largoFlechas, largoMarcas, fontSize, colorFuente, //diseño recta numerica
+    formato, valorInicialRecta, valorFinalRecta, valorEscalaRecta, divicionesRecta, //valores para pintar recta
+    marcas, extremos, valores, valorInicioMostrar, valorFinalMostrar,
+    formatoSubescala, divicionesSubescala, marcasSubescala, marcaInicioMostrarSubescala, marcaFinMostrarSubescala, valoresSubescala, valorInicioMostrarSubescala, valorFinMostrarSubescala,
+    valoresEspecificos, //valores a mostrar en recta
+    imagenes, //aqui se agregan las imagenes de la recta
+    resaltarTramo, tipoTramo, inicioTramo, finTramo, separacionTramo, colorTramo,//datos de tramos
+    arcos, //datos de arcos
+    textos, //datos de texto
+    puntos,
+    encerrarValores } = params //puntos de la recta para marcar
+  //reemplaza valores para calcular datos de recta
+  valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
+  divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
+  valorFinalRecta = valorFinalRecta ?
+    Number(regexFunctions(regex(valorFinalRecta, vars, vt))) :
+    valorInicialRecta + Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) * divicionesRecta
+  valorEscalaRecta = valorEscalaRecta ?
+    Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) :
+    (valorFinalRecta - valorInicialRecta) / divicionesRecta
+  //valores para mostrar en recta numerica
+  valoresEspecificos = valoresEspecificos ? await Promise.all(valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x))) : []
+  //subdiviciones de recta numerica
+  divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
+  //puntos de la recta para marcar
+  puntos = puntos.length > 0 ? regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+    posicion: valorRectaACoordenadaX(Number(x[0])),
+    color: x[1]
+  })) : []
+  //valores para ecerrar en recta numerica
+  encerrarValores = encerrarValores.length > 0 ? regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+    posicion: valorRectaACoordenadaX(Number(x[0])),
+    ancho: Number(x[1]),
+    alto: Number(x[2]),
+    color: x[3]
+  })) : []
+  //imagenes para mostrar en recta numerica
+  imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
+  //arcos para mostrar en la recta numerica
+  arcos = arcos ? await Promise.all(arcos.map(x => getArcoObj(x))) : []
+  //texto para mostrar en la recta numerica
+  textos = textos ? await Promise.all(textos.map(x => getTextoObj(x))) : []
+  //parsea los textos y los numeros reemplazando variables y funciones
+  grosorRecta = Number(grosorRecta)
+  grosorMarcas = Number(grosorMarcas)
+  largoFlechas = Number(largoFlechas)
+  largoMarcas = Number(largoMarcas)
+  fontSize = Number(fontSize)
+  inicioTramo = Number(Number(regexFunctions(regex(inicioTramo, vars, vt))).toFixed(10))
+  finTramo = Number(Number(regexFunctions(regex(finTramo, vars, vt))).toFixed(10))
+  separacionTramo = Number(separacionTramo)
+  valorInicioMostrar = Number(Number(regexFunctions(regex(valorInicioMostrar, vars, vt))).toFixed(10))
+  valorFinalMostrar = Number(Number(regexFunctions(regex(valorFinalMostrar, vars, vt))).toFixed(10))
+  //setea valores de dimensiones de recta
+  container.setAttributeNS(null, 'height', altoRecta)
+  container.setAttributeNS(null, 'width', anchoRecta)
+  container.setAttributeNS(null, 'viewBox', `0 0 ${anchoRecta} ${altoRecta}`)
+  let _centroYRecta = altoRecta / 2 - grosorRecta / 2,
+    _anchoSeparaciones = anchoRecta / (divicionesRecta + 2),
+    _posicionesEnRecta = []
+  //importa fuente opensans para ser utilizada en los elementos de texto
+  let defs = crearElemento('defs', {})
+  let styles = document.createElement('style')
+  styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
+  defs.appendChild(styles)
+  container.appendChild(defs)
+  //dibuja recta numerica (linea base y flechas)
+  container.appendChild(crearElemento('rect', { //dibuja linea principal
+    x: 0,
+    y: _centroYRecta,
+    width: anchoRecta,
+    height: grosorRecta,
+    fill: colorRecta,
+    rx: 2,
+    ry: 2
+  }))
+  container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+    x: grosorRecta / 2,
+    y: _centroYRecta,
+    width: largoFlechas,
+    height: grosorRecta,
+    fill: colorRecta,
+    transform: `rotate(30 ${0},${_centroYRecta})`,
+    rx: 2,
+    ry: 2
+  }))
+  container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+    x: 0,
+    y: _centroYRecta,
+    width: largoFlechas,
+    height: grosorRecta,
+    fill: colorRecta,
+    transform: `rotate(-30 ${0},${_centroYRecta})`,
+    rx: 2,
+    ry: 2
+  }))
+  container.appendChild(crearElemento('rect', { //dibuja flecha final
+    x: anchoRecta - largoFlechas,
+    y: _centroYRecta,
+    width: largoFlechas,
+    height: grosorRecta,
+    fill: colorRecta,
+    transform: `rotate(30 ${anchoRecta},${_centroYRecta})`,
+    rx: 2,
+    ry: 2
+  }))
+  container.appendChild(crearElemento('rect', { //dibuja flecha final
+    x: anchoRecta - largoFlechas - grosorRecta / 2,
+    y: _centroYRecta,
+    width: largoFlechas,
+    height: grosorRecta,
+    fill: colorRecta,
+    transform: `rotate(-30 ${anchoRecta},${_centroYRecta})`,
+    rx: 2,
+    ry: 2
+  }))
+  //calcula los valores a posicionar en la recta numerica y sus posiciones en el eje x
+  _posicionesEnRecta = await Promise.all([{
+    numero: valorInicialRecta,
+    posicion: _anchoSeparaciones - grosorMarcas / 2
+  }]
+    .concat(Array(divicionesRecta)
+      .fill()
+      .map((x, index) => ({
+        numero: Number((valorInicialRecta + valorEscalaRecta * (index + 1)).toFixed(10)),
+        posicion: _anchoSeparaciones + _anchoSeparaciones * (index + 1) - grosorMarcas / 2
+      }))))
+  //dibuja marcas y numeros en recta numerica 
+  ////console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
+  _posicionesEnRecta.forEach(({ numero, posicion }, index) => {
+    //dibuja las marcas por si solas
+    if ((index == 0 || index == divicionesRecta) || marcas === 'todas') {
+      dibujarMarca(posicion)
+    }
+    //dibuja el numero asociado a la marca
+    if (index == 0 && (extremos == 'ambos' || extremos == 'inicial')) { // dibuja primer valor
+      dibujaValorDeMarca(numero, posicion, index)
+    } else if (index == divicionesRecta && (extremos == 'ambos' || extremos == 'final')) { //dibuja ultimo valor
+      dibujaValorDeMarca(numero, posicion, index)
+    }
+    if (index != 0 && index != divicionesRecta && valores === 'todos') { //dibuja todos los valores de recta
+      dibujaValorDeMarca(numero, posicion, index)
+    }
+  })
 
-	if(puntos && puntos.length > 0) {
-		puntos.forEach(punto => {
-			container.appendChild(crearElemento('circle', {
-				cx: punto.posicion,
-				cy: altoRecta/2,
-				r: grosorRecta+grosorRecta/2,
-				fill: punto.color,
-				stroke: colorRecta,
-				strokeWidth: grosorRecta/2
-			}))
-		})
-	}
+  if (puntos && puntos.length > 0) {
+    puntos.forEach(punto => {
+      container.appendChild(crearElemento('circle', {
+        cx: punto.posicion,
+        cy: altoRecta / 2,
+        r: grosorRecta + grosorRecta / 2,
+        fill: punto.color,
+        stroke: colorRecta,
+        strokeWidth: grosorRecta / 2
+      }))
+    })
+  }
 
-	valoresEspecificos.forEach(valor => {
-		if(valor.tipo == 'numero') {
-			let { numero, posicion, ubicacion } = valor
-			dibujaNumeroEnPosicion(numero, posicion, ubicacion)
-			dibujarMarca(posicion)
-		} else {
-			let { entero, numerador, denominador, posicion, ubicacion } = valor
-			dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion)
-			dibujarMarca(posicion)
-		}
-	})
+  valoresEspecificos.forEach(valor => {
+    if (valor.tipo == 'numero') {
+      let { numero, posicion, ubicacion } = valor
+      dibujaNumeroEnPosicion(numero, posicion, ubicacion)
+      dibujarMarca(posicion)
+    } else {
+      let { entero, numerador, denominador, posicion, ubicacion } = valor
+      dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion)
+      dibujarMarca(posicion)
+    }
+  })
 
-	imagenes.forEach(img => {
-		let widthImg = img.height * img.imagen.width / img.imagen.height
-		img.posiciones.forEach(posicionEnRecta => {
-			let posicionX = valorRectaACoordenadaX(posicionEnRecta)
-			if(img.marcar) {
-				container.appendChild(crearElemento('rect', { //dibuja marca
-					x: posicionX-grosorMarcas/2,
-					y: altoRecta/2-largoMarcas/2,
-					width: grosorMarcas,
-					height: largoMarcas,
-					fill: colorRecta,
-					rx: 2,
-					ry: 2
-				}))
-			}
-			container.appendChild(crearElementoDeImagen(img.srcImg,{
-				x: posicionX-widthImg/2,
-				y: img.posicion == 'arriba' ? altoRecta/2-largoMarcas/2-img.separacion-img.height : altoRecta/2+largoMarcas/2+img.separacion,
-				height: img.height
-			}))
-		})
-	})
-	//dibuja solo los valores entre las variables valorInicioMostrar y valorFinalMostrar
-	if(marcas == 'ninguna' && valores == 'entre') {
-		let valoresAMarcar = _posicionesEnRecta.filter(x => x.numero >= valorInicioMostrar && x.numero <= valorFinalMostrar)
-		valoresAMarcar.forEach(({ numero, posicion }) => {
-			dibujarMarca(posicion)
-			dibujaValorDeMarca(numero, posicion, _posicionesEnRecta.map(x => x.numero).indexOf(numero))
-		})
-	}
-	//dibuja tramo de recta numerica
-	if(resaltarTramo === 'si') {
-		let inicioX = valorRectaACoordenadaX(inicioTramo)
-		let finX = valorRectaACoordenadaX(finTramo)
-		let centro = (finX - inicioX) / 2 + inicioX
-		let inicioY = altoRecta/2-largoMarcas/2-separacionTramo
-		let radio = 10
-		
-		switch(tipoTramo) {
-			case 'llave':
-				container.appendChild(crearElemento('path',{
-					d: `M ${inicioX} ${inicioY}
-						A ${radio} ${radio} 0 0 1 ${inicioX+radio} ${inicioY-radio}
-						H ${centro-radio}
-						A ${radio} ${radio} 0 0 0 ${centro} ${inicioY-radio*2}
-						A ${radio} ${radio} 0 0 0 ${centro+radio} ${inicioY-radio}
-						H ${finX-radio}
+  imagenes.forEach(img => {
+    let widthImg = img.height * img.imagen.width / img.imagen.height
+    img.posiciones.forEach(posicionEnRecta => {
+      let posicionX = valorRectaACoordenadaX(posicionEnRecta)
+      if (img.marcar) {
+        container.appendChild(crearElemento('rect', { //dibuja marca
+          x: posicionX - grosorMarcas / 2,
+          y: altoRecta / 2 - largoMarcas / 2,
+          width: grosorMarcas,
+          height: largoMarcas,
+          fill: colorRecta,
+          rx: 2,
+          ry: 2
+        }))
+      }
+      container.appendChild(crearElementoDeImagen(img.srcImg, {
+        x: posicionX - widthImg / 2,
+        y: img.posicion == 'arriba' ? altoRecta / 2 - largoMarcas / 2 - img.separacion - img.height : altoRecta / 2 + largoMarcas / 2 + img.separacion,
+        height: img.height
+      }))
+    })
+  })
+  //dibuja solo los valores entre las variables valorInicioMostrar y valorFinalMostrar
+  if (marcas == 'ninguna' && valores == 'entre') {
+    let valoresAMarcar = _posicionesEnRecta.filter(x => x.numero >= valorInicioMostrar && x.numero <= valorFinalMostrar)
+    valoresAMarcar.forEach(({ numero, posicion }) => {
+      dibujarMarca(posicion)
+      dibujaValorDeMarca(numero, posicion, _posicionesEnRecta.map(x => x.numero).indexOf(numero))
+    })
+  }
+  //dibuja tramo de recta numerica
+  if (resaltarTramo === 'si') {
+    let inicioX = valorRectaACoordenadaX(inicioTramo)
+    let finX = valorRectaACoordenadaX(finTramo)
+    let centro = (finX - inicioX) / 2 + inicioX
+    let inicioY = altoRecta / 2 - largoMarcas / 2 - separacionTramo
+    let radio = 10
+
+    switch (tipoTramo) {
+      case 'llave':
+        container.appendChild(crearElemento('path', {
+          d: `M ${inicioX} ${inicioY}
+						A ${radio} ${radio} 0 0 1 ${inicioX + radio} ${inicioY - radio}
+						H ${centro - radio}
+						A ${radio} ${radio} 0 0 0 ${centro} ${inicioY - radio * 2}
+						A ${radio} ${radio} 0 0 0 ${centro + radio} ${inicioY - radio}
+						H ${finX - radio}
 						A ${radio} ${radio} 0 0 1 ${finX} ${inicioY}`,
-					fill: 'none',
-					stroke: colorTramo,
-					strokeWidth: grosorMarcas
-				}))
-				break
-			case 'punto-punto':
-				container.appendChild(crearElemento('circle', {
-					cx: inicioX,
-					cy: altoRecta/2,
-					r: grosorRecta+2,
-					fill: colorTramo,
-					stroke: colorRecta,
-					strokeWidth: grosorRecta/2
-				}))
-				container.appendChild(crearElemento('circle', {
-					cx: finX,
-					cy: altoRecta/2,
-					r: grosorRecta+2,
-					fill: colorTramo,
-					stroke: colorRecta,
-					strokeWidth: grosorRecta/2
-				}))
-				container.appendChild(crearElemento('rect', {
-					x: inicioX,
-					y: altoRecta/2-grosorRecta/2,
-					width: finX-inicioX,
-					height: grosorRecta,
-					fill: colorTramo
-				}))
-				break
-			default:
-				//console.log('no se puede agregar este tipo de tramo :c')
-				break
-		}
-	}
+          fill: 'none',
+          stroke: colorTramo,
+          strokeWidth: grosorMarcas
+        }))
+        break
+      case 'punto-punto':
+        container.appendChild(crearElemento('circle', {
+          cx: inicioX,
+          cy: altoRecta / 2,
+          r: grosorRecta + 2,
+          fill: colorTramo,
+          stroke: colorRecta,
+          strokeWidth: grosorRecta / 2
+        }))
+        container.appendChild(crearElemento('circle', {
+          cx: finX,
+          cy: altoRecta / 2,
+          r: grosorRecta + 2,
+          fill: colorTramo,
+          stroke: colorRecta,
+          strokeWidth: grosorRecta / 2
+        }))
+        container.appendChild(crearElemento('rect', {
+          x: inicioX,
+          y: altoRecta / 2 - grosorRecta / 2,
+          width: finX - inicioX,
+          height: grosorRecta,
+          fill: colorTramo
+        }))
+        break
+      default:
+        //console.log('no se puede agregar este tipo de tramo :c')
+        break
+    }
+  }
 
-	arcos.forEach(arco => {
-		if(arco.saltos) {
-			let puntosDeArcos = _posicionesEnRecta.filter(x => x.numero >= arco.inicio && x.numero <= arco.fin)
-			puntosDeArcos.forEach(({ posicion }, index) => {
-				if(index+1 == puntosDeArcos.length) {
-					return
-				}
-				let x = posicion+_anchoSeparaciones/2
-				let y = altoRecta/2
-				let radio = _anchoSeparaciones/2
-				container.appendChild(crearElemento('path',{
-					d: createArcWithAngles(x, y, radio, 45, 135),
-					fill: 'none',
-					stroke: arco.color,
-					strokeWidth: grosorMarcas
-				}))
-				if(arco.direccion == 'derecha') {
-					let puntaFlecha = polarToCartesian(x, y, radio, 135)
-					container.appendChild(crearElemento('path', {
-						d: `M ${puntaFlecha.x} ${puntaFlecha.y}
-							L ${puntaFlecha.x} ${puntaFlecha.y-5}
-							L ${puntaFlecha.x-5} ${puntaFlecha.y}
+  arcos.forEach(arco => {
+    if (arco.saltos) {
+      let puntosDeArcos = _posicionesEnRecta.filter(x => x.numero >= arco.inicio && x.numero <= arco.fin)
+      puntosDeArcos.forEach(({ posicion }, index) => {
+        if (index + 1 == puntosDeArcos.length) {
+          return
+        }
+        let x = posicion + _anchoSeparaciones / 2
+        let y = altoRecta / 2
+        let radio = _anchoSeparaciones / 2
+        container.appendChild(crearElemento('path', {
+          d: createArcWithAngles(x, y, radio, 45, 135),
+          fill: 'none',
+          stroke: arco.color,
+          strokeWidth: grosorMarcas
+        }))
+        if (arco.direccion == 'derecha') {
+          let puntaFlecha = polarToCartesian(x, y, radio, 135)
+          container.appendChild(crearElemento('path', {
+            d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+							L ${puntaFlecha.x - 5} ${puntaFlecha.y}
 							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-						fill: arco.color,
-						stroke: arco.color
-					}))
-				} else {
-					let puntaFlecha = polarToCartesian(x, y, radio, 45)
-					container.appendChild(crearElemento('path', {
-						d: `M ${puntaFlecha.x} ${puntaFlecha.y}
-							L ${puntaFlecha.x} ${puntaFlecha.y-5}
-							L ${puntaFlecha.x+5} ${puntaFlecha.y}
+            fill: arco.color,
+            stroke: arco.color
+          }))
+        } else {
+          let puntaFlecha = polarToCartesian(x, y, radio, 45)
+          container.appendChild(crearElemento('path', {
+            d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+							L ${puntaFlecha.x + 5} ${puntaFlecha.y}
 							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-						fill: arco.color,
-						stroke: arco.color
-					}))
-				}
-				if(arco.mostrarValorTramo) {
-					container.appendChild(crearElementoDeTexto({
-						x: posicion+_anchoSeparaciones/2,
-						y: altoRecta/2-_anchoSeparaciones/2-5,
-						fontSize: fontSize,
-						textAnchor: 'middle',
-						fill: colorFuente,
-						style: 'font-family:Open-Sans-Reg;'
-					}, valorEscalaRecta))
-				}
-			})
-		} else {
-			let inicioArco = valorRectaACoordenadaX(arco.inicio)
-			let finArco = valorRectaACoordenadaX(arco.fin)
-			let mitad = (finArco - inicioArco) / 2 + inicioArco
-			let yArco = altoRecta/2-largoMarcas/2-10
-			container.appendChild(crearElemento('path',{
-				d: `M ${inicioArco} ${yArco}
+            fill: arco.color,
+            stroke: arco.color
+          }))
+        }
+        if (arco.mostrarValorTramo) {
+          container.appendChild(crearElementoDeTexto({
+            x: posicion + _anchoSeparaciones / 2,
+            y: altoRecta / 2 - _anchoSeparaciones / 2 - 5,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, valorEscalaRecta))
+        }
+      })
+    } else {
+      let inicioArco = valorRectaACoordenadaX(arco.inicio)
+      let finArco = valorRectaACoordenadaX(arco.fin)
+      let mitad = (finArco - inicioArco) / 2 + inicioArco
+      let yArco = altoRecta / 2 - largoMarcas / 2 - 10
+      container.appendChild(crearElemento('path', {
+        d: `M ${inicioArco} ${yArco}
 					A 22 2 0 0 1 ${finArco} ${yArco}`,
-				fill: 'none',
-				stroke: arco.color,
-				strokeWidth: grosorMarcas
-			}))
-			if(arco.direccion == 'derecha') {
-				let puntaFlecha = {
-					x: finArco,
-					y: yArco
-				}
-				container.appendChild(crearElemento('path', {
-					d: `M ${puntaFlecha.x} ${puntaFlecha.y}
-						L ${puntaFlecha.x} ${puntaFlecha.y-5}
-						L ${puntaFlecha.x-5} ${puntaFlecha.y}
+        fill: 'none',
+        stroke: arco.color,
+        strokeWidth: grosorMarcas
+      }))
+      if (arco.direccion == 'derecha') {
+        let puntaFlecha = {
+          x: finArco,
+          y: yArco
+        }
+        container.appendChild(crearElemento('path', {
+          d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+						L ${puntaFlecha.x - 5} ${puntaFlecha.y}
 						L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-					fill: arco.color,
-					stroke: arco.color
-				}))
-			} else {
-				let puntaFlecha = {
-					x: inicioArco,
-					y: yArco
-				}
-				container.appendChild(crearElemento('path', {
-					d: `M ${puntaFlecha.x} ${puntaFlecha.y}
-						L ${puntaFlecha.x} ${puntaFlecha.y-5}
-						L ${puntaFlecha.x+5} ${puntaFlecha.y}
+          fill: arco.color,
+          stroke: arco.color
+        }))
+      } else {
+        let puntaFlecha = {
+          x: inicioArco,
+          y: yArco
+        }
+        container.appendChild(crearElemento('path', {
+          d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+						L ${puntaFlecha.x + 5} ${puntaFlecha.y}
 						L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-					fill: arco.color,
-					stroke: arco.color
-				}))
-			}
-			if(arco.mostrarValorTramo) {
-				let diferencia = arco.fin - arco.inicio
-				container.appendChild(crearElementoDeTexto({
-					x: mitad,
-					y: altoRecta/2-_anchoSeparaciones*0.7,
-					fontSize: fontSize,
-					textAnchor: 'middle',
-					fill: colorFuente,
-					style: 'font-family:Open-Sans-Reg;'
-				}, diferencia.toString().replace('.', ',')))
-			}
-		}
-	})
-	//pone todos los textos de la recta
-	textos.forEach(({texto, valorCentro, posicionY}) => {
-		container.appendChild(crearElementoDeTexto({
-			x: valorCentro,
-			y: posicionY,
-			fontSize: fontSize,
-			textAnchor: 'middle',
-			fill: colorFuente,
-			style: 'font-family:Open-Sans-Reg;'
-		}, texto))
-	})
+          fill: arco.color,
+          stroke: arco.color
+        }))
+      }
+      if (arco.mostrarValorTramo) {
+        let diferencia = arco.fin - arco.inicio
+        container.appendChild(crearElementoDeTexto({
+          x: mitad,
+          y: altoRecta / 2 - _anchoSeparaciones * 0.7,
+          fontSize: fontSize,
+          textAnchor: 'middle',
+          fill: colorFuente,
+          style: 'font-family:Open-Sans-Reg;'
+        }, diferencia.toString().replace('.', ',')))
+      }
+    }
+  })
+  //pone todos los textos de la recta
+  textos.forEach(({ texto, valorCentro, posicionY }) => {
+    container.appendChild(crearElementoDeTexto({
+      x: valorCentro,
+      y: posicionY,
+      fontSize: fontSize,
+      textAnchor: 'middle',
+      fill: colorFuente,
+      style: 'font-family:Open-Sans-Reg;'
+    }, texto))
+  })
 
-	if(divicionesSubescala > 0) {
-		
-	}
+  if (divicionesSubescala > 0) {
 
-	if(encerrarValores && encerrarValores.length > 0) {
-		encerrarValores.forEach(encerrarValor => {
-			container.appendChild(crearElemento('rect', {
-				x: encerrarValor.posicion - encerrarValor.ancho/2,
-				y: altoRecta/2-encerrarValor.alto/2,
-				width: encerrarValor.ancho,
-				height: encerrarValor.alto,
-				stroke: encerrarValor.color,
-				strokeWidth: '2',
-				fill: 'none'
-			}))
-		})
-	}
+  }
 
-	function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
-		let angleInRadians = (angleInDegrees-180) * Math.PI / 180.0;
-		
-		return {
-			x: centerX + (radius * Math.cos(angleInRadians)),
-			y: centerY + (radius * Math.sin(angleInRadians))
-		}
-	}
-	  
-	function createArcWithAngles(x, y, radius, startAngle, endAngle){
-	  
-		let start = polarToCartesian(x, y, radius, endAngle)
-		let end = polarToCartesian(x, y, radius, startAngle)
-	
-		let arcSweep = endAngle - startAngle <= 180 ? '0' : '1'
-	
-		let d = [
-			'M', start.x, start.y, 
-			'A', radius, radius, 0, arcSweep, 0, end.x, end.y
-			//'L', x,y,
-			//'L', start.x, start.y
-		].join(' ')
-	
-		return d  
-	}
+  if (encerrarValores && encerrarValores.length > 0) {
+    encerrarValores.forEach(encerrarValor => {
+      container.appendChild(crearElemento('rect', {
+        x: encerrarValor.posicion - encerrarValor.ancho / 2,
+        y: altoRecta / 2 - encerrarValor.alto / 2,
+        width: encerrarValor.ancho,
+        height: encerrarValor.alto,
+        stroke: encerrarValor.color,
+        strokeWidth: '2',
+        fill: 'none'
+      }))
+    })
+  }
 
-	function valorRectaACoordenadaX(valorRecta) {
-		let valorReal = valorRecta + valorEscalaRecta - valorInicialRecta
-		let valorInicioMenosEscala = valorInicialRecta - valorEscalaRecta
-		let valorFinalMasEscala = valorFinalRecta + valorEscalaRecta
-		let largoRecta = valorFinalMasEscala - valorInicioMenosEscala
-		return anchoRecta * valorReal / largoRecta
-	}
+  function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
+    let angleInRadians = (angleInDegrees - 180) * Math.PI / 180.0;
 
-	async function getImagenObj(img) {
+    return {
+      x: centerX + (radius * Math.cos(angleInRadians)),
+      y: centerY + (radius * Math.sin(angleInRadians))
+    }
+  }
+
+  function createArcWithAngles(x, y, radius, startAngle, endAngle) {
+
+    let start = polarToCartesian(x, y, radius, endAngle)
+    let end = polarToCartesian(x, y, radius, startAngle)
+
+    let arcSweep = endAngle - startAngle <= 180 ? '0' : '1'
+
+    let d = [
+      'M', start.x, start.y,
+      'A', radius, radius, 0, arcSweep, 0, end.x, end.y
+      //'L', x,y,
+      //'L', start.x, start.y
+    ].join(' ')
+
+    return d
+  }
+
+  function valorRectaACoordenadaX(valorRecta) {
+    let valorReal = valorRecta + valorEscalaRecta - valorInicialRecta
+    let valorInicioMenosEscala = valorInicialRecta - valorEscalaRecta
+    let valorFinalMasEscala = valorFinalRecta + valorEscalaRecta
+    let largoRecta = valorFinalMasEscala - valorInicioMenosEscala
+    return anchoRecta * valorReal / largoRecta
+  }
+
+  async function getImagenObj(img) {
     let src = regexFunctions(regex(img.srcImg, vars, vt))
     src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
-		return {
-			srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
-			imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
-			height: Number(img.height),
-			posicion: img.posicion,
-			separacion: Number(img.separacion),
-			marcar: img.marcar === 'si' ? true : false,
-			posiciones: String(img.posiciones).split(',')
-				.map(x => regexFunctions(regex(x, vars, vt)))
-				.map(x => Number(Number(x).toFixed(10)))
-		}
-	}
-
-	function getArcoObj(arco) {
-		return {
-			inicio: Number(regexFunctions(regex(arco.inicio, vars, vt))),
-			fin: Number(regexFunctions(regex(arco.fin, vars, vt))),
-			direccion: arco.direccion,
-			color: '#8B1013',
-			saltos: arco.saltos == 'si' ? true : false,
-			mostrarValorTramo: arco.mostrarValorTramo == 'si' ? true : false
-		}
-	}
-
-	function getTextoObj(texto) {
-		return {
-			texto: regexFunctions(regex(texto.texto, vars, vt)),
-			valorCentro:  valorRectaACoordenadaX(Number(regexFunctions(regex(texto.valorCentro, vars, vt)))),
-			posicionY: texto.posicionY
-		}
-	}
-
-	function dibujarMarca(posicion) {
-		container.appendChild(crearElemento('rect', { //dibuja marca
-			x: posicion,
-			y: altoRecta/2-largoMarcas/2,
-			width: grosorMarcas,
-			height: largoMarcas,
-			fill: colorRecta,
-			rx: 2,
-			ry: 2
-		}))
-	}
-
-	function dibujaValorDeMarca(numero, posicion, index){ //pone los numeros o fracciones debajo de la marca de la recta
-		if(Number.isInteger(numero)) {
-			dibujaNumeroEnPosicion(numero, posicion, 'abajo')
-		} else if(formato == 'numero') {
-//va a pintar el valor como numero, ya sea decimal o no, con todos sus decimales
-			dibujaNumeroEnPosicion(numero, posicion, 'abajo')
-		} else if(((valorFinalRecta-valorInicialRecta)==1) && formato == 'fraccion' && index >= 0) {
-/*si la diferencia entre la primera y la segunda marca es 1 y 
-el formato se debe pintar como fraccion y 
-el valor esta dentro de los valores de la recta*/
-			dibujaFraccionEnPosicion(Math.floor(numero), index, divicionesRecta, posicion, 'abajo')
-		}
-	}
-
-	function dibujaNumeroEnPosicion(numero, posicion, ubicacion) {
-		//console.log({numero, posicion, ubicacion})
-		container.appendChild(crearElementoDeTexto({ 
-			x: posicion+grosorMarcas/2,
-			y: ubicacion == 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-4,
-			fontSize: fontSize,
-			textAnchor: 'middle',
-			fill: colorFuente,
-			style: 'font-family:Open-Sans-Reg;'
-		}, numero.toString().replace('.',',')))
-	}
-
-	function frac({ tipo, entero, numerador, denominador, ubicacion }) {
-		entero = Number(regexFunctions(regex(entero, vars, vt)))
-		numerador = Number(regexFunctions(regex(numerador, vars, vt)))
-		denominador = Number(regexFunctions(regex(denominador, vars, vt)))
-		let valor = Number(entero+numerador/denominador)
-		let	posicion = valorRectaACoordenadaX(valor)
-
-		return { entero, numerador, denominador, valor, posicion, ubicacion, tipo }
-	}
-
-	function num({ tipo, valor, ubicacion }) {
-		let numero = Number(regexFunctions(regex(valor, vars, vt)))
-		let	posicion = valorRectaACoordenadaX(numero)
-		return { numero, posicion, ubicacion, tipo }
-	}
-
-	function dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion) {
-		//console.log(ubicacion)
-		if(entero > 0) {
-			container.appendChild(crearElementoDeTexto({ 
-				x: posicion+grosorMarcas/2-10,
-				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*1.5 : altoRecta/2-largoMarcas/2-fontSize/2-2,
-				fontSize: fontSize+2,
-				textAnchor: 'middle',
-				fill: colorFuente,
-				style: 'font-family:Open-Sans-Reg;'
-			}, entero))
-			container.appendChild(crearElementoDeTexto({ 
-				x: posicion+grosorMarcas/2+10,
-				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-fontSize-2,
-				fontSize: fontSize,
-				textAnchor: 'middle',
-				fill: colorFuente,
-				style: 'font-family:Open-Sans-Reg;'
-			}, numerador))
-			container.appendChild(crearElemento('line', { 
-				x1: posicion+grosorMarcas/2,
-				y1: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
-				x2: posicion+grosorMarcas/2+20,
-				y2: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
-				stroke: colorRecta,
-				strokeWidth: 2
-			}))
-			container.appendChild(crearElementoDeTexto({ 
-				x: posicion+grosorMarcas/2+10,
-				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*2 : altoRecta/2-largoMarcas/2-2,
-				fontSize: fontSize,
-				textAnchor: 'middle',
-				fill: colorFuente,
-				style: 'font-family:Open-Sans-Reg;'
-			}, denominador))
-		} else {
-			container.appendChild(crearElementoDeTexto({ 
-				x: posicion+grosorMarcas/2,
-				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-fontSize-2,
-				fontSize: fontSize,
-				textAnchor: 'middle',
-				fill: colorFuente,
-				style: 'font-family:Open-Sans-Reg;'
-			}, numerador))
-			container.appendChild(crearElemento('line', { 
-				x1: posicion+grosorMarcas/2-10,
-				y1: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
-				x2: posicion+grosorMarcas/2+10,
-				y2: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
-				stroke: colorRecta,
-				strokeWidth: 2
-			}))
-			container.appendChild(crearElementoDeTexto({ 
-				x: posicion+grosorMarcas/2,
-				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*2 : altoRecta/2-largoMarcas/2-2,
-				fontSize: fontSize,
-				textAnchor: 'middle',
-				fill: colorFuente,
-				style: 'font-family:Open-Sans-Reg;'
-			}, denominador))
-		}
-	}
-
-	function crearElementoDeImagen(src, atributos) {
-		let element = document.createElementNS('http://www.w3.org/2000/svg', 'image')
-		element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
-		for (let p in atributos) {
-		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
-			return '-' + m.toLowerCase()
-		  }), atributos[p])
-		}
-		return element
-	}
-
-	function crearElemento(nombre, atributos) {
-		let element = document.createElementNS('http://www.w3.org/2000/svg', nombre)
-		for (let p in atributos) {
-		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
-			return '-' + m.toLowerCase()
-		  }), atributos[p])
-		}
-		return element
-	}
-
-	function crearElementoDeTexto(atributos, texto) {
-		let element = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-		for (let p in atributos) {
-		  element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
-			return '-' + m.toLowerCase()
-		  }), atributos[p])
-		}
-		let textNode = document.createTextNode(texto)
-		element.appendChild(textNode)
-		return element
+    return {
+      srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
+      imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
+      height: Number(img.height),
+      posicion: img.posicion,
+      separacion: Number(img.separacion),
+      marcar: img.marcar === 'si' ? true : false,
+      posiciones: String(img.posiciones).split(',')
+        .map(x => regexFunctions(regex(x, vars, vt)))
+        .map(x => Number(Number(x).toFixed(10)))
+    }
   }
-  if(window.innerWidth <= 576) {
-    container.setAttributeNS(null, 'height', Number(altoRecta)+50)
+
+  function getArcoObj(arco) {
+    return {
+      inicio: Number(regexFunctions(regex(arco.inicio, vars, vt))),
+      fin: Number(regexFunctions(regex(arco.fin, vars, vt))),
+      direccion: arco.direccion,
+      color: '#8B1013',
+      saltos: arco.saltos == 'si' ? true : false,
+      mostrarValorTramo: arco.mostrarValorTramo == 'si' ? true : false
+    }
+  }
+
+  function getTextoObj(texto) {
+    return {
+      texto: regexFunctions(regex(texto.texto, vars, vt)),
+      valorCentro: valorRectaACoordenadaX(Number(regexFunctions(regex(texto.valorCentro, vars, vt)))),
+      posicionY: texto.posicionY
+    }
+  }
+
+  function dibujarMarca(posicion) {
+    container.appendChild(crearElemento('rect', { //dibuja marca
+      x: posicion,
+      y: altoRecta / 2 - largoMarcas / 2,
+      width: grosorMarcas,
+      height: largoMarcas,
+      fill: colorRecta,
+      rx: 2,
+      ry: 2
+    }))
+  }
+
+  function dibujaValorDeMarca(numero, posicion, index) { //pone los numeros o fracciones debajo de la marca de la recta
+    if (Number.isInteger(numero)) {
+      dibujaNumeroEnPosicion(numero, posicion, 'abajo')
+    } else if (formato == 'numero') {
+      //va a pintar el valor como numero, ya sea decimal o no, con todos sus decimales
+      dibujaNumeroEnPosicion(numero, posicion, 'abajo')
+    } else if (((valorFinalRecta - valorInicialRecta) == 1) && formato == 'fraccion' && index >= 0) {
+      /*si la diferencia entre la primera y la segunda marca es 1 y 
+      el formato se debe pintar como fraccion y 
+      el valor esta dentro de los valores de la recta*/
+      dibujaFraccionEnPosicion(Math.floor(numero), index, divicionesRecta, posicion, 'abajo')
+    }
+  }
+
+  function dibujaNumeroEnPosicion(numero, posicion, ubicacion) {
+    //console.log({numero, posicion, ubicacion})
+    container.appendChild(crearElementoDeTexto({
+      x: posicion + grosorMarcas / 2,
+      y: ubicacion == 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize : altoRecta / 2 - largoMarcas / 2 - 4,
+      fontSize: fontSize,
+      textAnchor: 'middle',
+      fill: colorFuente,
+      style: 'font-family:Open-Sans-Reg;'
+    }, numero.toString().replace('.', ',')))
+  }
+
+  function frac({ tipo, entero, numerador, denominador, ubicacion }) {
+    entero = Number(regexFunctions(regex(entero, vars, vt)))
+    numerador = Number(regexFunctions(regex(numerador, vars, vt)))
+    denominador = Number(regexFunctions(regex(denominador, vars, vt)))
+    let valor = Number(entero + numerador / denominador)
+    let posicion = valorRectaACoordenadaX(valor)
+
+    return { entero, numerador, denominador, valor, posicion, ubicacion, tipo }
+  }
+
+  function num({ tipo, valor, ubicacion }) {
+    let numero = Number(regexFunctions(regex(valor, vars, vt)))
+    let posicion = valorRectaACoordenadaX(numero)
+    return { numero, posicion, ubicacion, tipo }
+  }
+
+  function dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion) {
+    //console.log(ubicacion)
+    if (entero > 0) {
+      container.appendChild(crearElementoDeTexto({
+        x: posicion + grosorMarcas / 2 - 10,
+        y: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize * 1.5 : altoRecta / 2 - largoMarcas / 2 - fontSize / 2 - 2,
+        fontSize: fontSize + 2,
+        textAnchor: 'middle',
+        fill: colorFuente,
+        style: 'font-family:Open-Sans-Reg;'
+      }, entero))
+      container.appendChild(crearElementoDeTexto({
+        x: posicion + grosorMarcas / 2 + 10,
+        y: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize : altoRecta / 2 - largoMarcas / 2 - fontSize - 2,
+        fontSize: fontSize,
+        textAnchor: 'middle',
+        fill: colorFuente,
+        style: 'font-family:Open-Sans-Reg;'
+      }, numerador))
+      container.appendChild(crearElemento('line', {
+        x1: posicion + grosorMarcas / 2,
+        y1: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize + 3 : altoRecta / 2 - largoMarcas / 2 - fontSize + 1,
+        x2: posicion + grosorMarcas / 2 + 20,
+        y2: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize + 3 : altoRecta / 2 - largoMarcas / 2 - fontSize + 1,
+        stroke: colorRecta,
+        strokeWidth: 2
+      }))
+      container.appendChild(crearElementoDeTexto({
+        x: posicion + grosorMarcas / 2 + 10,
+        y: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize * 2 : altoRecta / 2 - largoMarcas / 2 - 2,
+        fontSize: fontSize,
+        textAnchor: 'middle',
+        fill: colorFuente,
+        style: 'font-family:Open-Sans-Reg;'
+      }, denominador))
+    } else {
+      container.appendChild(crearElementoDeTexto({
+        x: posicion + grosorMarcas / 2,
+        y: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize : altoRecta / 2 - largoMarcas / 2 - fontSize - 2,
+        fontSize: fontSize,
+        textAnchor: 'middle',
+        fill: colorFuente,
+        style: 'font-family:Open-Sans-Reg;'
+      }, numerador))
+      container.appendChild(crearElemento('line', {
+        x1: posicion + grosorMarcas / 2 - 10,
+        y1: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize + 3 : altoRecta / 2 - largoMarcas / 2 - fontSize + 1,
+        x2: posicion + grosorMarcas / 2 + 10,
+        y2: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize + 3 : altoRecta / 2 - largoMarcas / 2 - fontSize + 1,
+        stroke: colorRecta,
+        strokeWidth: 2
+      }))
+      container.appendChild(crearElementoDeTexto({
+        x: posicion + grosorMarcas / 2,
+        y: ubicacion === 'abajo' ? altoRecta / 2 + largoMarcas / 2 + fontSize * 2 : altoRecta / 2 - largoMarcas / 2 - 2,
+        fontSize: fontSize,
+        textAnchor: 'middle',
+        fill: colorFuente,
+        style: 'font-family:Open-Sans-Reg;'
+      }, denominador))
+    }
+  }
+
+  function crearElementoDeImagen(src, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'image')
+    element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
+  function crearElemento(nombre, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', nombre)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
+  function crearElementoDeTexto(atributos, texto) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    let textNode = document.createTextNode(texto)
+    element.appendChild(textNode)
+    return element
+  }
+  if (window.innerWidth <= 576) {
+    container.setAttributeNS(null, 'height', Number(altoRecta) + 50)
     container.style.borderRadius = '5px'
     container.style.background = '#CACCCA'
-    if(tipo == 'g') {
+    if (tipo == 'g') {
       svgGlosa.push(container)
     } else {
       svgPanZoom(container, {
@@ -5533,7 +5534,7 @@ el valor esta dentro de los valores de la recta*/
 
 var eventsHandler = {
   haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
-  init: function(options) {
+  init: function (options) {
     var instance = options.instance
       , initialScale = 1
       , pannedX = 0
@@ -5546,15 +5547,15 @@ var eventsHandler = {
     })
 
     // Enable pinch
-    this.hammer.get('pinch').set({enable: true})
+    this.hammer.get('pinch').set({ enable: true })
 
     // Handle double tap
-    this.hammer.on('doubletap', function(ev){
+    this.hammer.on('doubletap', function (ev) {
       instance.zoomIn()
     })
 
     // Handle pan
-    this.hammer.on('panstart panmove', function(ev){
+    this.hammer.on('panstart panmove', function (ev) {
       // On pan start reset panned variables
       if (ev.type === 'panstart') {
         pannedX = 0
@@ -5562,31 +5563,31 @@ var eventsHandler = {
       }
 
       // Pan only the difference
-      instance.panBy({x: ev.deltaX - pannedX, y: ev.deltaY - pannedY})
+      instance.panBy({ x: ev.deltaX - pannedX, y: ev.deltaY - pannedY })
       pannedX = ev.deltaX
       pannedY = ev.deltaY
     })
 
     // Handle pinch
-    this.hammer.on('pinchstart pinchmove', function(ev){
+    this.hammer.on('pinchstart pinchmove', function (ev) {
       // On pinch start remember initial zoom
       if (ev.type === 'pinchstart') {
         initialScale = instance.getZoom()
-        instance.zoomAtPoint(initialScale * ev.scale, {x: ev.center.x, y: ev.center.y})
+        instance.zoomAtPoint(initialScale * ev.scale, { x: ev.center.x, y: ev.center.y })
       }
 
-      instance.zoomAtPoint(initialScale * ev.scale, {x: ev.center.x, y: ev.center.y})
+      instance.zoomAtPoint(initialScale * ev.scale, { x: ev.center.x, y: ev.center.y })
     })
 
     // Prevent moving the page on some devices when panning over SVG
-    options.svgElement.addEventListener('touchmove', function(e){ e.preventDefault(); });
+    options.svgElement.addEventListener('touchmove', function (e) { e.preventDefault(); });
   },
-  destroy: function(){
+  destroy: function () {
     this.hammer.destroy()
   }
 }
 
-function beforePan(oldPan, newPan){
+function beforePan(oldPan, newPan) {
   var stopHorizontal = false,
     stopVertical = false,
     gutterWidth = 50,
@@ -5600,4 +5601,399 @@ function beforePan(oldPan, newPan){
   customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
   customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
   return customPan
+}
+
+async function tabPos(config) {
+  const { container, params, variables, versions, vt } = config
+  //container.innerHTML = ''
+  //container.style.border = '1px solid #000'
+  let vars = vt ? variables : versions
+  let { tipoTabla, pisoTabla, detallePisos, conOperacion, tipoOperacion, canje, detalleCanje } = params
+
+  let tiposTabla = [{
+    id: 'UMCDU',
+    detalle: ['UM', 'C', 'D', 'U'],
+    url: `../../../../imagenes_front/tablas_posicionales/UMCDU${pisoTabla}.svg`
+  }, {
+    id: 'CDU',
+    detalle: ['C', 'D', 'U'],
+    url: `../../../../imagenes_front/tablas_posicionales/CDU${pisoTabla}.svg`
+  }, {
+    id: 'DU,dc',
+    detalle: ['D', 'U', 'd', 'c'],
+    url: `../../../../imagenes_front/tablas_posicionales/DU_dc${pisoTabla}.svg`
+  }, {
+    id: 'U,dc',
+    detalle: ['U', 'd', 'c'],
+    url: `../../../../imagenes_front/tablas_posicionales/U_dc${pisoTabla}.svg`
+  }, {
+    id: 'U,d',
+    detalle: ['U', 'd'],
+    url: `../../../../imagenes_front/tablas_posicionales/U_d${pisoTabla}.svg`
+  }]
+
+  let urlImagenesPosicionalesBloques = [{
+    posicion: 'U',
+    url: '../../../../imagenes_front/bloques_multibase/cubito#.svg'
+  }, {
+    posicion: 'D',
+    url: '../../../../imagenes_front/bloques_multibase/barra#.svg'
+  }, {
+    posicion: 'C',
+    url: '../../../../imagenes_front/bloques_multibase/placa#.svg'
+  }, {
+    posicion: 'UM',
+    url: '../../../../imagenes_front/bloques_multibase/cubo#.svg'
+  }, {
+    posicion: 'd',
+    url: '../../../../imagenes_front/bloques_multibase/cubo_decimo_#.svg'
+  }, {
+    posicion: 'c',
+    url: '../../../../imagenes_front/bloques_multibase/cubo_centesimo_#.svg'
+  }]
+
+  let urlImgsFichasRojas = '../../../../imagenes_front/pelotas_repeticiones/naranjo#.svg'
+
+  let urlImgsFichasAmarillas = '../../../../imagenes_front/pelotas_repeticiones/amarillo#.svg'
+
+  let urlImgSuma = '../../../../imagenes_front/tablas_posicionales/num_sig_mas.svg'
+  let urlImgResta = '../../../../imagenes_front/simbolos/menos.svg'
+
+
+  //variables para dibujar tabla
+  let { imagenes, imagenTabla } = await getImagenesPorCargar()
+  //variables para medidas
+  conOperacion = conOperacion === 'si' ? true : false
+  canje = regexFunctions(regex(canje, vars, vt)) === 'si' ? true : false
+  let anchoPosicion = 160
+  let anchoSvg = imagenTabla.detalle.length * anchoPosicion + (conOperacion ? anchoPosicion / 2 : 0)
+  let altoSvg = imagenTabla.detalle.length * anchoPosicion * imagenTabla.height / imagenTabla.width
+  let altoPosicion = (altoSvg / ((pisoTabla * 2) + 1)) * 2
+  let altoPosicionConMargen = altoPosicion * 0.8
+  let anchoPosicionConMargen = anchoPosicion * 0.8
+  let fontSize = altoPosicion * 0.8
+  //agrega elementos a defs
+  let defs = crearElemento('defs', {})
+  let styles = document.createElement('style')
+  styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
+  defs.appendChild(styles)
+  imagenes.forEach(imagen => {
+    let g = crearElemento('g', {
+      id: imagen.id
+    })
+    if (imagen.id.startsWith('bloque')) {
+      let posicion = imagen.id.match(/-\w{1,}-/g)[0].replace(/-/g, '')
+      switch (posicion) {
+        case 'D':
+          if (tipoTabla.indexOf(',') > -1) {
+            g.appendChild(crearElementoDeImagen(imagen.url, {
+              height: altoPosicionConMargen,
+              width: altoPosicionConMargen * imagen.width / imagen.height
+            }))
+          } else {
+            g.appendChild(crearElementoDeImagen(imagen.url, {
+              height: anchoPosicionConMargen * imagen.height / imagen.width,
+              width: anchoPosicionConMargen
+            }))
+          }
+          break
+        case 'U':
+          if (tipoTabla.indexOf(',') > -1) {
+            g.appendChild(crearElementoDeImagen(imagen.url, {
+              height: altoPosicionConMargen,
+              width: altoPosicionConMargen * imagen.width / imagen.height
+            }))
+          } else {
+            g.appendChild(crearElementoDeImagen(imagen.url, {
+              height: altoPosicionConMargen * 0.5 * imagen.width / imagen.height,
+              width: altoPosicionConMargen * 0.5
+            }))
+          }
+          break
+        case 'd':
+          g.appendChild(crearElementoDeImagen(imagen.url, {
+            height: altoPosicionConMargen * 1.2,
+            width: altoPosicionConMargen * 1.2 * imagen.width / imagen.height
+          }))
+          break
+        case 'c':
+          g.appendChild(crearElementoDeImagen(imagen.url, {
+            height: altoPosicionConMargen * 1.2,
+            width: altoPosicionConMargen * 1.2 * imagen.width / imagen.height
+          }))
+          break
+        default:
+          g.appendChild(crearElementoDeImagen(imagen.url, {
+            height: altoPosicionConMargen,
+            width: altoPosicionConMargen * imagen.width / imagen.height
+          }))
+          break
+      }
+    } else {
+      g.appendChild(crearElementoDeImagen(imagen.url, {
+        height: altoPosicionConMargen,
+        width: altoPosicionConMargen * imagen.width / imagen.height
+      }))
+    }
+
+    defs.appendChild(g)
+  })
+  container.appendChild(defs)
+
+  //setea tamaños de la tabla
+  container.setAttributeNS(null, 'height', altoSvg)
+  container.setAttributeNS(null, 'width', anchoSvg)
+  container.setAttributeNS(null, 'viewBox', `0 0 ${anchoSvg} ${altoSvg}`)
+  //dibuja tabla principal
+  container.appendChild(crearElementoDeImagen(imagenTabla.url, {
+    x: conOperacion ? anchoPosicion / 2 : 0,
+    y: 0,
+    width: conOperacion ? anchoSvg - anchoPosicion / 2 : anchoSvg,
+    height: altoSvg
+  }))
+  //inicio de relleno de pisos
+  detallePisos = detallePisos.map(x => getDetallePiso(x)).forEach((detallePiso, piso) => {
+    let centroYPiso = (piso + 1) * altoPosicion
+    switch (detallePiso.tipo) {
+      case 'numero':
+        let yNumero = centroYPiso + fontSize / 3
+        let grupoT = crearElemento('g', {
+          id: `Piso${piso + 1}`,
+          textAnchor: 'middle',
+          fontSize: fontSize,
+          fill: '#E58433'
+        })
+        imagenTabla.detalle.forEach((posicion, index) => {
+          let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
+          let numero = detallePiso.detalle[posicion]
+          grupoT.appendChild(crearElementoDeTexto({
+            //si es con operacion, hay que mostrar canje, es la primera fila y hay un numero en el objeto de canje pàra la columna especifica
+            x: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? centroXPiso - fontSize / 4 : centroXPiso,
+            y: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? yNumero + fontSize / 4 : yNumero,
+            style: 'font-family:Open-Sans-Reg;'
+          }, numero ? numero : 0))
+        })
+        container.appendChild(grupoT)
+        break
+      case 'fichas amarillas':
+        let grupoFA = crearElemento('g', {
+          id: `Piso${piso + 1}`
+        })
+        imagenTabla.detalle.forEach((posicion, index) => {
+          let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
+          grupoFA.appendChild(crearReferenciaAElemento(
+            detallePiso.tipo.replace(' ', '-') + '-' + detallePiso.detalle[posicion], {
+            x: centroXPiso - altoPosicionConMargen / 2,
+            y: centroYPiso - altoPosicionConMargen / 2
+          }))
+        })
+        container.appendChild(grupoFA)
+        break
+      case 'fichas rojas':
+        let grupoFR = crearElemento('g', {
+          id: `Piso${piso + 1}`
+        })
+        imagenTabla.detalle.forEach((posicion, index) => {
+          let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
+          grupoFR.appendChild(crearReferenciaAElemento(
+            detallePiso.tipo.replace(' ', '-') + '-' + detallePiso.detalle[posicion], {
+            x: centroXPiso - altoPosicionConMargen / 2,
+            y: centroYPiso - altoPosicionConMargen / 2
+          }))
+        })
+        container.appendChild(grupoFR)
+        break
+      case 'bloques':
+        let grupoB = crearElemento('g', {
+          id: `Piso${piso + 1}`
+        })
+        imagenTabla.detalle.forEach((posicion, index) => {
+          let imagen = document.getElementById(detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion]).children[0]
+          let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
+          grupoB.appendChild(crearReferenciaAElemento(
+            detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion], {
+            x: centroXPiso - Number(imagen.getAttribute('width')) / 2,
+            y: centroYPiso - Number(imagen.getAttribute('height')) / 2
+          }))
+        })
+        container.appendChild(grupoB)
+        break
+      default:
+        //no soportado
+        break
+    }
+  })
+  //dibuja la operacion y los canjes
+  if (conOperacion) {
+    let simbolo = tipoOperacion === 'suma' ? '+' : '-'
+    let centroYUltimoPiso = (pisoTabla - 1) * altoPosicion
+    container.appendChild(crearElementoDeTexto({
+      x: (anchoPosicion / 2) / 2,
+      y: centroYUltimoPiso + (fontSize * 1.2) / 3,
+      style: 'font-family:Open-Sans-Reg;',
+      textAnchor: 'middle',
+      fontSize: fontSize * 1.2,
+      fill: '#E58433'
+    }, simbolo))
+
+    let yLineaOperacion = (pisoTabla - 1) * altoPosicion + altoPosicion / 2
+    container.appendChild(crearElemento('rect', {
+      x: 0,
+      y: yLineaOperacion - 2,
+      width: anchoSvg,
+      height: 4,
+      stroke: '#E58433',
+      fill: '#E58433'
+    }))
+    imagenTabla.detalle.forEach((posicion, columna) => {
+      if (detalleCanje[posicion]) {
+        let numero = regexFunctions(regex(detalleCanje[posicion], vars, vt))
+        if (numero) {
+          let centroXPiso = anchoPosicion + columna * anchoPosicion
+          container.appendChild(crearElementoDeTexto({
+            x: centroXPiso + fontSize / 2,
+            y: altoPosicion + fontSize / 4,
+            style: 'font-family:Open-Sans-Reg;',
+            textAnchor: 'middle',
+            fontSize: fontSize,
+            fill: '#E58433'
+          }, numero))
+
+          container.appendChild(crearElemento('line', {
+            x1: centroXPiso,
+            y1: altoPosicion - fontSize / 4.5,
+            x2: centroXPiso - fontSize / 1.8,
+            y2: altoPosicion + altoPosicion / 2,
+            stroke: '#E58433',
+            strokeWidth: '3'
+          }))
+        }
+      }
+    })
+  }
+
+  //FUNCIONES -------------------
+  function getDetallePiso(x) {
+    let numeroCompleto = x.numeroCompleto === 'si' ? true : false
+    let detalle = {}
+    if (numeroCompleto) {
+      let numero = regexFunctions(regex(x.detalle, vars, vt)).toString().replace('.', '').split('')
+      tiposTabla.find(x => x.id === tipoTabla).detalle.forEach((posicion, index) => {
+        detalle[posicion] = numero[index]
+      })
+    } else {
+      Object.keys(x.detalle).forEach(posicion => {
+        detalle[posicion] = regexFunctions(regex(x.detalle[posicion], vars, vt))
+      })
+    }
+    return {
+      tipo: x.tipo,
+      detalle
+    }
+  }
+
+  async function getImagenesPorCargar() {
+    let imagenes = []
+    detallePisos.forEach(piso => {
+      switch (piso.tipo) {
+        case 'bloques':
+          Object.keys(piso.detalle).forEach(posicion => {
+            piso.detalle[posicion] > 0 && imagenes.push({
+              id: piso.tipo + '-' + posicion + '-' + piso.detalle[posicion],
+              url: urlImagenesPosicionalesBloques.find(x => x.posicion === posicion).url.replace('#', piso.detalle[posicion])
+            })
+          })
+          break
+        case 'fichas amarillas':
+          Object.keys(piso.detalle).forEach(posicion => {
+            piso.detalle[posicion] > 0 && imagenes.push({
+              id: piso.tipo.replace(' ', '-') + '-' + piso.detalle[posicion],
+              url: urlImgsFichasAmarillas.replace('#', piso.detalle[posicion])
+            })
+          })
+          break
+        case 'fichas rojas':
+          Object.keys(piso.detalle).forEach(posicion => {
+            piso.detalle[posicion] > 0 && imagenes.push({
+              id: piso.tipo.replace(' ', '-') + '-' + piso.detalle[posicion],
+              url: urlImgsFichasRojas.replace('#', piso.detalle[posicion])
+            })
+          })
+          break
+        default:
+          //no debe ingresar texto
+          break
+      }
+    })
+    imagenes = imagenes.reduce((acc, current) => {
+      const x = acc.find(item => item.id === current.id)
+      if (!x) {
+        return acc.concat([current])
+      } else {
+        return acc
+      }
+    }, [])
+    let imagenesCargadas = await Promise.all(imagenes.map(x => cargaImagen(x.url)))
+    imagenes = imagenes.map((x, i) => ({
+      id: x.id,
+      url: x.url,
+      height: imagenesCargadas[i].height,
+      width: imagenesCargadas[i].width
+    }))
+    let imagenTabla = tiposTabla.find(x => x.id === tipoTabla)
+    let imagenTablaCargada = await cargaImagen(imagenTabla.url)
+    imagenTabla = {
+      ...imagenTabla,
+      height: imagenTablaCargada.height,
+      width: imagenTablaCargada.width
+    }
+    return {
+      imagenes,
+      imagenTabla
+    }
+  }
+
+  function crearElementoDeImagen(src, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'image')
+    element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
+  function crearReferenciaAElemento(id, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'use')
+    element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${id}`)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
+  function crearElemento(nombre, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', nombre)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
+  function crearElementoDeTexto(atributos, texto) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    let textNode = document.createTextNode(texto)
+    element.appendChild(textNode)
+    return element
+  }
 }
