@@ -69,9 +69,8 @@ table {
   }
 
   .contenido {
-    max-height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
-    height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
-    overflow: auto;
+    max-height: 150vh; /*header 50px + 10px de margen + footer mobile 60 px*/
+    height: 150vh; /*header 50px + 10px de margen + footer mobile 60 px*/
     overflow-y: scroll;
     margin-bottom: 0;
   }
