@@ -40,8 +40,18 @@ li {
 }
 
 canvas {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: -40px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: -1;
+}
+
+.tran {
+    background: rgba(0, 0, 0, 0);
+}
+
+.mascinco {
+    padding-bottom: 40px
 }
 
 img {
@@ -54,8 +64,10 @@ table img {
 }
 
 table {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    display: inline-block;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    z-index: 1;
 }
 
 @font-face {
@@ -226,11 +238,6 @@ table {
         border-radius: 26px;
         height: 53px;
     }
-    .opcionradio input[type=radio]+label:hover {
-        background: #b9e8ff;
-        color: #1caff6;
-        padding: 8px 12px;
-    }
 }
 
 
@@ -295,17 +302,9 @@ hr.sidelinebar {
     color: #4d8b4b;
 }
 
-
-/* ANTES
 .pieIncorrecta {
-  background-color: #F6B3B1;
-  color: #d33131;
-}
-*/
-
-.pieIncorrecta {
-    color: #ff0000;
-    background-color: #fbdfe3;
+    background-color: #F6B3B1;
+    color: #d33131;
 }
 
 #btnConsulta {
@@ -523,28 +522,10 @@ hr.sidelinebar {
     width: 100%;
 }
 
-
-/* ANTES
-.opcionradio input[type=radio] + label:before {
-  height: 20px;
-  width: 20px;
-  border: 2px solid #bfbfbf;
-  border-radius: 50%;
-  margin-right: 4px;
-  margin-top: 3px;
-  margin-bottom: -4px;
-  content: " ";
-  display: inline-block;
-  background-color: #fff;
-  transition: 0.3s;
-  cursor: pointer;
-}
-*/
-
 .opcionradio input[type=radio]+label:before {
     height: 20px;
     width: 20px;
-    border: 2px solid #000000;
+    border: 2px solid #bfbfbf;
     border-radius: 50%;
     margin-right: 4px;
     margin-top: 3px;
@@ -575,7 +556,7 @@ hr.sidelinebar {
 /* INICIO DISEÑO TABLAS SIMPLES */
 
 .tabla {
-    width: 100%;
+    *width: 100%;
 }
 
 .tabla td {
@@ -584,10 +565,6 @@ hr.sidelinebar {
     text-align: center;
     vertical-align: middle;
     padding: 5px;
-}
-
-.tabla p {
-    margin-bottom: 0;
 }
 
 .tabla input {
@@ -871,14 +848,17 @@ hr.sidelinebar {
     }
 }
 
-@media(max-width: 510px) {
+@media(max-width: 410px) {
     .tabla {
         width: 100%;
+        display: table;
+        margin-bottom: 10px;
     }
 }
 
-@media(min-width: 510px) {
+@media(min-width: 411px) {
     .tabla {
-        width: 460px;
+        width: 370px;
+        display: table;
     }
 }
