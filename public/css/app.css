@@ -69,9 +69,8 @@ table {
   }
 
   .contenido {
-    max-height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
-    height: calc(100vh - 120px); /*header 50px + 10px de margen + footer mobile 60 px*/
-    overflow: auto;
+    max-height: calc(100vh + 170px); /*header 50px + 10px de margen + footer mobile 60 px*/
+    height: calc(100vh + 170px); /*header 50px + 10px de margen + footer mobile 60 px*/
     overflow-y: scroll;
     margin-bottom: 0;
   }
@@ -505,7 +504,7 @@ hr.sidelinebar {
 .input-num-y-den {
   font-size: 35px;
   text-align: center;
-  width: 45px;
+  width: 75px;
   height: 40px;
   margin: 2px;
   border: 2px solid #cfcfcf;
