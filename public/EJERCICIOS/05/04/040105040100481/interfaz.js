@@ -9,7 +9,7 @@ ejeF = idEjercicio.substring(2, 4),
 errFre = '', 
 feed = '', 
 check = false;
-var _TIPO_INPUT_ = '';
+var _TIPO_INPUT_ = '', _VALIDACIONES_INPUT_TABLA_ = null;
 var tmpProgreso, tmpTotal, hiddenBarraDatos = window.parent.parent.barraProgreso;
 
 const feedCorrectas = ['¡Muy Bien!','¡Excelente!','¡Sigue así!'];
@@ -34,15 +34,9 @@ if(hiddenBarraDatos) {
 
 barraDeProgreso();
 $(document).ready(function(){
-	$('.contenido input[type=text]').on("cut copy paste contextmenu",function(e) {
+	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
 		e.preventDefault();
  	});
-	window.addEventListener("keyup", function(event){
-		event.preventDefault();
-		if(event.keyCode === 13) {
-			!btnRespuesta.disabled && btnRespuesta.click();
-		}
-	});
 });
 
 function validaRespuesta() { //Validar respuesta
@@ -54,95 +48,147 @@ function validaRespuesta() { //Validar respuesta
 		errFre = respuestaObj ? respuestaObj.errFrec : true;
 	} else if (_TIPO_INPUT_ === 'input') {
 		var inputs = document.querySelectorAll(".contenido input[name='answer']");
-		if(inputs.length === 1) {//si solo hay un input de texto
+		if(inputs.length === 1 && !_VALIDACIONES_INPUT_TABLA_) {//si solo hay un input de texto
 			evaluaInputTexto(inputs[0]);
 		} else {//si hay mas de un input de texto
-			for(var input of inputs) {
+			/*for(var input of inputs) {
 				coloreaInputTexto(input);
-			}
-			for(var input of inputs) {
-				evaluaInputTexto(input);
-				if(errFre !== null) {
-					break;
-				}
-			}
+			}*/
+			evaluaInputsEjercicio();
 		}
 	}
 }
 
-function coloreaInputTexto(inputElement) {
-	var content = JSON.parse(inputElement.getAttribute('data-content'));
+function evaluaInputTexto(inputElement) {	
+	var content = JSON.parse(b64_to_utf8(inputElement.getAttribute('data-content')));
 	var match = false;
 	switch(content.tipoInput){
 		case 'numero':
 			var resp = inputElement.value.replace(/\s/g, '');
 			for(var answer of content.answers) {
 				if(resp === answer.respuesta) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
+					feed = answer.feedback;
+					errFre = answer.errFrec;
 					match = true;
 					break;
-				}
-			}
-			break;
-		case 'texto':
-			var resp = inputElement.value;
+				}	
+			}	
+			break;	
+		case 'texto':	
+			var resp = inputElement.value
 			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
-				if(checkWord(resp, numberArr)) {
-					if(answer.errFrec !== null) {
-						inputElement.classList.add('inputTexto-incorrecto');
-					} else {
-						inputElement.classList.add('inputTexto-correcto');
-					}
-					match = true;
+				if(String(resp).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "") === String(answer.respuesta).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")) {
+					feed = answer.feedback;	
+					errFre = answer.errFrec;	
+					match = true;	
 					break;
 				}
 			}
-			break;
+			break
+		case 'texto-numerico':
+			var resp = inputElement.value;	
+			for(var answer of content.answers) {	
+				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');	
+				if(checkWord(resp, numberArr)) {
+					feed = answer.feedback;	
+					errFre = answer.errFrec;	
+					match = true;	
+					break;
+				}
+			}
+			break
 	}
 	if(!match) {
 		feed = content.feedbackDefecto;
 		errFre = content.errFrecDefecto;
+	}
+}
+
+function coloreaInputTextoPorDefecto(inputElement) {
+	var content = JSON.parse(inputElement.getAttribute('data-content'));
+	var match = false;
+	switch(content.tipoInput){
+		case 'numero':
+			var resp = inputElement.value.replace(/\s/g, '');
+			b64_to_utf8(content.correctas).split(',').forEach(function(correcta){
+				if(resp === correcta) {
+					inputElement.classList.add('inputTexto-correcto');
+					match = true;
+				}
+			})
+			break;
+		case 'texto':
+			var resp = inputElement.value;
+			b64_to_utf8(content.correctas).split(',').forEach(function(correcta){
+				var numberArr = correcta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
+				if(checkWord(resp, numberArr)) {
+					inputElement.classList.add('inputTexto-correcto');
+				}
+ 			});
+	}
+	if(!match) {
 		inputElement.classList.add('inputTexto-incorrecto');
 	}
 }
 
-function evaluaInputTexto(inputElement) {
-	var content = JSON.parse(inputElement.getAttribute('data-content'));
-	var match = false;
-	switch(content.tipoInput){
-		case 'numero':
-			var resp = inputElement.value.replace(/\s/g, '');
-			for(var answer of content.answers) {
-				if(resp === answer.respuesta) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
+function evaluaInputsEjercicio() {
+	let { respuestas, errFrecDefecto, feedbackDefecto } = _VALIDACIONES_INPUT_TABLA_;
+	for(let i = 0; i < respuestas.length; i++) {
+		let { validaciones, errFrec, feedback } = respuestas[i], coincidenTodas = true;
+		validaciones.forEach(function(val, index){
+			let input = document.getElementById(val.inputId);
+			let content = JSON.parse(input.getAttribute('data-content'))
+			switch(content.tipoInput){
+				case 'numero':
+					if(input.value.replace(/\s/g, '') !== val.valor && val.valor !== '-any-'){
+						coincidenTodas = false;
+					}
 					break;
-				}
+				case 'texto':
+					var numberArr = correcta.length === 3 ? ('0'+val.valor).split('') : val.valor.split('');
+					if(!checkWord(input.value, numberArr) && val.valor !== '-any-') {
+						coincidenTodas = false
+					}
+			}
+		})
+		if(coincidenTodas) {
+			feed = feedback;
+			errFre = errFrec;
+			if(errFre !== null) {
+				coloreaInputsTextoPorCoincidencia(respuestas[i]) //colorear input
+			} else {
+				$(".contenido input[name='answer']").addClass('inputTexto-correcto')
 			}
 			break;
-		case 'texto':
-			var resp = inputElement.value;
-			for(var answer of content.answers) {
-				var numberArr = answer.respuesta.length === 3 ? ('0'+answer.respuesta).split('') : answer.respuesta.split('');
-				if(checkWord(resp, numberArr)) {
-					feed = answer.feedback;
-					errFre = answer.errFrec;
-					match = true;
-					break;
-				}
+		}
+	}
+	if(errFre === '') {
+		feed = feedbackDefecto;
+		errFre = errFrecDefecto;
+		var inputs = document.querySelectorAll(".contenido input[name='answer']");
+		for(var input of inputs) {
+			coloreaInputTextoPorDefecto(input);
+		}
+	}
+}
+
+function coloreaInputsTextoPorCoincidencia(coincidencia) { // colorea inputs de acuerdo a 
+	let { validaciones, errFrec, feedback } = coincidencia
+	validaciones.forEach(function(val, index){
+		var { color, inputId } = val
+		var input = document.getElementById(inputId)
+		if(color === 'ok') {
+			input.classList.add('inputTexto-correcto')
+		} else if(color === 'bad') {
+			input.classList.add('inputTexto-incorrecto')
+		} else {
+			if(input.value.replace(/\s/g, '') == color.correcta) {
+				input.classList.add('inputTexto-correcto')
+			} else {
+				input.classList.add('inputTexto-incorrecto')
 			}
-			break;
-	}
-	if(!match) {
-		feed = content.feedbackDefecto;
-		errFre = content.errFrecDefecto;
-	}
+		}
+	})
 }
 
 function answer() { 
@@ -326,16 +372,19 @@ function continuarEjercicio() {//permite continuar con el segundo intento en DES
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
 		$('.radio-div_selected').removeClass('radio-div_selected');
+		$('section.contenido').find('input').prop('disabled', false);
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
-			$('section.contenido').find('input[type=text]').val('');
+			$('section input[type=text]').val('');
+			$('section input[type=text]').prop('disabled', false);
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
+	
 }
 //handle modals
 function openModalFeedback(feedback, correcto) {
@@ -371,10 +420,19 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 	if(_TIPO_INPUT_ === 'radio') {
 		$('input:checked')[0].checked = false;
 		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('section.contenido').find('input').prop('disabled', false);
 	} else if(_TIPO_INPUT_ === 'input') {
-		$('section.contenido').find('input[type=text]').val('');
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section.contenido').find('input[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		} else {
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
 	}
-	$('section.contenido').find('input').prop('disabled', false);
 	btnRespuesta.disabled = true;
 }
 
@@ -393,7 +451,6 @@ function cambiaRadios(e) {
 }
 function cambiaRadioImagen(e) {
 	_TIPO_INPUT_ = 'radio';
-	console.log('seleccionado');
 	var seleccionado = document.querySelector('.radio-div_selected');
 	if(seleccionado) {
 		seleccionado.classList.remove('radio-div_selected');
@@ -405,38 +462,23 @@ function seleccionaImagenRadio(e, labelId) {
 	document.getElementById(labelId).click();
 }
 function cambiaInputTexto(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
-	}
-	var regex = /[a-zA-Z]|\.|ñ|\s/;
-	if( !regex.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
-	} else {
-		_TIPO_INPUT_ = 'input';
-		checkTexts();
+	var validacion = (e.keyCode >= 48 && e.keyCode <= 57) //numero
+		|| (e.keyCode >= 65 && e.keyCode <= 90) //letra mayuzc
+		|| (e.keyCode >= 97 && e.keyCode <= 122) //letra minusc
+		|| (e.keyCode == 241 || e.keyCode == 209) //ñ y Ñ
+		|| (e.keyCode == 225 || e.keyCode == 233 || e.keyCode == 237 || e.keyCode == 243 || e.keyCode == 250) //áéíóú
+		|| (e.keyCode == 193 || e.keyCode == 201 || e.keyCode == 205 || e.keyCode == 211 || e.keyCode == 218) //ÁÉÍÓÚ
+		|| (e.keyCode == 32) //espacio
+	if( !validacion ) {
+		e.preventDefault();
+		return false;
 	}
 }
 function cambiaInputNumerico(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
-	}
-	var regex = /[0-9]|\./;
-	if( !regex.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
+	var validacion = e.keyCode >= 48 && e.keyCode <= 57
+	if(!validacion) {
+		e.preventDefault();
+		return false;
 	}
 }
 
@@ -452,42 +494,22 @@ function formatearNumero(e) {
 		}
 	} 
 	e.target.value = valor;
-	_TIPO_INPUT_ = 'input';
 	checkTexts();
-}
-
-function cambiaInputAlfanumerico(e) {
-	var theEvent = e || window.event;
-	// Handle paste
-	if (theEvent.type === 'paste') {
-				key = event.clipboardData.getData('text/plain');
-	} else {
-	// Handle key press
-				var key = theEvent.keyCode || theEvent.which;
-				key = String.fromCharCode(key);
-	}
-	var regexNumero = /[0-9]|\./;
-	var regexTexto = /[a-zA-Z]|\.|ñ|\s/;
-	if( !regexNumero.test(key) && !regexTexto.test(key) ) {
-		 theEvent.returnValue = false;
-		 if(theEvent.preventDefault) theEvent.preventDefault();
-	} else {
-		_TIPO_INPUT_ = 'input';
-		checkTexts();
-	}
 }
 
 function checkTexts() {
 	var todasRespondidas = true;
-	$('input[type=text]:not([disabled])').each(function(){
-		if($(this).val() == ''){
+	let inputs = document.querySelectorAll('input[type=text]:not([disabled])')
+	for(let i = 0; i < inputs.length; i++) {
+		if(inputs[i].value === '') {
 			todasRespondidas = false;
-			return false;
+			break
 		}
-	});
+	}
 	if(!check || respGeneral >= 2) {
 		btnRespuesta.disabled = !todasRespondidas;
 	}
+	_TIPO_INPUT_ = 'input';
 }
 
 /*

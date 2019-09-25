@@ -576,7 +576,8 @@ hr.sidelinebar {
   font-size: 20px;
   color: #000000;
   vertical-align: middle;
-  padding: 0px;
+  padding: 8px;
+  
 }
 
 .tabla img {
