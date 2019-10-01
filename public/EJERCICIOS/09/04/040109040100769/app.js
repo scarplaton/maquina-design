@@ -3,212 +3,213 @@ var contenidoBody = JSON.parse(document.body.getAttribute('data-content').replac
 var versionBody = JSON.parse(document.body.getAttribute('data-version').replace(/\'/g, '\"'));
 var svgGlosa = []
 
-$(document).ready(function () {
-  dibujaHtml();
-  print();
+$(document).ready(function() {
+    dibujaHtml();
+    print();
 });
 
 function imagenEnTexto(imgsrc, alto, ancho) {
-  return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
+    return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
 }
 
 function repeticiones(cantidad, numero, signo) {
-  cantidad = Number(cantidad);
-  let con = "";
-  for (let i = 0; i < cantidad; i++) {
-    con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${signo} `;
-  }
-  return con;
+    cantidad = Number(cantidad);
+    let con = "";
+    for (let i = 0; i < cantidad; i++) {
+        con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${signo} `;
+    }
+    return con;
 }
 
 function repeticionesImg(cantidad, imgsrc, alto, ancho, signo) {
-  cantidad = Number(cantidad);
-  let con = "";
-  for (let i = 0; i < cantidad; i++) {
-    con += i + 1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
-  }
-  return con;
+    cantidad = Number(cantidad);
+    let con = "";
+    for (let i = 0; i < cantidad; i++) {
+        con += i + 1 === cantidad ? ` <img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ` : `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/> ${signo} `;
+    }
+    return con;
 
 }
 
 function injectHtml(elemento, texto, styles) {
-  return `<${elemento} style="${styles}">${texto}</${elemento}>`;
+    return `<${elemento} style="${styles}">${texto}</${elemento}>`;
 }
 
 function b64_to_utf8(str) {
-  return decodeURIComponent(escape(window.atob(str)));
+    return decodeURIComponent(escape(window.atob(str)));
 }
 
 function utf8_to_b64(str) {
-  return window.btoa(unescape(encodeURIComponent(str)));
+    return window.btoa(unescape(encodeURIComponent(str)));
 }
 
 function shuffle(arr, t = 10) {
-  for (let i = 0; i < t; i++) {
-    arr = arr.sort(() => (.5 - Math.random()));
-  };
-  return arr
+    for (let i = 0; i < t; i++) {
+        arr = arr.sort(() => (.5 - Math.random()));
+    };
+    return arr
 }
 
 function replace(texto, variables) {
-  var result = texto.toString().replace(/\$[a-z]/g, function (coincidencia) { //coincidencia => '$a'
-    for (var indexVar = 0; indexVar < variables.length; indexVar++) {
-      if (variables[indexVar].var == coincidencia[1]) {
-        return variables[indexVar].var;
-      }
-    }
-  });
-  return result;
+    var result = texto.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
+        for (var indexVar = 0; indexVar < variables.length; indexVar++) {
+            if (variables[indexVar].var == coincidencia[1]) {
+                return variables[indexVar].var;
+            }
+        }
+    });
+    return result;
 }
 
 function regex(theInput, theVariables, isTutorial) {
-  var result = theInput.toString().replace(/\$[a-z]/g, function (coincidencia) { //coincidencia => '$a'
-    for (var indexVar = 0; indexVar < theVariables.length; indexVar++) {
-      if (theVariables[indexVar].var == coincidencia[1]) {
-        return isTutorial ? theVariables[indexVar].vt : theVariables[indexVar].val;
-      }
-    }
-  });
-  return result;
+    var result = theInput.toString().replace(/\$[a-z]/g, function(coincidencia) { //coincidencia => '$a'
+        for (var indexVar = 0; indexVar < theVariables.length; indexVar++) {
+            if (theVariables[indexVar].var == coincidencia[1]) {
+                return isTutorial ? theVariables[indexVar].vt : theVariables[indexVar].val;
+            }
+        }
+    });
+    return result;
 }
 
 function repeticiones(cantidad, numero, proceso) {
-  cantidad = Number(cantidad);
+    cantidad = Number(cantidad);
 
-  let con = "";
-  for (let i = 0; i < cantidad; i++) {
-    con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${proceso} `;
-  }
-  return con;
+    let con = "";
+    for (let i = 0; i < cantidad; i++) {
+        con += i + 1 === cantidad ? ` ${numero} ` : ` ${numero} ${proceso} `;
+    }
+    return con;
 }
 
 function numeroAPartitivo(numero, plural) {
-  let s = plural === 'si' ? 's' : ''
-  switch (numero) {
-    case '2':
-      return `medio${s}`
-    case '3':
-      return `tercio${s}`
-    case '4':
-      return `cuarto${s}`
-    case '5':
-      return `quinto${s}`
-    case '6':
-      return `sexto${s}`
-    case '7':
-      return `séptimo${s}`
-    case '8':
-      return `octavo${s}`
-    case '9':
-      return `noveno${s}`
-    case '10':
-      return `décimo${s}`
-    case '11':
-      return `onceavo${s}`
-    case '12':
-      return `doceavo${s}`
-    default:
-      return `[[[hay que agregar el partitivo]]]`
-  }
+    let s = plural === 'si' ? 's' : ''
+    switch (numero) {
+        case '2':
+            return `medio${s}`
+        case '3':
+            return `tercio${s}`
+        case '4':
+            return `cuarto${s}`
+        case '5':
+            return `quinto${s}`
+        case '6':
+            return `sexto${s}`
+        case '7':
+            return `séptimo${s}`
+        case '8':
+            return `octavo${s}`
+        case '9':
+            return `noveno${s}`
+        case '10':
+            return `décimo${s}`
+        case '11':
+            return `onceavo${s}`
+        case '12':
+            return `doceavo${s}`
+        default:
+            return `[[[hay que agregar el partitivo]]]`
+    }
 }
 
 
 
 function regexFunctions(text) {
-  var result = text.replace(/\/\[.*?\/\]/g, function (coincidencia) { //coincidencia => '{funcion()}' o '[latex]'
-    var final = coincidencia.length - 4;
-    var funcion = coincidencia.substr(2, final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
-    try {
-      return eval(funcion)
-    } catch (error) {
-      /*console.log(error);
-      console.log(funcion)*/
-      return coincidencia;
-    }
-  })
-  return result;
+    var result = text.replace(/\/\[.*?\/\]/g, function(coincidencia) { //coincidencia => '{funcion()}' o '[latex]'
+        var final = coincidencia.length - 4;
+        var funcion = coincidencia.substr(2, final).replace(/&gt;/g, '>').replace(/&lt;/, '<');
+        try {
+            return eval(funcion)
+        } catch (error) {
+            /*console.log(error);
+            console.log(funcion)*/
+            return coincidencia;
+        }
+    })
+    return result;
 }
 
 function espacioMilesRegex(texto) {
-  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
-    let entero = coincidencia.split('.')[0]
-    let decimal = coincidencia.split('.')[1]
-    let enteroEspaciado = entero.length >= 4 ? '' : entero
-    if (entero.length >= 4) {
-      let enteroReverse = entero.split('').reverse()
-      let count = 1
-      enteroReverse.forEach(function (numero) {
-        if (count === 3) {
-          enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
-          count = 1
-        } else {
-          enteroEspaciado = numero + enteroEspaciado
-          count++;
+    return texto.replace(/\d{1,}(\.\d{1,})?/g, function(coincidencia) { //coincidencia => 2000
+        let entero = coincidencia.split('.')[0]
+        let decimal = coincidencia.split('.')[1]
+        let enteroEspaciado = entero.length >= 4 ? '' : entero
+        if (entero.length >= 4) {
+            let enteroReverse = entero.split('').reverse()
+            let count = 1
+            enteroReverse.forEach(function(numero) {
+                if (count === 3) {
+                    enteroEspaciado = '&nbsp;' + numero + enteroEspaciado
+                    count = 1
+                } else {
+                    enteroEspaciado = numero + enteroEspaciado
+                    count++;
+                }
+            })
         }
-      })
-    }
-    return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
-  })
+        return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
+    })
 }
+
 function espacioMilesRegexx(texto) {
-  return texto.replace(/\d{1,}(\.\d{1,})?/g, function (coincidencia) { //coincidencia => 2000
-    let entero = coincidencia.split('.')[0]
-    let decimal = coincidencia.split('.')[1]
-    let enteroEspaciado = entero.length >= 4 ? '' : entero
-    if (entero.length >= 4) {
-      let enteroReverse = entero.split('').reverse()
-      let count = 1
-      enteroReverse.forEach(function (numero) {
-        if (count === 3) {
-          enteroEspaciado = ' ' + numero + enteroEspaciado
-          count = 1
-        } else {
-          enteroEspaciado = numero + enteroEspaciado
-          count++;
+    return texto.replace(/\d{1,}(\.\d{1,})?/g, function(coincidencia) { //coincidencia => 2000
+        let entero = coincidencia.split('.')[0]
+        let decimal = coincidencia.split('.')[1]
+        let enteroEspaciado = entero.length >= 4 ? '' : entero
+        if (entero.length >= 4) {
+            let enteroReverse = entero.split('').reverse()
+            let count = 1
+            enteroReverse.forEach(function(numero) {
+                if (count === 3) {
+                    enteroEspaciado = ' ' + numero + enteroEspaciado
+                    count = 1
+                } else {
+                    enteroEspaciado = numero + enteroEspaciado
+                    count++;
+                }
+            })
         }
-      })
-    }
-    return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
-  })
+        return `${enteroEspaciado}${decimal ? ',' : ''}${decimal ? decimal : ''}`
+    })
 }
 
 function cargaImagen(src) {
-  return new Promise(function (resolve, reject) {
-    var img = new Image();
-    img.src = src;
-    img.onload = function () {
-      resolve(img);
-    }
-    img.onerror = function () {
-      reject('no pasa nada');
-    }
-  });
+    return new Promise(function(resolve, reject) {
+        var img = new Image();
+        img.src = src;
+        img.onload = function() {
+            resolve(img);
+        }
+        img.onerror = function() {
+            reject('no pasa nada');
+        }
+    });
 }
 
 function cargaFuente(nombre, src) {
-  return new Promise(function (resolve, reject) {
-    var font = new FontFace(nombre, `url('${src}')`, {});
-    font.load().then(function (loadedFont) {
-      document.fonts.add(loadedFont);
-      loadedFont.load();
-      loadedFont.loaded.then(() => {
-        ////console.log('fuente ', nombre, ' cargada');
-      }).catch(error => {
-        ////console.log('errror al cargar imagen => ', error);
-      });
-      document.fonts.ready.then((fontFaceSet) => {
-        ////console.log(fontFaceSet.size, 'FontFaces loaded.');
-        resolve(nombre);
-      })
-    }).catch(function (error) {
-      reject(error);
+    return new Promise(function(resolve, reject) {
+        var font = new FontFace(nombre, `url('${src}')`, {});
+        font.load().then(function(loadedFont) {
+            document.fonts.add(loadedFont);
+            loadedFont.load();
+            loadedFont.loaded.then(() => {
+                ////console.log('fuente ', nombre, ' cargada');
+            }).catch(error => {
+                ////console.log('errror al cargar imagen => ', error);
+            });
+            document.fonts.ready.then((fontFaceSet) => {
+                ////console.log(fontFaceSet.size, 'FontFaces loaded.');
+                resolve(nombre);
+            })
+        }).catch(function(error) {
+            reject(error);
+        });
     });
-  });
 }
 
 // ---INICIO--- funciones para modificar texto en texto
 function fraccion(entero, numerador, denominador) {
-  return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" mathcolor="teal" mathbackground="yellow" mathsize="big">
+    return `<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline" mathcolor="teal" mathbackground="yellow" mathsize="big">
 	${entero > 0 ? `<mn>${Number(entero)}</mn>` : ''}
 	<mrow>
 		<mfrac>

@@ -555,8 +555,8 @@ function insertarInputFraccion(config) {
   const { enteroMaxLen, numeradorMaxLen, denominadorMaxLen, validaciones, enteroCorrecta, numeradorCorrecta, denominadorCorrecta } = params
   let vars = vt ? variables : versions
   //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
-  //_VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
-  let inputFraccion = `<table class="mx-auto d-block">
+  _VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+  let inputFraccion = `<table class="mx-auto">
 	<tbody>
 		<tr>
 			<td rowspan="2">
@@ -5608,7 +5608,7 @@ async function tabPos(config) {
   //container.innerHTML = ''
   //container.style.border = '1px solid #000'
   let vars = vt ? variables : versions
-  let { tipoTabla, pisoTabla, detallePisos, conOperacion, tipoOperacion, canje, detalleCanje } = params
+  let { tipoTabla, pisoTabla, detallePisos, conOperacion, tipoOperacion, canje, detalleCanje, imagenesParaPosiciones } = params
 
   let tiposTabla = [{
     id: 'UMCDU',
@@ -5872,6 +5872,30 @@ async function tabPos(config) {
     })
   }
 
+  if (imagenesParaPosiciones && imagenesParaPosiciones.length > 0) {
+    let imagenesCargadas = await Promise.all(imagenesParaPosiciones.map(async function (x) {
+      let src = regexFunctions(regex(x.src, vars, vt))
+      let imagen = await cargaImagen(src)
+      return {
+        nombre: src.split('/').pop().replace('.svg', ''),
+        piso: Number(x.piso),
+        posicion: x.posicion,
+        src: src,
+        alto: Number(x.alto),
+        ancho: Number(x.alto) * imagen.width / imagen.height
+      }
+    }))
+    imagenesCargadas.forEach(imagen => {
+      let indicePosicion = tiposTabla.find(x => x.id === tipoTabla).detalle.indexOf(imagen.posicion)
+      container.appendChild(crearElementoDeImagen(imagen.src, {
+        x: indicePosicion * anchoPosicion + anchoPosicion / 2 + (conOperacion ? anchoPosicion / 2 : 0) - imagen.ancho / 2,
+        y: imagen.piso * altoPosicion - imagen.alto / 2,
+        height: imagen.alto,
+        width: imagen.ancho
+      }))
+    })
+  }
+
   //FUNCIONES -------------------
   function getDetallePiso(x) {
     let numeroCompleto = x.numeroCompleto === 'si' ? true : false
@@ -5898,25 +5922,28 @@ async function tabPos(config) {
       switch (piso.tipo) {
         case 'bloques':
           Object.keys(piso.detalle).forEach(posicion => {
-            piso.detalle[posicion] > 0 && imagenes.push({
-              id: piso.tipo + '-' + posicion + '-' + piso.detalle[posicion],
-              url: urlImagenesPosicionalesBloques.find(x => x.posicion === posicion).url.replace('#', piso.detalle[posicion])
+            let valor = regexFunctions(regex(piso.detalle[posicion], vars, vt))
+            valor > 0 && imagenes.push({
+              id: piso.tipo + '-' + posicion + '-' + valor,
+              url: urlImagenesPosicionalesBloques.find(x => x.posicion === posicion).url.replace('#', valor)
             })
           })
           break
         case 'fichas amarillas':
           Object.keys(piso.detalle).forEach(posicion => {
-            piso.detalle[posicion] > 0 && imagenes.push({
-              id: piso.tipo.replace(' ', '-') + '-' + piso.detalle[posicion],
-              url: urlImgsFichasAmarillas.replace('#', piso.detalle[posicion])
+            let valor = regexFunctions(regex(piso.detalle[posicion], vars, vt))
+            valor > 0 && imagenes.push({
+              id: piso.tipo.replace(' ', '-') + '-' + valor,
+              url: urlImgsFichasAmarillas.replace('#', valor)
             })
           })
           break
         case 'fichas rojas':
           Object.keys(piso.detalle).forEach(posicion => {
-            piso.detalle[posicion] > 0 && imagenes.push({
-              id: piso.tipo.replace(' ', '-') + '-' + piso.detalle[posicion],
-              url: urlImgsFichasRojas.replace('#', piso.detalle[posicion])
+            let valor = regexFunctions(regex(piso.detalle[posicion], vars, vt))
+            valor > 0 && imagenes.push({
+              id: piso.tipo.replace(' ', '-') + '-' + valor,
+              url: urlImgsFichasRojas.replace('#', valor)
             })
           })
           break

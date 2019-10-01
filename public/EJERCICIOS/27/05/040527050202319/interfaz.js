@@ -37,12 +37,6 @@ $(document).ready(function(){
 	$('.contenido input[type=text]').on("cut copy paste contextmenu drop",function(e) {
 		e.preventDefault();
  	});
-	window.addEventListener("keyup", function(event){
-		event.preventDefault();
-		if(event.keyCode === 13) {
-			!btnRespuesta.disabled && btnRespuesta.click();
-		}
-	});
 });
 
 function validaRespuesta() { //Validar respuesta
@@ -432,10 +426,12 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 		if(inputsCount === 1) {
 			$('section.contenido').find('input[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('input.inputTexto').prop('disabled', false);
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('input.inputTexto').prop('disabled', false);
 			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
 		}
 	}
@@ -443,11 +439,22 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 }
 
 function openModalGlosa() {
+	$('#modalGlosa').on('shown.bs.modal', function () {
+		svgGlosa.forEach(svg => {
+			svgPanZoom(svg, {
+				zoomEnabled: true,
+				minZomm: 1,
+				maxZoom: 2,
+				customEventsHandler: eventsHandler,
+				beforePan: beforePan
+			})
+		})
+	})
 	$('#modalGlosa').modal({
 		backdrop: 'static',
-    keyboard: false
+    	keyboard: false
 	});
-	$('#modalGlosa').modal('show');
+	$('#modalGlosa').modal('show')
 }
 
 //FUNCIONES DE LOS INPUTS DE RESPUESTA
@@ -468,8 +475,7 @@ function seleccionaImagenRadio(e, labelId) {
 	document.getElementById(labelId).click();
 }
 function cambiaInputTexto(e) {
-	var validacion = (e.keyCode >= 48 && e.keyCode <= 57) //numero
-		|| (e.keyCode >= 65 && e.keyCode <= 90) //letra mayuzc
+	var validacion = (e.keyCode >= 65 && e.keyCode <= 90) //letra mayuzc
 		|| (e.keyCode >= 97 && e.keyCode <= 122) //letra minusc
 		|| (e.keyCode == 241 || e.keyCode == 209) //ñ y Ñ
 		|| (e.keyCode == 225 || e.keyCode == 233 || e.keyCode == 237 || e.keyCode == 243 || e.keyCode == 250) //áéíóú
