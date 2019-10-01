@@ -1,6 +1,7 @@
 //datos ejercicio
 var contenidoBody = JSON.parse(document.body.getAttribute('data-content').replace(/\'/g, '\"'));
 var versionBody = JSON.parse(document.body.getAttribute('data-version').replace(/\'/g, '\"'));
+var svgGlosa = []
 
 $(document).ready(function () {
   dibujaHtml();
@@ -246,6 +247,7 @@ const FUNCIONES = [
     name: 'General', tag: 'general', fns: [
       { id: 'Insertar Texto', action: insertarTexto },
       { id: 'Insertar Input', action: insertarInput },
+      { id:'Insertar Input Fraccion', action: insertarInputFraccion },
       { id: 'Insertar Tabla', action: insertarTabla },
       { id: 'Insertar Imagen', action: insertarImagen }
     ]
@@ -288,7 +290,7 @@ function print() { //Dibujar ejercicios
                 params: m.params,
                 versions: versionBody.vars,
                 vt: false
-              });
+              }, m.tag == 'svg' ? n : undefined);
 
               break;
             }
@@ -546,6 +548,33 @@ function insertarInput(config) {
     }
   }
 }
+
+function insertarInputFraccion(config) {
+	const { container, params, variables, versions, vt } = config;
+  const { enteroMaxLen,numeradorMaxLen,denominadorMaxLen,validaciones,enteroCorrecta,numeradorCorrecta,denominadorCorrecta } = params
+  let vars = vt ? variables : versions
+  //console.log(regexFunctions(regex(b64_to_utf8(validaciones), vars, vt)))
+  //_VALIDACIONES_INPUT_TABLA_ = JSON.parse(regex(b64_to_utf8(validaciones), vars, vt));
+	let inputFraccion = `<table class="mx-auto d-block">
+	<tbody>
+		<tr>
+			<td rowspan="2">
+				<input type="text" id="input1" name="answer" autocomplete="off" class="input-numerador" maxlength="${enteroMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(enteroCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)" />
+			</td>
+			<td style="border-bottom: 2px solid black;">
+				<input type="text" id="input2" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${numeradorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(numeradorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="text" id="input3" name="answer" autocomplete="off" class="input-num-y-den" maxlength="${denominadorMaxLen}" data-content='${JSON.stringify({correctas:utf8_to_b64(regex(denominadorCorrecta,vars,vt)),tipoInput:'numero'})}' onkeypress="cambiaInputNumerico(event)" onkeyup="formatearNumero(event)"/>
+			</td>
+		</tr>
+	</tbody>
+</table>`
+	container.innerHTML = inputFraccion;
+}
+
 function insertarTabla(config) {
   const { container, params, variables, versions, vt } = config, 
     { table, cssclases, encabezado, lineasHorizontales, estiloLineaHorizontal, destacado, estiloFondoTD, anchoCols, tituloTabla, widthTabla, validaciones } = params, 
@@ -4875,19 +4904,24 @@ async function repeticionPicV2(config) {
   }
 }
 
-async function recta(config) {
+async function recta(config, tipo) {
 	const { container, params, variables, versions, vt } = config
 	//container.innerHTML = '' //quitar linea en funcionalidad de app.js
 	//container.style.border = '1px solid #000'
 	let vars = vt ? variables : versions
 
 	let { altoRecta,anchoRecta, 
-		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize, //diseño recta numerica
+		grosorRecta,grosorMarcas,colorRecta,largoFlechas,largoMarcas,fontSize,colorFuente, //diseño recta numerica
 		formato,valorInicialRecta,valorFinalRecta,valorEscalaRecta,divicionesRecta, //valores para pintar recta
-		extremos,valores,valoresEspecificos, //valores a mostrar en recta
+		marcas,extremos,valores,valorInicioMostrar,valorFinalMostrar,
+		formatoSubescala,divicionesSubescala,marcasSubescala,marcaInicioMostrarSubescala,marcaFinMostrarSubescala,valoresSubescala,valorInicioMostrarSubescala,valorFinMostrarSubescala,
+		valoresEspecificos, //valores a mostrar en recta
 		imagenes, //aqui se agregan las imagenes de la recta
-		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,textoTramo,//datos de tramos
-		mostrarArcos,inicioArcos,finArcos,direccionArcos,colorArcos } = params //datos de arcos
+		resaltarTramo,tipoTramo,inicioTramo,finTramo,separacionTramo,colorTramo,//datos de tramos
+		arcos, //datos de arcos
+		textos, //datos de texto
+		puntos,
+		encerrarValores } = params //puntos de la recta para marcar
 	//reemplaza valores para calcular datos de recta
 	valorInicialRecta = Number(regexFunctions(regex(valorInicialRecta, vars, vt)))
 	divicionesRecta = Number(regexFunctions(regex(divicionesRecta, vars, vt)))
@@ -4898,25 +4932,38 @@ async function recta(config) {
 		Number(regexFunctions(regex(valorEscalaRecta, vars, vt))) : 
 		(valorFinalRecta - valorInicialRecta) / divicionesRecta
 	//valores para mostrar en recta numerica
-	valoresEspecificos = valores === 'especificos' ? 
-		String(valoresEspecificos)
-		.split(',')
-		.map(x => regexFunctions(regex(x, vars, vt)))
-		.map(x => Number(Number(x).toFixed(10))) : []
+	valoresEspecificos = valoresEspecificos ? await Promise.all(valoresEspecificos.map(x => x.tipo == 'numero' ? num(x) : frac(x))) : []
+	//subdiviciones de recta numerica
+	divicionesSubescala = Number(regexFunctions(regex(divicionesSubescala, vars, vt)))
+	//puntos de la recta para marcar
+	puntos = puntos.length > 0 ? regexFunctions(regex(puntos, vars, vt)).split(';').map(x => x.split(',')).map(x => ({ 
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		color: x[1]
+	})) : []
+	//valores para ecerrar en recta numerica
+	encerrarValores = encerrarValores.length > 0 ? regexFunctions(regex(encerrarValores, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+		posicion: valorRectaACoordenadaX(Number(x[0])),
+		ancho: Number(x[1]),
+		alto: Number(x[2]),
+		color: x[3]
+	})) : []
 	//imagenes para mostrar en recta numerica
 	imagenes = imagenes ? await Promise.all(imagenes.map(x => getImagenObj(x))) : []
+	//arcos para mostrar en la recta numerica
+	arcos = arcos ? await Promise.all(arcos.map(x => getArcoObj(x))) : []
+	//texto para mostrar en la recta numerica
+	textos = textos ? await Promise.all(textos.map(x => getTextoObj(x))) : []
 	//parsea los textos y los numeros reemplazando variables y funciones
 	grosorRecta = Number(grosorRecta)
 	grosorMarcas = Number(grosorMarcas)
 	largoFlechas = Number(largoFlechas)
 	largoMarcas = Number(largoMarcas)
 	fontSize = Number(fontSize)
-	inicioTramo = Number(regexFunctions(regex(inicioTramo, vars, vt)))
-	finTramo = Number(regexFunctions(regex(finTramo, vars, vt)))
+	inicioTramo = Number(Number(regexFunctions(regex(inicioTramo, vars, vt))).toFixed(10))
+	finTramo = Number(Number(regexFunctions(regex(finTramo, vars, vt))).toFixed(10))
 	separacionTramo = Number(separacionTramo)
-	textoTramo = regexFunctions(regex(textoTramo, vars, vt))
-	inicioArcos = regexFunctions(regex(inicioArcos, vars, vt))
-	finArcos = regexFunctions(regex(finArcos, vars, vt))
+	valorInicioMostrar = Number(Number(regexFunctions(regex(valorInicioMostrar, vars, vt))).toFixed(10))
+	valorFinalMostrar = Number(Number(regexFunctions(regex(valorFinalMostrar, vars, vt))).toFixed(10))
 	//setea valores de dimensiones de recta
 	container.setAttributeNS(null, 'height', altoRecta)
 	container.setAttributeNS(null, 'width', anchoRecta)
@@ -4927,7 +4974,7 @@ async function recta(config) {
 	//importa fuente opensans para ser utilizada en los elementos de texto
 	let defs = crearElemento('defs', {})
 	let styles = document.createElement('style')
-	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/fonts/OpenSans-Regular-webfont.woff");}'
+	styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../fonts/OpenSans-Regular-webfont.woff");}'
 	defs.appendChild(styles)
 	container.appendChild(defs)
 	//dibuja recta numerica (linea base y flechas)
@@ -4981,7 +5028,7 @@ async function recta(config) {
 		ry: 2
 	}))
 	//calcula los valores a posicionar en la recta numerica y sus posiciones en el eje x
-	_posicionesEnRecta = [{ 
+	_posicionesEnRecta = await Promise.all([{ 
 			numero: valorInicialRecta,
 			posicion: _anchoSeparaciones - grosorMarcas/2
 		}]
@@ -4990,12 +5037,14 @@ async function recta(config) {
 		.map((x,index) => ({
 			numero: Number((valorInicialRecta + valorEscalaRecta * (index+1)).toFixed(10)),
 			posicion: _anchoSeparaciones + _anchoSeparaciones*(index+1) - grosorMarcas/2
-		})))
+		}))))
 	//dibuja marcas y numeros en recta numerica 
-	//console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
+	////console.log({ _posicionesEnRecta, valoresEspecificos, imagenes })
 	_posicionesEnRecta.forEach(({ numero, posicion }, index) => {
 		//dibuja las marcas por si solas
-		dibujarMarca(posicion)
+		if((index == 0 || index == divicionesRecta) || marcas === 'todas') {
+			dibujarMarca(posicion)
+		}
 		//dibuja el numero asociado a la marca
 		if(index == 0  && (extremos == 'ambos' || extremos == 'inicial')) { // dibuja primer valor
 			dibujaValorDeMarca(numero, posicion, index)
@@ -5007,10 +5056,29 @@ async function recta(config) {
 		}
 	})
 
+	if(puntos && puntos.length > 0) {
+		puntos.forEach(punto => {
+			container.appendChild(crearElemento('circle', {
+				cx: punto.posicion,
+				cy: altoRecta/2,
+				r: grosorRecta+grosorRecta/2,
+				fill: punto.color,
+				stroke: colorRecta,
+				strokeWidth: grosorRecta/2
+			}))
+		})
+	}
+
 	valoresEspecificos.forEach(valor => {
-		let posicionX = valorRectaACoordenadaX(valor) - grosorMarcas/2
-		dibujaValorDeMarca(valor, posicionX, _posicionesEnRecta.map(x => x.numero).indexOf(valor))
-		dibujarMarca(posicionX)
+		if(valor.tipo == 'numero') {
+			let { numero, posicion, ubicacion } = valor
+			dibujaNumeroEnPosicion(numero, posicion, ubicacion)
+			dibujarMarca(posicion)
+		} else {
+			let { entero, numerador, denominador, posicion, ubicacion } = valor
+			dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion)
+			dibujarMarca(posicion)
+		}
 	})
 
 	imagenes.forEach(img => {
@@ -5035,6 +5103,14 @@ async function recta(config) {
 			}))
 		})
 	})
+	//dibuja solo los valores entre las variables valorInicioMostrar y valorFinalMostrar
+	if(marcas == 'ninguna' && valores == 'entre') {
+		let valoresAMarcar = _posicionesEnRecta.filter(x => x.numero >= valorInicioMostrar && x.numero <= valorFinalMostrar)
+		valoresAMarcar.forEach(({ numero, posicion }) => {
+			dibujarMarca(posicion)
+			dibujaValorDeMarca(numero, posicion, _posicionesEnRecta.map(x => x.numero).indexOf(numero))
+		})
+	}
 	//dibuja tramo de recta numerica
 	if(resaltarTramo === 'si') {
 		let inicioX = valorRectaACoordenadaX(inicioTramo)
@@ -5057,14 +5133,6 @@ async function recta(config) {
 					stroke: colorTramo,
 					strokeWidth: grosorMarcas
 				}))
-				textoTramo != '' && container.appendChild(crearElementoDeTexto({
-					x: centro+grosorMarcas/2,
-					y: inicioY-radio*3,
-					fontSize: fontSize,
-					textAnchor: 'middle',
-					fill: colorRecta,
-					style: 'font-family:Open-Sans-Reg;'
-				}, textoTramo))
 				break
 			case 'punto-punto':
 				container.appendChild(crearElemento('circle', {
@@ -5090,24 +5158,16 @@ async function recta(config) {
 					height: grosorRecta,
 					fill: colorTramo
 				}))
-				textoTramo != '' && container.appendChild(crearElementoDeTexto({
-					x: centro+grosorMarcas/2,
-					y: inicioY,
-					fontSize: fontSize,
-					textAnchor: 'middle',
-					fill: colorRecta,
-					style: 'font-family:Open-Sans-Reg;'
-				}, textoTramo))
 				break
 			default:
-				console.log('no se puede agregar este tipo de tramo :c')
+				//console.log('no se puede agregar este tipo de tramo :c')
 				break
 		}
 	}
 
-	if(mostrarArcos == 'si' && inicioArcos != finArcos) {
-		let puntosDeArcos = _posicionesEnRecta.filter(x => x.numero >= inicioArcos && x.numero <= finArcos)
-		try {
+	arcos.forEach(arco => {
+		if(arco.saltos) {
+			let puntosDeArcos = _posicionesEnRecta.filter(x => x.numero >= arco.inicio && x.numero <= arco.fin)
 			puntosDeArcos.forEach(({ posicion }, index) => {
 				if(index+1 == puntosDeArcos.length) {
 					return
@@ -5118,18 +5178,18 @@ async function recta(config) {
 				container.appendChild(crearElemento('path',{
 					d: createArcWithAngles(x, y, radio, 45, 135),
 					fill: 'none',
-					stroke: colorArcos,
+					stroke: arco.color,
 					strokeWidth: grosorMarcas
 				}))
-				if(direccionArcos == 'derecha') {
+				if(arco.direccion == 'derecha') {
 					let puntaFlecha = polarToCartesian(x, y, radio, 135)
 					container.appendChild(crearElemento('path', {
 						d: `M ${puntaFlecha.x} ${puntaFlecha.y}
 							L ${puntaFlecha.x} ${puntaFlecha.y-5}
 							L ${puntaFlecha.x-5} ${puntaFlecha.y}
 							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-						fill: colorArcos,
-						stroke: colorArcos
+						fill: arco.color,
+						stroke: arco.color
 					}))
 				} else {
 					let puntaFlecha = polarToCartesian(x, y, radio, 45)
@@ -5138,14 +5198,101 @@ async function recta(config) {
 							L ${puntaFlecha.x} ${puntaFlecha.y-5}
 							L ${puntaFlecha.x+5} ${puntaFlecha.y}
 							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
-						fill: colorArcos,
-						stroke: colorArcos
+						fill: arco.color,
+						stroke: arco.color
 					}))
 				}
+				if(arco.mostrarValorTramo) {
+					container.appendChild(crearElementoDeTexto({
+						x: posicion+_anchoSeparaciones/2,
+						y: altoRecta/2-_anchoSeparaciones/2-5,
+						fontSize: fontSize,
+						textAnchor: 'middle',
+						fill: colorFuente,
+						style: 'font-family:Open-Sans-Reg;'
+					}, valorEscalaRecta))
+				}
 			})
-		} catch(e) {
-			console.log(e)
+		} else {
+			let inicioArco = valorRectaACoordenadaX(arco.inicio)
+			let finArco = valorRectaACoordenadaX(arco.fin)
+			let mitad = (finArco - inicioArco) / 2 + inicioArco
+			let yArco = altoRecta/2-largoMarcas/2-10
+			container.appendChild(crearElemento('path',{
+				d: `M ${inicioArco} ${yArco}
+					A 22 2 0 0 1 ${finArco} ${yArco}`,
+				fill: 'none',
+				stroke: arco.color,
+				strokeWidth: grosorMarcas
+			}))
+			if(arco.direccion == 'derecha') {
+				let puntaFlecha = {
+					x: finArco,
+					y: yArco
+				}
+				container.appendChild(crearElemento('path', {
+					d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y-5}
+						L ${puntaFlecha.x-5} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+					fill: arco.color,
+					stroke: arco.color
+				}))
+			} else {
+				let puntaFlecha = {
+					x: inicioArco,
+					y: yArco
+				}
+				container.appendChild(crearElemento('path', {
+					d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y-5}
+						L ${puntaFlecha.x+5} ${puntaFlecha.y}
+						L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+					fill: arco.color,
+					stroke: arco.color
+				}))
+			}
+			if(arco.mostrarValorTramo) {
+				let diferencia = arco.fin - arco.inicio
+				container.appendChild(crearElementoDeTexto({
+					x: mitad,
+					y: altoRecta/2-_anchoSeparaciones*0.7,
+					fontSize: fontSize,
+					textAnchor: 'middle',
+					fill: colorFuente,
+					style: 'font-family:Open-Sans-Reg;'
+				}, diferencia.toString().replace('.', ',')))
+			}
 		}
+	})
+	//pone todos los textos de la recta
+	textos.forEach(({texto, valorCentro, posicionY}) => {
+		container.appendChild(crearElementoDeTexto({
+			x: valorCentro,
+			y: posicionY,
+			fontSize: fontSize,
+			textAnchor: 'middle',
+			fill: colorFuente,
+			style: 'font-family:Open-Sans-Reg;'
+		}, texto))
+	})
+
+	if(divicionesSubescala > 0) {
+		
+	}
+
+	if(encerrarValores && encerrarValores.length > 0) {
+		encerrarValores.forEach(encerrarValor => {
+			container.appendChild(crearElemento('rect', {
+				x: encerrarValor.posicion - encerrarValor.ancho/2,
+				y: altoRecta/2-encerrarValor.alto/2,
+				width: encerrarValor.ancho,
+				height: encerrarValor.alto,
+				stroke: encerrarValor.color,
+				strokeWidth: '2',
+				fill: 'none'
+			}))
+		})
 	}
 
 	function polarToCartesian(centerX, centerY, radius, angleInDegrees) { // 0 grados = 9 hrs
@@ -5175,14 +5322,19 @@ async function recta(config) {
 	}
 
 	function valorRectaACoordenadaX(valorRecta) {
-		return ((anchoRecta * valorRecta) / (valorFinalRecta-valorInicialRecta+valorEscalaRecta*2)) + _anchoSeparaciones
+		let valorReal = valorRecta + valorEscalaRecta - valorInicialRecta
+		let valorInicioMenosEscala = valorInicialRecta - valorEscalaRecta
+		let valorFinalMasEscala = valorFinalRecta + valorEscalaRecta
+		let largoRecta = valorFinalMasEscala - valorInicioMenosEscala
+		return anchoRecta * valorReal / largoRecta
 	}
 
 	async function getImagenObj(img) {
-    let src = String(regexFunctions(regex(img.srcImg, vars, vt))).replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
+    let src = regexFunctions(regex(img.srcImg, vars, vt))
+    src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
 		return {
-			srcImg: src,
-			imagen: await cargaImagen(src),
+			srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
+			imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
 			height: Number(img.height),
 			posicion: img.posicion,
 			separacion: Number(img.separacion),
@@ -5190,6 +5342,25 @@ async function recta(config) {
 			posiciones: String(img.posiciones).split(',')
 				.map(x => regexFunctions(regex(x, vars, vt)))
 				.map(x => Number(Number(x).toFixed(10)))
+		}
+	}
+
+	function getArcoObj(arco) {
+		return {
+			inicio: Number(regexFunctions(regex(arco.inicio, vars, vt))),
+			fin: Number(regexFunctions(regex(arco.fin, vars, vt))),
+			direccion: arco.direccion,
+			color: '#8B1013',
+			saltos: arco.saltos == 'si' ? true : false,
+			mostrarValorTramo: arco.mostrarValorTramo == 'si' ? true : false
+		}
+	}
+
+	function getTextoObj(texto) {
+		return {
+			texto: regexFunctions(regex(texto.texto, vars, vt)),
+			valorCentro:  valorRectaACoordenadaX(Number(regexFunctions(regex(texto.valorCentro, vars, vt)))),
+			posicionY: texto.posicionY
 		}
 	}
 
@@ -5207,55 +5378,107 @@ async function recta(config) {
 
 	function dibujaValorDeMarca(numero, posicion, index){ //pone los numeros o fracciones debajo de la marca de la recta
 		if(Number.isInteger(numero)) {
-			dibujaNumeroEnPosicion(numero, posicion)
+			dibujaNumeroEnPosicion(numero, posicion, 'abajo')
 		} else if(formato == 'numero') {
 //va a pintar el valor como numero, ya sea decimal o no, con todos sus decimales
-			dibujaNumeroEnPosicion(numero, posicion)
+			dibujaNumeroEnPosicion(numero, posicion, 'abajo')
 		} else if(((valorFinalRecta-valorInicialRecta)==1) && formato == 'fraccion' && index >= 0) {
 /*si la diferencia entre la primera y la segunda marca es 1 y 
 el formato se debe pintar como fraccion y 
 el valor esta dentro de los valores de la recta*/
-			dibujaFraccionEnPosicion(numero, posicion, index)
+			dibujaFraccionEnPosicion(Math.floor(numero), index, divicionesRecta, posicion, 'abajo')
 		}
 	}
 
-	function dibujaNumeroEnPosicion(numero, posicion) {
+	function dibujaNumeroEnPosicion(numero, posicion, ubicacion) {
+		//console.log({numero, posicion, ubicacion})
 		container.appendChild(crearElementoDeTexto({ 
 			x: posicion+grosorMarcas/2,
-			y: altoRecta/2+largoMarcas/2+fontSize,
+			y: ubicacion == 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-4,
 			fontSize: fontSize,
 			textAnchor: 'middle',
-			fill: colorRecta,
+			fill: colorFuente,
 			style: 'font-family:Open-Sans-Reg;'
 		}, numero.toString().replace('.',',')))
 	}
 
-	function dibujaFraccionEnPosicion(numero, posicion, index) {
-		let numerador = index, denominador = divicionesRecta, entero = Math.floor(numero)
-		container.appendChild(crearElementoDeTexto({ 
-			x: posicion+grosorMarcas/2,
-			y: altoRecta/2+largoMarcas/2+fontSize,
-			fontSize: fontSize,
-			textAnchor: 'middle',
-			fill: colorRecta,
-			style: 'font-family:Open-Sans-Reg;'
-		}, numerador))
-		container.appendChild(crearElemento('line', { 
-			x1: posicion+grosorMarcas/2-10,
-			y1: altoRecta/2+largoMarcas/2+fontSize+3,
-			x2: posicion+grosorMarcas/2+10,
-			y2: altoRecta/2+largoMarcas/2+fontSize+3,
-			stroke: colorRecta,
-			strokeWidth: 2
-		}))
-		container.appendChild(crearElementoDeTexto({ 
-			x: posicion+grosorMarcas/2,
-			y: altoRecta/2+largoMarcas/2+fontSize*2,
-			fontSize: fontSize,
-			textAnchor: 'middle',
-			fill: colorRecta,
-			style: 'font-family:Open-Sans-Reg;'
-		}, denominador))
+	function frac({ tipo, entero, numerador, denominador, ubicacion }) {
+		entero = Number(regexFunctions(regex(entero, vars, vt)))
+		numerador = Number(regexFunctions(regex(numerador, vars, vt)))
+		denominador = Number(regexFunctions(regex(denominador, vars, vt)))
+		let valor = Number(entero+numerador/denominador)
+		let	posicion = valorRectaACoordenadaX(valor)
+
+		return { entero, numerador, denominador, valor, posicion, ubicacion, tipo }
+	}
+
+	function num({ tipo, valor, ubicacion }) {
+		let numero = Number(regexFunctions(regex(valor, vars, vt)))
+		let	posicion = valorRectaACoordenadaX(numero)
+		return { numero, posicion, ubicacion, tipo }
+	}
+
+	function dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion) {
+		//console.log(ubicacion)
+		if(entero > 0) {
+			container.appendChild(crearElementoDeTexto({ 
+				x: posicion+grosorMarcas/2-10,
+				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*1.5 : altoRecta/2-largoMarcas/2-fontSize/2-2,
+				fontSize: fontSize+2,
+				textAnchor: 'middle',
+				fill: colorFuente,
+				style: 'font-family:Open-Sans-Reg;'
+			}, entero))
+			container.appendChild(crearElementoDeTexto({ 
+				x: posicion+grosorMarcas/2+10,
+				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-fontSize-2,
+				fontSize: fontSize,
+				textAnchor: 'middle',
+				fill: colorFuente,
+				style: 'font-family:Open-Sans-Reg;'
+			}, numerador))
+			container.appendChild(crearElemento('line', { 
+				x1: posicion+grosorMarcas/2,
+				y1: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
+				x2: posicion+grosorMarcas/2+20,
+				y2: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
+				stroke: colorRecta,
+				strokeWidth: 2
+			}))
+			container.appendChild(crearElementoDeTexto({ 
+				x: posicion+grosorMarcas/2+10,
+				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*2 : altoRecta/2-largoMarcas/2-2,
+				fontSize: fontSize,
+				textAnchor: 'middle',
+				fill: colorFuente,
+				style: 'font-family:Open-Sans-Reg;'
+			}, denominador))
+		} else {
+			container.appendChild(crearElementoDeTexto({ 
+				x: posicion+grosorMarcas/2,
+				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize : altoRecta/2-largoMarcas/2-fontSize-2,
+				fontSize: fontSize,
+				textAnchor: 'middle',
+				fill: colorFuente,
+				style: 'font-family:Open-Sans-Reg;'
+			}, numerador))
+			container.appendChild(crearElemento('line', { 
+				x1: posicion+grosorMarcas/2-10,
+				y1: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
+				x2: posicion+grosorMarcas/2+10,
+				y2: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize+3 : altoRecta/2-largoMarcas/2-fontSize+1,
+				stroke: colorRecta,
+				strokeWidth: 2
+			}))
+			container.appendChild(crearElementoDeTexto({ 
+				x: posicion+grosorMarcas/2,
+				y: ubicacion === 'abajo' ? altoRecta/2+largoMarcas/2+fontSize*2 : altoRecta/2-largoMarcas/2-2,
+				fontSize: fontSize,
+				textAnchor: 'middle',
+				fill: colorFuente,
+				style: 'font-family:Open-Sans-Reg;'
+			}, denominador))
+		}
 	}
 
 	function crearElementoDeImagen(src, atributos) {
@@ -5289,5 +5512,92 @@ el valor esta dentro de los valores de la recta*/
 		let textNode = document.createTextNode(texto)
 		element.appendChild(textNode)
 		return element
-	}
+  }
+  if(window.innerWidth <= 576) {
+    container.setAttributeNS(null, 'height', Number(altoRecta)+50)
+    container.style.borderRadius = '5px'
+    container.style.background = '#CACCCA'
+    if(tipo == 'g') {
+      svgGlosa.push(container)
+    } else {
+      svgPanZoom(container, {
+        zoomEnabled: true,
+        minZomm: 1,
+        maxZoom: 2,
+        customEventsHandler: eventsHandler,
+        beforePan: beforePan
+      })
+    }
+  }
+}
+
+var eventsHandler = {
+  haltEventListeners: ['touchstart', 'touchend', 'touchmove', 'touchleave', 'touchcancel'],
+  init: function(options) {
+    var instance = options.instance
+      , initialScale = 1
+      , pannedX = 0
+      , pannedY = 0
+
+    // Init Hammer
+    // Listen only for pointer and touch events
+    this.hammer = Hammer(options.svgElement, {
+      inputClass: Hammer.SUPPORT_POINTER_EVENTS ? Hammer.PointerEventInput : Hammer.TouchInput
+    })
+
+    // Enable pinch
+    this.hammer.get('pinch').set({enable: true})
+
+    // Handle double tap
+    this.hammer.on('doubletap', function(ev){
+      instance.zoomIn()
+    })
+
+    // Handle pan
+    this.hammer.on('panstart panmove', function(ev){
+      // On pan start reset panned variables
+      if (ev.type === 'panstart') {
+        pannedX = 0
+        pannedY = 0
+      }
+
+      // Pan only the difference
+      instance.panBy({x: ev.deltaX - pannedX, y: ev.deltaY - pannedY})
+      pannedX = ev.deltaX
+      pannedY = ev.deltaY
+    })
+
+    // Handle pinch
+    this.hammer.on('pinchstart pinchmove', function(ev){
+      // On pinch start remember initial zoom
+      if (ev.type === 'pinchstart') {
+        initialScale = instance.getZoom()
+        instance.zoomAtPoint(initialScale * ev.scale, {x: ev.center.x, y: ev.center.y})
+      }
+
+      instance.zoomAtPoint(initialScale * ev.scale, {x: ev.center.x, y: ev.center.y})
+    })
+
+    // Prevent moving the page on some devices when panning over SVG
+    options.svgElement.addEventListener('touchmove', function(e){ e.preventDefault(); });
+  },
+  destroy: function(){
+    this.hammer.destroy()
+  }
+}
+
+function beforePan(oldPan, newPan){
+  var stopHorizontal = false,
+    stopVertical = false,
+    gutterWidth = 50,
+    gutterHeight = 50,
+    sizes = this.getSizes(),
+    leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth,
+    rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom),
+    topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight,
+    bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
+  customPan = {}
+  customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
+  customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
+  return customPan
 }

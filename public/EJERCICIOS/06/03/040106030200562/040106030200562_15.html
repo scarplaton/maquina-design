@@ -9,7 +9,7 @@
 	<!-- MATHJAX NO IMPORTADO -->
 	<script>document.domain = "adaptativamente.cl";</script>
 </head>
-<body id="040106030200562" data-content="{'e':[{'id':'-LjIRauYJPchAjFh1gr5','date':'08-07-2019 17:17:00','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>La profesora Sonia siempre reúne  a sus estudiantes en grupos de <strong>$b </strong>integrantes. Si hoy asistieron <strong>$a </strong>estudiantes, ¿cuántos grupos se formaron en la clase?&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LjIU22fAihQIt7vYN49','date':'09-07-2019 18:02:00','name':'Insertar Input','params':{'active':2,'anchoInput':'','col':'12','colmd':'3','colsm':'6','defaultError':'','defaultFeed':'','error0':'','error2':'4','error3':'5','error4':'4','feed0':'','feed1':'¡Muy bien!','feed2':'La cantidad de grupos la obtienes armando grupos de $b integrantes con los a estudiantes.','feed3':'Esa es la cantidad total de estudiantes.','feed4':'La cantidad de grupos la obtienes armando grupos de $b integrantes con los a estudiantes.','inputSize':'4','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'$p grupos','value2':'$q grupos','value3':'$a grupos','value4':'$s grupos'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LjIUUAa-zndRcSucQ_x','date':'08-07-2019 17:29:35','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si asistieron <strong>$a</strong> estudiantes a la clase y se forman grupos con<strong> $b</strong> estudiantes cada uno, entonces para saber cuántos grupos se formaron hacemos la división <strong>$a&amp;nbsp;:&amp;nbsp;$b</strong>  y así obtenemos <strong>$p</strong>.</p>\n<p>Entonces, podemos decir que se han formado <strong>$p</strong> grupos.&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':15,'vars':[{'rank':0,'val':32,'var':'a'},{'rank':3,'val':2,'var':'b'},{'rank':9,'val':4,'var':'k'},{'rank':0,'val':16,'var':'p'},{'rank':0,'val':34,'var':'q'},{'rank':0,'val':64,'var':'s'}]}">
+<body id="040106030200562" data-content="{'e':[{'id':'-LjIRauYJPchAjFh1gr5','date':'08-07-2019 17:17:00','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>La profesora Sonia siempre reúne  a sus estudiantes en grupos de <strong>$b </strong>integrantes. Si hoy asistieron <strong>$a </strong>estudiantes, ¿cuántos grupos se formaron en la clase?&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LjIU22fAihQIt7vYN49','date':'12/9/2019 12:29:17','name':'Insertar Input','params':{'active':2,'anchoInput':'','col':'12','colmd':'3','colsm':'6','defaultError':'','defaultFeed':'','error0':'','error2':'4','error3':'5','error4':'4','feed0':'','feed1':'¡Muy bien!','feed2':'La cantidad de grupos la obtienes armando grupos de $b integrantes con los $a estudiantes.','feed3':'Esa es la cantidad total de estudiantes.','feed4':'La cantidad de grupos la obtienes armando grupos de $b integrantes con los $a estudiantes.','inputSize':'4','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'$p grupos','value2':'$q grupos','value3':'$a grupos','value4':'$s grupos'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LjIUUAa-zndRcSucQ_x','date':'08-07-2019 17:29:35','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si asistieron <strong>$a</strong> estudiantes a la clase y se forman grupos con<strong> $b</strong> estudiantes cada uno, entonces para saber cuántos grupos se formaron hacemos la división <strong>$a&amp;nbsp;:&amp;nbsp;$b</strong>  y así obtenemos <strong>$p</strong>.</p>\n<p>Entonces, podemos decir que se han formado <strong>$p</strong> grupos.&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':15,'vars':[{'rank':0,'val':32,'var':'a'},{'rank':3,'val':2,'var':'b'},{'rank':9,'val':4,'var':'k'},{'rank':0,'val':16,'var':'p'},{'rank':0,'val':34,'var':'q'},{'rank':0,'val':64,'var':'s'}]}">
 	<header class="barraprogreso">
 			<div class="container-fluid">
 				<div class="row justify-content-center no-gutters align-items-center">
@@ -28,7 +28,7 @@
 	</header>
 	<section class="contenido">
 			<div class="container-fluid">
-				<div id="enunciado" class="row"></div>
+				<div id="enunciado" class="row justify-content-center"></div>
 				<div id="respuesta" class="row justify-content-center"></div>
 			</div>
 	</section>
@@ -83,7 +83,7 @@
 											<img class="img-fluid" src="../../../../imagenes_front/patos/togaSuki.svg">
 										</div>
 										<div class="col-12 col-sm-10">
-											<div class="row" id="glosa"></div>
+											<div class="row justify-content-center" id="glosa"></div>
 										</div>
 									</div>
 									<div class="row no-gutters">
@@ -102,5 +102,7 @@
 	<script src="app.js"></script>
 	<script src="interfaz.js"></script>
 	<script src="../../../../js/jsEjercicios.js"></script>
+	<script src="../../../../js/svg-pan-zoom.min.js"></script>
+	<script src="../../../../js/hammer.min.js"></script>
 </body>
 </html>
