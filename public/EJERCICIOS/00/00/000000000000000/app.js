@@ -5768,7 +5768,7 @@ async function tabPos(config) {
           let numero = detallePiso.detalle[posicion]
           grupoT.appendChild(crearElementoDeTexto({
             //si es con operacion, hay que mostrar canje, es la primera fila y hay un numero en el objeto de canje pàra la columna especifica
-            x: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? centroXPiso - fontSize / 4 : centroXPiso,
+            x: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? centroXPiso - fontSize / 2 : centroXPiso,
             y: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? yNumero + fontSize / 4 : yNumero,
             style: 'font-family:Open-Sans-Reg;'
           }, numero ? numero : 0))
@@ -5808,13 +5808,15 @@ async function tabPos(config) {
           id: `Piso${piso + 1}`
         })
         imagenTabla.detalle.forEach((posicion, index) => {
-          let imagen = document.getElementById(detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion]).children[0]
-          let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
-          grupoB.appendChild(crearReferenciaAElemento(
-            detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion], {
-            x: centroXPiso - Number(imagen.getAttribute('width')) / 2,
-            y: centroYPiso - Number(imagen.getAttribute('height')) / 2
-          }))
+          if (detallePiso.detalle[posicion] > 0) {
+            let imagen = document.getElementById(detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion]).children[0]
+            let centroXPiso = conOperacion ? anchoPosicion + index * anchoPosicion : anchoPosicion / 2 + index * anchoPosicion
+            grupoB.appendChild(crearReferenciaAElemento(
+              detallePiso.tipo + '-' + posicion + '-' + detallePiso.detalle[posicion], {
+              x: centroXPiso - Number(imagen.getAttribute('width')) / 2,
+              y: centroYPiso - Number(imagen.getAttribute('height')) / 2
+            }))
+          }
         })
         container.appendChild(grupoB)
         break
@@ -5851,7 +5853,7 @@ async function tabPos(config) {
         if (numero) {
           let centroXPiso = anchoPosicion + columna * anchoPosicion
           container.appendChild(crearElementoDeTexto({
-            x: centroXPiso + fontSize / 2,
+            x: centroXPiso + fontSize / 4,
             y: altoPosicion + fontSize / 4,
             style: 'font-family:Open-Sans-Reg;',
             textAnchor: 'middle',
@@ -5860,9 +5862,9 @@ async function tabPos(config) {
           }, numero))
 
           container.appendChild(crearElemento('line', {
-            x1: centroXPiso,
+            x1: centroXPiso - fontSize / 4,
             y1: altoPosicion - fontSize / 4.5,
-            x2: centroXPiso - fontSize / 1.8,
+            x2: centroXPiso - fontSize / 1.8 - fontSize / 4,
             y2: altoPosicion + altoPosicion / 2,
             stroke: '#E58433',
             strokeWidth: '3'
