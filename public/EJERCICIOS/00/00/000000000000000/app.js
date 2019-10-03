@@ -5771,7 +5771,7 @@ async function tabPos(config) {
             x: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? centroXPiso - fontSize / 2 : centroXPiso,
             y: (conOperacion && canje && piso === 0 && detalleCanje[posicion]) ? yNumero + fontSize / 4 : yNumero,
             style: 'font-family:Open-Sans-Reg;'
-          }, numero ? numero : 0))
+          }, numero))
         })
         container.appendChild(grupoT)
         break
