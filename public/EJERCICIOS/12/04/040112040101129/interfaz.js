@@ -163,7 +163,7 @@ function evaluaInputsEjercicio() {
 		}
 	}
 	if(errFre === '') {
-		feed = feedbackDefecto;
+		feed = regexFunctions(feedbackDefecto);
 		errFre = errFrecDefecto;
 		var inputs = document.querySelectorAll(".contenido input[name='answer']");
 		for(var input of inputs) {
