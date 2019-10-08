@@ -4444,7 +4444,7 @@ async function repeticionPicV2(config) {
           img: await cargaImagen(srcImgRepSrc),
           cantidadRepeticiones: Number(regexFunctions(regex(dato.cantidadRepeticiones, vars, vt))),
           formaRepeticiones: dato.formaRepeticiones,
-          sepX: dato.sepX.split(',').map(x => Number(x)),
+          sepX: regexFunctions(regex(dato.sepX, vars, vt)).split(',').map(x => Number(x)),
           sepY: dato.sepY.split(',').map(x => Number(x)),
           vp1: mostrarVP1 ? dato.vp1.tipo === 'texto' ? { // si el valor posicional 1 es texto
             tipo: dato.vp1.tipo,
