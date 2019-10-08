@@ -674,7 +674,7 @@ function insertarTabla(config) {
               tipoInput
             }
             switch (tipoInput) {
-              case 'text':
+              case 'texto':
                 r += `<input type="text" id="${idInput}" name="answer" maxlength="${maxLength}" placeholder="${placeholder}" style="width:${anchoInput};" autocomplete="off" data-content='${JSON.stringify(dataContent)}' onkeypress="cambiaInputTexto(event)" />`;
                 break;
               case 'numero':

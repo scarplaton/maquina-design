@@ -424,9 +424,8 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 	} else if(_TIPO_INPUT_ === 'input') {
 		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
 		if(inputsCount === 1) {
-			$('section.contenido').find('input[type=text]').val('');
-			$('input.inputTexto-incorrecto').prop('disabled', false);
-			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+			$('section input[type=text]').val('');
+			$('section input[type=text]').prop('disabled', false);
 		} else {
 			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
 			$('input.inputTexto-incorrecto').prop('disabled', false);
