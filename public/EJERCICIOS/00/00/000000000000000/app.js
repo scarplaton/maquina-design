@@ -12,6 +12,7 @@ function imagenEnTexto(imgsrc, alto, ancho) {
   return `<img src="${imgsrc.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')}" height="${alto}" width="${ancho}"/>`
 }
 
+
 function repeticiones(cantidad, numero, signo) {
   cantidad = Number(cantidad);
   let con = "";
