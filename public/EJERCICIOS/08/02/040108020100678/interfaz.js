@@ -163,7 +163,7 @@ function evaluaInputsEjercicio() {
 		}
 	}
 	if(errFre === '') {
-		feed = feedbackDefecto;
+		feed = regexFunctions(feedbackDefecto);
 		errFre = errFrecDefecto;
 		var inputs = document.querySelectorAll(".contenido input[name='answer']");
 		for(var input of inputs) {
@@ -437,11 +437,22 @@ function closeModalFeedback() {//esta funcion permite continuar con el segundo i
 }
 
 function openModalGlosa() {
+	$('#modalGlosa').on('shown.bs.modal', function () {
+		svgGlosa.forEach(svg => {
+			svgPanZoom(svg, {
+				zoomEnabled: true,
+				minZomm: 1,
+				maxZoom: 2,
+				customEventsHandler: eventsHandler,
+				beforePan: beforePan
+			})
+		})
+	})
 	$('#modalGlosa').modal({
 		backdrop: 'static',
-    keyboard: false
+    	keyboard: false
 	});
-	$('#modalGlosa').modal('show');
+	$('#modalGlosa').modal('show')
 }
 
 //FUNCIONES DE LOS INPUTS DE RESPUESTA
