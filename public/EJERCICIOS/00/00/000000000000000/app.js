@@ -477,21 +477,21 @@ function insertarInput(config) {
     answers[1] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
-      errFrec: error0 === '' ? error2 : error0
+      errFrec: error0 === '' ? regexFunctions(regex(error2, vars, vt)) : regexFunctions(regex(error0, vars, vt))
     }
   }
   if (inputSize > 2) {
     answers[2] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value3, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed3, vars, vt))) : feedGenerico,
-      errFrec: error0 === '' ? error3 : error0
+      errFrec: error0 === '' ? regexFunctions(regex(error3, vars, vt)) : regexFunctions(regex(error0, vars, vt))
     }
   }
   if (inputSize > 3) {
     answers[3] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value4, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed4, vars, vt))) : feedGenerico,
-      errFrec: error0 === '' ? error4 : error0
+      errFrec: error0 === '' ? regexFunctions(regex(error4, vars, vt)) : regexFunctions(regex(error0, vars, vt))
     }
   }
   //console.log(answers)
@@ -666,7 +666,7 @@ function insertarTabla(config) {
             break;
           case 'image':
             var relativePath = table[row][col].value.url.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../');
-            r += `<img src=${regex(relativePath, vars, vt)} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
+            r += `<img src=${regexFunctions(regex(relativePath, vars, vt))} height=${table[row][col].value.height} width=${table[row][col].value.width}/>`;
             break;
           case 'input':
             var { anchoInput, correctas, idInput, maxLength, placeholder, tipoInput } = table[row][col].value;
@@ -4524,7 +4524,12 @@ async function repeticionPicV2(config) {
           alto: altoImg + (sepY[0] > 0 ? cantidadRepeticiones * altoImg : 0) + ((cantidadRepeticiones - 1) * sepY[0])
         };
       case 'dado':
-        if (cantidadRepeticiones === 1) {
+          if (cantidadRepeticiones === 0) {
+            return {
+              ancho: 0,
+              alto: 0
+            };
+          } else if (cantidadRepeticiones === 1) {
           return {
             ancho: anchoImg,
             alto: altoImg
