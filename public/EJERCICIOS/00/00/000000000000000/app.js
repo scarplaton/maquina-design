@@ -4023,7 +4023,7 @@ styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../
                       }))
                       if(grupo.repDivisores.length > 0) {
                           if(i === 0) {
-                              let symbol = crearElementoSymbol(`divisor-grupo-${index}`, anchoMaximoRepDivisores, altoTotalRepDivisores)
+                              let symbol = crearElementoSymbol(`${container.id}-divisor-grupo-${index}`, anchoMaximoRepDivisores, altoTotalRepDivisores)
                               let inicio = 0
                               grupo.repDivisores.forEach((repDivisor, indiceRepDiv) => {
                                   if(repDivisor.formaRep === 'izq/der') {
@@ -4059,12 +4059,12 @@ styles.innerHTML = '@font-face{font-family:"Open-Sans-Reg";src:url("../../../../
                                   }
                               })
                               defs.appendChild(symbol)
-                              container.appendChild(crearReferenciaAElemento(`divisor-grupo-${index}`, {
+                              container.appendChild(crearReferenciaAElemento(`${container.id}-divisor-grupo-${index}`, {
                                   x: xDivisor + grupo.anchoDivisores/2 - anchoMaximoRepDivisores/2,
                                   y: yDivisor + grupo.altoDivisores/2 - altoTotalRepDivisores/2
                               }))
                           } else {
-                              container.appendChild(crearReferenciaAElemento(`divisor-grupo-${index}`, {
+                              container.appendChild(crearReferenciaAElemento(`${container.id}-divisor-grupo-${index}`, {
                                   x: xDivisor + grupo.anchoDivisores/2 - anchoMaximoRepDivisores/2,
                                   y: yDivisor + grupo.altoDivisores/2 - altoTotalRepDivisores/2
                               }))
