@@ -422,20 +422,20 @@ function insertarInput(config) {
   }, {
     respuesta: espacioMilesRegex(regexFunctions(regex(value2, vars, vt))),
     feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed2, vars, vt))) : feedGenerico,
-    errFrec: error0 === '' ? error2 : error0
+    errFrec: error0 === '' ? regexFunctions(regex(error2, vars, vt)) : regexFunctions(regex(error0, vars, vt))
   }];
   if (inputSize > 2) {
     answers[2] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value3, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed3, vars, vt))) : feedGenerico,
-      errFrec: error0 === '' ? error3 : error0
+      errFrec: error0 === '' ? regexFunctions(regex(error3, vars, vt)) : regexFunctions(regex(error0, vars, vt))
     }
   }
   if (inputSize > 3) {
     answers[3] = {
       respuesta: espacioMilesRegex(regexFunctions(regex(value4, vars, vt))),
       feedback: feed0 === '' ? espacioMilesRegex(regexFunctions(regex(feed4, vars, vt))) : feedGenerico,
-      errFrec: error0 === '' ? error4 : error0
+      errFrec: error0 === '' ? regexFunctions(regex(error4, vars, vt)) : regexFunctions(regex(error0, vars, vt))
     }
   }
   //console.log(answers)
