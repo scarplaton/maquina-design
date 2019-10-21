@@ -9,7 +9,7 @@
 	<!-- MATHJAX NO IMPORTADO -->
 	<script>document.domain = "adaptativamente.cl";</script>
 </head>
-<body id="040106030200563" data-content="{'e':[{'id':'-LjN_hYsQZEFDolM4GZz','date':'09-07-2019 17:14:53','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si Andrés cocina <strong>$x</strong> galletas y las reparte en <strong>$y </strong>bolsitas de igual capacidad, ¿cuántas galletas pone en cada bolsita?&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LjNaaFItU8MI8IQGXb9','date':'09-07-2019 17:18:45','name':'Insertar Input','params':{'active':0,'anchoInput':'','col':'12','colmd':'3','colsm':'4','defaultError':'','defaultFeed':'','error0':'','error2':'5','error3':'4','error4':'','feed0':'','feed1':'¡Muy bien!','feed2':'Esa cantidad corresponde al total de galletas a empaquetar.','feed3':'Esta cantidad de galletas es superior a la que se debe repartir.','feed4':'','inputSize':'3','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'$z galletas','value2':'$x galletas','value3':'$q galletas','value4':''},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LjNazjc9egI8UfeuHQa','date':'09-07-2019 17:20:29','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Andrés cocinó <strong>$x</strong> galletas y repartió la misma cantidad en <strong>$y</strong> bolsitas. Para saber cuántas galletas hay en cada bolsita, debemos hacer la división <strong>$x</strong> : <strong>$y</strong>,  y así obtendremos la respuesta.</p>\n<p>Al hacer el cálculo, tenemos que:  <strong>$x</strong> : <strong>$y</strong> = <strong>$z</strong>.</p>\n<p>Por lo tanto, en cada bolsita hay <strong>$z</strong> galletas.</p>\n','date':'09-07-2019 17:20:45','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':'vt','vars':[{'var':'z','val':'6'},{'var':'y','val':'7'},{'var':'x','val':'42'},{'var':'q','val':'294'}]}">
+<body id="040106030200563" data-content="{'e':[{'id':'-LjN_hYsQZEFDolM4GZz','date':'09-07-2019 17:14:53','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Si Andrés cocina <strong>$x</strong> galletas y las reparte en <strong>$y </strong>bolsitas de igual capacidad, ¿cuántas galletas pone en cada bolsita?&nbsp;</p>\n','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LjNaaFItU8MI8IQGXb9','date':'09-07-2019 17:18:45','name':'Insertar Input','params':{'active':0,'anchoInput':'','col':'12','colmd':'3','colsm':'4','defaultError':'','defaultFeed':'','error0':'','error2':'5','error3':'4','error4':'','feed0':'','feed1':'¡Muy bien!','feed2':'Esa cantidad corresponde al total de galletas a empaquetar.','feed3':'Esta cantidad de galletas es superior a la que se debe repartir.','feed4':'','inputSize':'3','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'$z galletas','value2':'$x galletas','value3':'$q galletas','value4':''},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LjNazjc9egI8UfeuHQa','date':'12/9/2019 12:17:33','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>Andrés cocinó <strong>$x</strong> galletas y repartió la misma cantidad en <strong>$y</strong> bolsitas. Para saber cuántas galletas hay en cada bolsita, debemos hacer la división <strong>$x</strong>&amp;nbsp;:&amp;nbsp;<strong>$y</strong>,  y así obtendremos la respuesta.</p>\n<p>Al hacer el cálculo, tenemos que:  <strong>$x</strong>&amp;nbsp;:&amp;nbsp;<strong>$y</strong>&amp;nbsp;=&amp;nbsp;<strong>$z</strong>.</p>\n<p>Por lo tanto, en cada bolsita hay <strong>$z</strong> galletas.</p>\n','date':'12/9/2019 12:17:34','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':'vt','vars':[{'var':'z','val':'6'},{'var':'y','val':'7'},{'var':'x','val':'42'},{'var':'q','val':'294'}]}">
 	<header class="barraprogreso">
 			<div class="container-fluid">
 				<div class="row justify-content-center no-gutters align-items-center">
@@ -28,7 +28,7 @@
 	</header>
 	<section class="contenido">
 			<div class="container-fluid">
-				<div id="enunciado" class="row"></div>
+				<div id="enunciado" class="row justify-content-center"></div>
 				<div id="respuesta" class="row justify-content-center"></div>
 			</div>
 	</section>
@@ -83,7 +83,7 @@
 											<img class="img-fluid" src="../../../../imagenes_front/patos/togaSuki.svg">
 										</div>
 										<div class="col-12 col-sm-10">
-											<div class="row" id="glosa"></div>
+											<div class="row justify-content-center" id="glosa"></div>
 										</div>
 									</div>
 									<div class="row no-gutters">
@@ -102,5 +102,7 @@
 	<script src="app.js"></script>
 	<script src="interfaz.js"></script>
 	<script src="../../../../js/jsEjercicios.js"></script>
+	<script src="../../../../js/svg-pan-zoom.min.js"></script>
+	<script src="../../../../js/hammer.min.js"></script>
 </body>
 </html>

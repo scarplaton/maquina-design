@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="../../../../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../../../../css/app.css">
+	<title>01972_1</title>
+	<!-- MATHJAX NO IMPORTADO -->
+	<script>document.domain = "adaptativamente.cl";</script>
+</head>
+<body id="040422040201972" data-content="{'e':[{'id':'-LkihWNDJ_baiqTYRWmp','date':'4/9/2019 12:02:01','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>¿Cuál de las siguientes unidades de longitud puede representar la distancia entre una ciudad A y una ciudad B?</p>\n','date':'4/9/2019 12:02:02','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'r':[{'id':'-LkiiLVwKgHQfG4n2zAu','date':'4/9/2019 17:05:15','name':'Insertar Input','params':{'active':0,'anchoInput':'','col':'12','colmd':'4','colsm':'12','defaultError':'','defaultFeed':'','error0':'','error2':'3','error3':'3','error4':'','feed0':'','feed1':'¡Genial!','feed2':'Fijate en la unidad de medida. Este podría ser el largo de un escritorio.','feed3':'No has escogido la unidad de medida correcta, este podría ser el largo de una calle. ','feed4':'','inputSize':'3','inputType':'radio','maxLength':'','placeholder':'','tipoInput':'texto','value1':'$x kilómetros ','value2':'$x centímetros','value3':'$x metros','value4':''},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}], 'g':[{'id':'-LkiiijBWXo7oFdwJzzB','date':'4/9/2019 12:04:17','name':'Insertar Texto','params':{'active':0,'color':'#ffffff','content':'<p>La distancia entre dos ciudades es relativamente grande. Se utilizan kilómetros porque resume de mejor manera la información. Se podría medir en metros o centímetros, pero serían números demasiado grandes.</p>\n<p>Recuerda que:</p>\n<ul>\n<li>1 kilómetro equivale a 1&amp;nbsp;000 metros, por lo que esta distancia en metros sería /[espacioMilesRegex(\'$y\')/] m.&nbsp;</li>\n<li>1 metro equivale a 100 centímetros, por lo que esta distancia en centímetros sería /[espacioMilesRegex(\'$z\')/] cm.</li>\n</ul>\n','date':'4/9/2019 12:04:17','padding':'10px 10px 0px'},'position':0,'tag':'general','width':{'md':12,'sm':12,'xs':12}}]}" data-version="{'id':1,'vars':[{'rank':51,'val':64,'var':'x'},{'rank':0,'val':64000,'var':'y'},{'rank':0,'val':6400000,'var':'z'}]}">
+	<header class="barraprogreso">
+			<div class="container-fluid">
+				<div class="row justify-content-center no-gutters align-items-center">
+					<div class="col-11 lineasbarra">
+						<hr class="sidelinebar d-none d-sm-block">
+						<svg xmlns="http://www.w3.org/2000/svg" id="progressbar" version="1.1" class="mx-sm-auto d-sm-block"></svg>
+						<hr class="sidelinebar d-none d-sm-block">
+					</div>
+					<div class="col-1 d-sm-none">
+						<!--<svg id="botonSalir" class="float-right" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" data-toggle="tooltip" data-placement="bottom" title="Salir de la misión">
+							<path d="M0 0h24v24H0z" fill="none"/><path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+						</svg>-->
+					</div>
+				</div>
+			</div>
+	</header>
+	<section class="contenido">
+			<div class="container-fluid">
+				<div id="enunciado" class="row"></div>
+				<div id="respuesta" class="row justify-content-center"></div>
+			</div>
+	</section>
+	<footer class="fixed-bottom pie">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnConsulta" class="btn btn-block bton bton-5 bton-5a icon-consulta" onclick="pressConsulta()">
+								<span>CONSULTA</span>
+							</button>
+							<img id="imgfeedback" class="img-fluid d-none" alt="IMG" />
+						</div>
+						<div class="col-4 col-md-6"></div>
+						<div class="col-4 col-md-3">
+							<button type="button" id="btnResponder" class="btn btn-block bton bton-5 bton-5a icon-responder float-right" disabled>
+								<span>RESPONDER</span>
+							</button> 
+						</div>
+				</div>
+			</div>
+	</footer>
+	<div class="modal fade" id="modalFeedback" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content" style="border-radius: 10px!important">
+						<div id="feedback" class="modal-body" style="padding: 10px 0;">
+							<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="col-12">
+												
+										</div>
+										<div class="col-4 offset-8">
+											<button id="btnCloseModal" type="button" class="btnCerrarFeed">
+												<div></div>
+											</button>
+										</div>
+									</div>
+							</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<div class="modal fade" id="modalGlosa" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered dimensionGlosa" role="document">
+				<div id="contenidoGlosa" class="modal-content glosaEjercicio">
+						<div class="modal-body modalBody">
+								<div class="container-fluid">
+									<div class="row no-gutters">
+										<div class="offset-2 col-10 tituloGlosa">
+											<span>Solución</span>
+										</div>
+										<div class="col-2 d-none d-sm-block">
+											<img class="img-fluid" src="../../../../imagenes_front/patos/togaSuki.svg">
+										</div>
+										<div class="col-12 col-sm-10">
+											<div class="row" id="glosa"></div>
+										</div>
+									</div>
+									<div class="row no-gutters">
+										<div class="offset-8 col-4 offset-sm-9 col-sm-3 offset-md-10 col-md-2">
+											<button id="btnCloseGlosa" type="button" class="btn btn-primary" onclick="cerrarFeedGlosa()">Aceptar</button>
+										</div>
+									</div>
+								</div>
+						</div>
+				</div>
+			</div>
+	</div>
+	<input id="hiddenIntento" type="hidden" value="hiddenIntento"/>
+	<script src="../../../../js/jquery-3.3.1.slim.min.js"></script>
+	<script src="../../../../js/bootstrap.min.js"></script>
+	<script src="app.js"></script>
+	<script src="interfaz.js"></script>
+	<script src="../../../../js/jsEjercicios.js"></script>
+	<script src="../../../../js/svg-pan-zoom.min.js"></script>
+	<script src="../../../../js/hammer.min.js"></script>
+</body>
+</html>
