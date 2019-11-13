@@ -495,7 +495,8 @@ function cambiaInputTexto(e) {
 }
 
 function cambiaInputNumerico(e) {
-    var validacion = e.keyCode >= 48 && e.keyCode <= 57
+    var validacion = e.keyCode >= 48 && e.keyCode <= 57 ||
+                        e.keyCode == 44
     if (!validacion) {
         e.preventDefault();
         return false;
