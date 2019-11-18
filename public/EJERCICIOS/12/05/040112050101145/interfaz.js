@@ -417,24 +417,24 @@ function openModalFeedback(feedback, correcto) {
     $('#modalFeedback').modal('show');
 }
 
-function closeModalFeedback() { //esta funcion permite continuar con el segundo intento en MOBILE 
-    $('#modalFeedback').modal('hide');
-    if (_TIPO_INPUT_ === 'radio') {
-        $('input:checked')[0].checked = false;
-        $('.radio-div__selected').removeClass('radio-div__selected');
-        $('section.contenido').find('input').prop('disabled', false);
-    } else if (_TIPO_INPUT_ === 'input') {
-        var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
-        if (inputsCount === 1) {
-            $('section.contenido').find('input[type=text]').val('');
-            $('section.contenido').find('input[type=text]').prop('disabled', false);
-        } else {
-            $('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
-            $('input.inputTexto-incorrecto').prop('disabled', false);
-            $('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
-        }
-    }
-    btnRespuesta.disabled = true;
+function closeModalFeedback() {//esta funcion permite continuar con el segundo intento en MOBILE 
+	$('#modalFeedback').modal('hide');
+	if(_TIPO_INPUT_ === 'radio') {
+		$('input:checked')[0].checked = false;
+		$('.radio-div__selected').removeClass('radio-div__selected');
+		$('section.contenido').find('input').prop('disabled', false);
+	} else if(_TIPO_INPUT_ === 'input') {
+		var inputsCount = document.querySelectorAll(".contenido input[name='answer']").length;
+		if(inputsCount === 1) {
+			$('section input[type=text]').val('');
+			$('section input[type=text]').prop('disabled', false);
+		} else {
+			$('section.contenido').find('input:not(.inputTexto-correcto)[type=text]').val('');
+			$('input.inputTexto-incorrecto').prop('disabled', false);
+			$('.inputTexto-incorrecto').removeClass('inputTexto-incorrecto');
+		}
+	}
+	btnRespuesta.disabled = true;
 }
 
 function openModalGlosa() {

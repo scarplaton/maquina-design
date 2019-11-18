@@ -273,7 +273,6 @@ function espacioMiles(stringNumero) {
 // ---FIN--- funciones para modificar texto en texto
 
 function print() { //Dibujar ejercicios
-  console.log(FUNCIONES)
   var h = ['e', 'r', 'g'];
   h.forEach(n => {
     contenidoBody[n].forEach((m, i) => {
@@ -2758,7 +2757,7 @@ async function repeticionPicV2(config) {
 
 async function recta(config, tipo) {
   const { container, params, variables, versions, vt } = config
-  //container.innerHTML = '' //quitar linea en funcionalidad de app.js
+  container.innerHTML = '' //quitar linea en funcionalidad de app.js
   //container.style.border = '1px solid #000'
   let vars = vt ? variables : versions
 
@@ -2766,7 +2765,11 @@ async function recta(config, tipo) {
     grosorRecta, grosorMarcas, colorRecta, largoFlechas, largoMarcas, fontSize, colorFuente, //diseño recta numerica
     formato, valorInicialRecta, valorFinalRecta, valorEscalaRecta, divicionesRecta, //valores para pintar recta
     marcas, extremos, valores, valorInicioMostrar, valorFinalMostrar,
-    formatoSubescala, divicionesSubescala, marcasSubescala, marcaInicioMostrarSubescala, marcaFinMostrarSubescala, valoresSubescala, valorInicioMostrarSubescala, valorFinMostrarSubescala,
+    mostrarSubescala, divicionesSubescala, posicionesSubescala, tramosSubescala,
+    mostrarLupa, anchoSubescala, formatoSubescala,
+    tipoInicioTramoLupa, inicioTramoLupaNumero, inicioTramoLupaEntero, inicioTramoLupaNumerador, inicioTramoLupaDenominador,
+    tipoFinTramoLupa, finTramoLupaNumero, finTramoLupaEntero, finTramoLupaNumerador, finTramoLupaDenominador,
+    arcosSubescala, segmetosSubescala, imagenesSubescala, puntosSubescala,
     valoresEspecificos, //valores a mostrar en recta
     imagenes, //aqui se agregan las imagenes de la recta
     tramos,//datos de tramos
@@ -2806,19 +2809,23 @@ async function recta(config, tipo) {
   //texto para mostrar en la recta numerica
   textos = textos ? textos.map(x => getTextoObj(x)) : []
   //tramos para mostrar en la recta
-	tramos = tramos ? tramos.map(x => getTramoObj(x)) : []
+  tramos = tramos ? tramos.map(x => getTramoObj(x)) : []
+  //imagenes de miniescala
+  imagenesSubescala = imagenesSubescala ? await Promise.all(imagenesSubescala.map(x => getImagenObj(x))) : []
   //parsea los textos y los numeros reemplazando variables y funciones
   grosorRecta = Number(grosorRecta)
   grosorMarcas = Number(grosorMarcas)
   largoFlechas = Number(largoFlechas)
   largoMarcas = Number(largoMarcas)
   fontSize = Number(fontSize)
+  anchoSubescala = Number(anchoSubescala)
   valorInicioMostrar = Number(Number(regexFunctions(regex(valorInicioMostrar, vars, vt))).toFixed(10))
   valorFinalMostrar = Number(Number(regexFunctions(regex(valorFinalMostrar, vars, vt))).toFixed(10))
+  mostrarLupa = mostrarLupa === 'si' ? true : false
   //setea valores de dimensiones de recta
-  container.setAttributeNS(null, 'height', altoRecta)
+  container.setAttributeNS(null, 'height', Number(altoRecta) + (mostrarLupa ? Number(altoRecta) : 0))
   container.setAttributeNS(null, 'width', anchoRecta)
-  container.setAttributeNS(null, 'viewBox', `0 0 ${anchoRecta} ${altoRecta}`)
+  container.setAttributeNS(null, 'viewBox', `0 0 ${anchoRecta} ${Number(altoRecta) + (mostrarLupa ? Number(altoRecta) : 0)}`)
   let _centroYRecta = altoRecta / 2 - grosorRecta / 2,
     _anchoSeparaciones = anchoRecta / (divicionesRecta + 2),
     _posicionesEnRecta = []
@@ -2907,6 +2914,44 @@ async function recta(config, tipo) {
     }
   })
 
+  if (mostrarSubescala === 'si') {
+    let symbol = crearElementoSymbol(`${container.id}-subescala`, _anchoSeparaciones, largoMarcas / 2)
+    let subseparacion = _anchoSeparaciones / divicionesSubescala
+    for (let i = 0; i < divicionesSubescala - 1; i++) {
+      symbol.appendChild(crearElemento('rect', {
+        x: subseparacion * (i + 1),
+        y: 0,
+        width: grosorMarcas,
+        height: largoMarcas / 2,
+        fill: colorRecta
+      }))
+    }
+    defs.appendChild(symbol)
+    if (posicionesSubescala === 'todas') {
+      _posicionesEnRecta.slice(0, _posicionesEnRecta.length - 1).forEach(x => {
+        container.appendChild(crearReferenciaAElemento(`${container.id}-subescala`, {
+          x: x.posicion,
+          y: altoRecta / 2 - largoMarcas / 4
+        }))
+      })
+    } else if (posicionesSubescala === 'entre') {
+      tramosSubescala = tramosSubescala.split(';').map(x => x.split('-')).map(x => ({
+        inicio: Number(regexFunctions(regex(x[0], vars, vt))),
+        fin: Number(regexFunctions(regex(x[1], vars, vt)))
+      }))
+      _posicionesEnRecta.forEach(posiciones => {
+        for (let j = 0; j < tramosSubescala.length; j++) {
+          if (posiciones.numero >= tramosSubescala[j].inicio && posiciones.numero < tramosSubescala[j].fin) {
+            container.appendChild(crearReferenciaAElemento(`${container.id}-subescala`, {
+              x: posiciones.posicion,
+              y: altoRecta / 2 - largoMarcas / 4
+            }))
+          }
+        }
+      })
+    }
+  }
+
   if (puntos && puntos.length > 0) {
     puntos.forEach(punto => {
       container.appendChild(crearElemento('circle', {
@@ -2963,86 +3008,88 @@ async function recta(config, tipo) {
     })
   }
   //dibuja tramo de recta numerica
-	if(tramos.length > 0) {
-		tramos.forEach(tramo => {
-			let inicioX = valorRectaACoordenadaX(tramo.inicio)
-			let finX = valorRectaACoordenadaX(tramo.final)
-			let centro = (finX - inicioX) / 2 + inicioX
-			let inicioY = altoRecta/2-largoMarcas/2-tramo.alto
-			let radio = 10
-			
-			switch(tramo.tipo) {
-				case 'llave':
-					container.appendChild(crearElemento('path',{
-						d: `M ${inicioX} ${inicioY}
-							A ${radio} ${radio} 0 0 1 ${inicioX+radio} ${inicioY-radio}
-							H ${centro-radio}
-							A ${radio} ${radio} 0 0 0 ${centro} ${inicioY-radio*2}
-							A ${radio} ${radio} 0 0 0 ${centro+radio} ${inicioY-radio}
-							H ${finX-radio}
-							A ${radio} ${radio} 0 0 1 ${finX} ${inicioY}`,
-						fill: 'none',
-						stroke: tramo.color,
-						strokeWidth: grosorMarcas
-					}))
-					break
-				case 'punto-punto':
-					container.appendChild(crearElemento('circle', {
-						cx: inicioX,
-						cy: altoRecta/2,
-						r: grosorRecta+2,
-						fill: tramo.color,
-						stroke: colorRecta,
-						strokeWidth: grosorRecta/2
-					}))
-					container.appendChild(crearElemento('circle', {
-						cx: finX,
-						cy: altoRecta/2,
-						r: grosorRecta+2,
-						fill: tramo.color,
-						stroke: colorRecta,
-						strokeWidth: grosorRecta/2
-					}))
-					container.appendChild(crearElemento('rect', {
-						x: inicioX,
-						y: altoRecta/2-grosorRecta/2,
-						width: finX-inicioX,
-						height: grosorRecta,
-						fill: tramo.color
-					}))
-					break
-				case 'tramo':
-					let inicioLineaExtremoY = tramo.alto+largoMarcas/4
-					let finLineaExtremoY = tramo.alto-largoMarcas/4
-					container.appendChild(crearElemento('line', {
-						x1: inicioX,
-						y1: inicioLineaExtremoY,
-						x2: inicioX,
-						y2: finLineaExtremoY,
-						stroke: tramo.color
-					}))
-					container.appendChild(crearElemento('line', {
-						x1: finX,
-						y1: inicioLineaExtremoY,
-						x2: finX,
-						y2: finLineaExtremoY,
-						stroke: tramo.color
-					}))
-					container.appendChild(crearElemento('line', {
-						x1: inicioX,
-						y1: tramo.alto,
-						x2: finX,
-						y2: tramo.alto,
-						stroke: tramo.color
-					}))
-					break
-				default:
-					//console.log('no se puede agregar este tipo de tramo :c')
-					break
-			}
-		})
-	}
+  if (tramos.length > 0) {
+    tramos.forEach(tramo => {
+      let inicioX = valorRectaACoordenadaX(tramo.inicio)
+      let finX = valorRectaACoordenadaX(tramo.final)
+      let centro = (finX - inicioX) / 2 + inicioX
+      let inicioY = altoRecta / 2 - largoMarcas / 2 - tramo.alto
+      let radio = 10
 
+      switch (tramo.tipo) {
+        case 'llave':
+          container.appendChild(crearElemento('path', {
+            d: `M ${inicioX} ${inicioY}
+							A ${radio} ${radio} 0 0 1 ${inicioX + radio} ${inicioY - radio}
+							H ${centro - radio}
+							A ${radio} ${radio} 0 0 0 ${centro} ${inicioY - radio * 2}
+							A ${radio} ${radio} 0 0 0 ${centro + radio} ${inicioY - radio}
+							H ${finX - radio}
+							A ${radio} ${radio} 0 0 1 ${finX} ${inicioY}`,
+            fill: 'none',
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          break
+        case 'punto-punto':
+          container.appendChild(crearElemento('circle', {
+            cx: inicioX,
+            cy: altoRecta / 2,
+            r: grosorRecta + 2,
+            fill: tramo.color,
+            stroke: colorRecta,
+            strokeWidth: grosorRecta / 2
+          }))
+          container.appendChild(crearElemento('circle', {
+            cx: finX,
+            cy: altoRecta / 2,
+            r: grosorRecta + 2,
+            fill: tramo.color,
+            stroke: colorRecta,
+            strokeWidth: grosorRecta / 2
+          }))
+          container.appendChild(crearElemento('rect', {
+            x: inicioX,
+            y: altoRecta / 2 - grosorRecta / 2,
+            width: finX - inicioX,
+            height: grosorRecta,
+            fill: tramo.color
+          }))
+          break
+        case 'tramo':
+          let inicioLineaExtremoY = tramo.alto + largoMarcas / 4
+          let finLineaExtremoY = tramo.alto - largoMarcas / 4
+          container.appendChild(crearElemento('line', {
+            x1: inicioX,
+            y1: inicioLineaExtremoY,
+            x2: inicioX,
+            y2: finLineaExtremoY,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          container.appendChild(crearElemento('line', {
+            x1: finX,
+            y1: inicioLineaExtremoY,
+            x2: finX,
+            y2: finLineaExtremoY,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          container.appendChild(crearElemento('line', {
+            x1: inicioX,
+            y1: tramo.alto,
+            x2: finX,
+            y2: tramo.alto,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          break
+        default:
+          //console.log('no se puede agregar este tipo de tramo :c')
+          break
+      }
+    })
+  }
 
   arcos.forEach(arco => {
     if (arco.saltos) {
@@ -3156,10 +3203,6 @@ async function recta(config, tipo) {
     }, texto))
   })
 
-  if (divicionesSubescala > 0) {
-
-  }
-
   if (encerrarValores && encerrarValores.length > 0) {
     encerrarValores.forEach(encerrarValor => {
       container.appendChild(crearElemento('rect', {
@@ -3170,6 +3213,473 @@ async function recta(config, tipo) {
         stroke: encerrarValor.color,
         strokeWidth: '2',
         fill: 'none'
+      }))
+    })
+  }
+
+  if (mostrarLupa) {
+    let imglupa = await cargaImagen('../../../../imagenes_front/lupas/Lupa_izq.svg')
+    let anchoImagen = _anchoSeparaciones * 2.2
+    let altoImagen = imglupa.height * anchoImagen / imglupa.width
+    let inicioTramoLupa, finTramoLupa
+    if (tipoInicioTramoLupa === 'numero') {
+      inicioTramoLupa = Number(regexFunctions(regex(inicioTramoLupaNumero, vars, vt)))
+    } else {
+      inicioTramoLupa = Number(regexFunctions(regex(inicioTramoLupaEntero, vars, vt))) +
+        Number(regexFunctions(regex(inicioTramoLupaNumerador, vars, vt))) / Number(regexFunctions(regex(inicioTramoLupaDenominador, vars, vt)))
+    }
+    if (tipoFinTramoLupa === 'numero') {
+      finTramoLupa = Number(regexFunctions(regex(finTramoLupaNumero, vars, vt)))
+    } else {
+      finTramoLupa = Number(regexFunctions(regex(finTramoLupaEntero, vars, vt))) +
+        Number(regexFunctions(regex(finTramoLupaNumerador, vars, vt))) / Number(regexFunctions(regex(finTramoLupaDenominador, vars, vt)))
+    }
+    let inicioLupa = valorRectaACoordenadaX(inicioTramoLupa)
+    let finLupa = valorRectaACoordenadaX(finTramoLupa)
+    let centroMiniEscala = Number(_centroYRecta) + Number(altoRecta)
+    let xInicialMiniEscala = anchoRecta / 2 - anchoSubescala / 2
+    let xFinalMiniEscala = anchoRecta / 2 + anchoSubescala / 2
+    container.appendChild(crearElementoDeImagen('../../../../imagenes_front/lupas/Lupa_izq.svg', {
+      x: inicioLupa - anchoImagen * 0.1,
+      y: _centroYRecta - altoImagen * 0.33,
+      width: _anchoSeparaciones * 2.2
+    }))
+    //dibuja recta
+    container.appendChild(crearElemento('rect', { //dibuja linea principal
+      x: xInicialMiniEscala,
+      y: centroMiniEscala,
+      width: anchoSubescala,
+      height: grosorRecta,
+      fill: colorRecta,
+      rx: 2,
+      ry: 2
+    }))
+    container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+      x: xInicialMiniEscala + grosorRecta / 2,
+      y: centroMiniEscala,
+      width: largoFlechas,
+      height: grosorRecta,
+      fill: colorRecta,
+      transform: `rotate(30 ${xInicialMiniEscala},${centroMiniEscala})`,
+      rx: 2,
+      ry: 2
+    }))
+    container.appendChild(crearElemento('rect', { //dibuja flecha inicial
+      x: xInicialMiniEscala,
+      y: centroMiniEscala,
+      width: largoFlechas,
+      height: grosorRecta,
+      fill: colorRecta,
+      transform: `rotate(-30 ${xInicialMiniEscala},${centroMiniEscala})`,
+      rx: 2,
+      ry: 2
+    }))
+    container.appendChild(crearElemento('rect', { //dibuja flecha final
+      x: xFinalMiniEscala - largoFlechas,
+      y: centroMiniEscala,
+      width: largoFlechas,
+      height: grosorRecta,
+      fill: colorRecta,
+      transform: `rotate(30 ${xFinalMiniEscala},${centroMiniEscala})`,
+      rx: 2,
+      ry: 2
+    }))
+    container.appendChild(crearElemento('rect', { //dibuja flecha final
+      x: xFinalMiniEscala - largoFlechas - grosorRecta / 2,
+      y: centroMiniEscala,
+      width: largoFlechas,
+      height: grosorRecta,
+      fill: colorRecta,
+      transform: `rotate(-30 ${xFinalMiniEscala},${centroMiniEscala})`,
+      rx: 2,
+      ry: 2
+    }))
+
+    let _anchoTramoMiniEscala = anchoSubescala / (divicionesSubescala + 2)
+    let _valorMiniEscala = (finTramoLupa - inicioTramoLupa) / divicionesSubescala
+    let _yMarcaRecta = centroMiniEscala - largoMarcas / 2 + grosorRecta / 2
+    let diferenciaInicioFin = Number(Number(finTramoLupa - inicioTramoLupa).toFixed(10))
+    let puntosMiniEscala = []
+    let escalaMiniEscala = valorEscalaRecta / divicionesSubescala
+    const datosMiniEscala = {
+      anchoSubescala: anchoSubescala,
+      valorInicioSubescala: inicioTramoLupa,
+      valorFinalSubescala: finTramoLupa,
+      valorEscalaSubescala: _valorMiniEscala
+    }
+    //dibuja lineas representativas de acercamiento
+    container.appendChild(crearElemento('line', { //dibuja flecha final
+      x1: inicioLupa,
+      y1: _centroYRecta + grosorMarcas / 2,
+      x2: xInicialMiniEscala + _anchoTramoMiniEscala,
+      y2: centroMiniEscala - largoFlechas,
+      stroke: 'black',
+      strokeWidth: 2
+    }))
+    container.appendChild(crearElemento('line', { //dibuja flecha final
+      x1: finLupa,
+      y1: _centroYRecta + grosorMarcas / 2,
+      x2: xFinalMiniEscala - _anchoTramoMiniEscala,
+      y2: centroMiniEscala - largoFlechas,
+      stroke: 'black',
+      strokeWidth: 2
+    }))
+    //dibujado de marcas
+    for (let i = 0; i < divicionesSubescala + 1; i++) {
+      if (i === 0) {
+        puntosMiniEscala.push({
+          numero: inicioTramoLupa,
+          posicion: xInicialMiniEscala + _anchoTramoMiniEscala * (i + 1)
+        })
+      } else if (i + 1 === divicionesSubescala + 1) {
+        puntosMiniEscala.push({
+          numero: finTramoLupa,
+          posicion: xInicialMiniEscala + _anchoTramoMiniEscala * (i + 1)
+        })
+      } else {
+        puntosMiniEscala.push({
+          numero: Number(Number(inicioTramoLupa + (i * _valorMiniEscala)).toFixed(10)),
+          posicion: xInicialMiniEscala + _anchoTramoMiniEscala * (i + 1)
+        })
+      }
+      container.appendChild(crearElemento('rect', {
+        x: xInicialMiniEscala + _anchoTramoMiniEscala * (i + 1),
+        y: _yMarcaRecta,
+        width: grosorMarcas,
+        height: largoMarcas,
+        fill: colorRecta,
+        rx: 2,
+        ry: 2
+      }))
+    }
+    //dibuja valores mini escala
+    puntosMiniEscala.forEach((valor, index) => {
+      if (index === 0) { //si es el primero
+        if (tipoInicioTramoLupa === 'numero') {
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, inicioTramoLupaNumero.toString().replace('.', ',')))
+        } else {
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, inicioTramoLupaNumerador))
+          container.appendChild(crearElemento('line', {
+            x1: valor.posicion + grosorMarcas / 2 - 10,
+            y1: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+            x2: valor.posicion + grosorMarcas / 2 + 10,
+            y2: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+            stroke: colorRecta,
+            strokeWidth: 2
+          }))
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize * 2,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, inicioTramoLupaDenominador))
+        }
+      } else if (index + 1 === puntosMiniEscala.length) { //si es el último
+        if (tipoFinTramoLupa === 'numero') {
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, finTramoLupaNumero.toString().replace('.', ',')))
+        } else {
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, finTramoLupaNumerador))
+          container.appendChild(crearElemento('line', {
+            x1: valor.posicion + grosorMarcas / 2 - 10,
+            y1: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+            x2: valor.posicion + grosorMarcas / 2 + 10,
+            y2: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+            stroke: colorRecta,
+            strokeWidth: 2
+          }))
+          container.appendChild(crearElementoDeTexto({
+            x: valor.posicion + grosorMarcas / 2,
+            y: centroMiniEscala + largoMarcas / 2 + fontSize * 2,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, finTramoLupaDenominador))
+        }
+      } else if (Number.isInteger(valor.numero) || formatoSubescala == 'numero') {
+        container.appendChild(crearElementoDeTexto({
+          x: valor.posicion + grosorMarcas / 2,
+          y: centroMiniEscala + largoMarcas / 2 + fontSize,
+          fontSize: fontSize,
+          textAnchor: 'middle',
+          fill: colorFuente,
+          style: 'font-family:Open-Sans-Reg;'
+        }, valor.numero.toString().replace('.', ',')))
+      } else if (formatoSubescala == 'fraccion') {
+				/*si la diferencia entre la primera y la segunda marca es 1 y 
+				el formato se debe pintar como fraccion y 
+				el valor esta dentro de los valores de la recta*/
+        container.appendChild(crearElementoDeTexto({
+          x: valor.posicion + grosorMarcas / 2,
+          y: centroMiniEscala + largoMarcas / 2 + fontSize,
+          fontSize: fontSize,
+          textAnchor: 'middle',
+          fill: colorFuente,
+          style: 'font-family:Open-Sans-Reg;'
+        }, diferenciaInicioFin === 1 ? index : inicioTramoLupa * 100 + index))
+        container.appendChild(crearElemento('line', {
+          x1: diferenciaInicioFin === 1 ? valor.posicion + grosorMarcas / 2 - 10 : valor.posicion + grosorMarcas / 2 - 15,
+          y1: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+          x2: diferenciaInicioFin === 1 ? valor.posicion + grosorMarcas / 2 + 10 : valor.posicion + grosorMarcas / 2 + 15,
+          y2: centroMiniEscala + largoMarcas / 2 + fontSize + 3,
+          stroke: colorRecta,
+          strokeWidth: 2
+        }))
+        container.appendChild(crearElementoDeTexto({
+          x: valor.posicion + grosorMarcas / 2,
+          y: centroMiniEscala + largoMarcas / 2 + fontSize * 2,
+          fontSize: fontSize,
+          textAnchor: 'middle',
+          fill: colorFuente,
+          style: 'font-family:Open-Sans-Reg;'
+        }, diferenciaInicioFin === 1 ? divicionesSubescala : divicionesSubescala * 10))
+      }
+    })
+
+    arcosSubescala && arcosSubescala.map(x => ({
+      inicio: Number(regexFunctions(regex(x.inicio, vars, vt))),
+      fin: Number(regexFunctions(regex(x.fin, vars, vt))),
+      direccion: x.direccion,
+      color: '#8B1013',
+      saltos: x.saltos == 'si' ? true : false,
+      mostrarValorTramo: x.mostrarValorTramo == 'si' ? true : false
+    })).forEach(arco => {
+      if (arco.saltos) {
+        let puntosDeArcos = puntosMiniEscala.filter(x => x.numero >= arco.inicio && x.numero <= arco.fin)
+        puntosDeArcos.forEach(({ posicion }, index) => {
+          if (index + 1 == puntosDeArcos.length) {
+            return
+          }
+          let x = posicion + _anchoTramoMiniEscala / 2
+          let y = centroMiniEscala
+          let radio = _anchoTramoMiniEscala / 2
+          container.appendChild(crearElemento('path', {
+            d: createArcWithAngles(x, y, radio, 45, 135),
+            fill: 'none',
+            stroke: arco.color,
+            strokeWidth: grosorMarcas
+          }))
+          if (arco.direccion == 'derecha') {
+            let puntaFlecha = polarToCartesian(x, y, radio, 135)
+            container.appendChild(crearElemento('path', {
+              d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+								L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+								L ${puntaFlecha.x - 5} ${puntaFlecha.y}
+								L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+              fill: arco.color,
+              stroke: arco.color
+            }))
+          } else {
+            let puntaFlecha = polarToCartesian(x, y, radio, 45)
+            container.appendChild(crearElemento('path', {
+              d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+								L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+								L ${puntaFlecha.x + 5} ${puntaFlecha.y}
+								L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+              fill: arco.color,
+              stroke: arco.color
+            }))
+          }
+          if (arco.mostrarValorTramo) {
+            container.appendChild(crearElementoDeTexto({
+              x: posicion + _anchoTramoMiniEscala / 2,
+              y: y - _anchoTramoMiniEscala / 2 - 5,
+              fontSize: fontSize,
+              textAnchor: 'middle',
+              fill: colorFuente,
+              style: 'font-family:Open-Sans-Reg;'
+            }, escalaMiniEscala.toString().replace('.', ',')))
+          }
+        })
+      } else {
+        let inicioArco = valorSubescalaACoordenadaX(arco.inicio, datosMiniEscala)
+        let finArco = valorSubescalaACoordenadaX(arco.fin, datosMiniEscala)
+        let mitad = (finArco - inicioArco) / 2 + inicioArco
+        let yArco = centroMiniEscala - largoMarcas / 2 - 5
+        container.appendChild(crearElemento('path', {
+          d: `M ${inicioArco} ${yArco}
+						A 22 2 0 0 1 ${finArco} ${yArco}`,
+          fill: 'none',
+          stroke: arco.color,
+          strokeWidth: grosorMarcas
+        }))
+        if (arco.direccion == 'derecha') {
+          let puntaFlecha = {
+            x: finArco,
+            y: yArco
+          }
+          container.appendChild(crearElemento('path', {
+            d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+							L ${puntaFlecha.x - 5} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+            fill: arco.color,
+            stroke: arco.color
+          }))
+        } else {
+          let puntaFlecha = {
+            x: inicioArco,
+            y: yArco
+          }
+          container.appendChild(crearElemento('path', {
+            d: `M ${puntaFlecha.x} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y - 5}
+							L ${puntaFlecha.x + 5} ${puntaFlecha.y}
+							L ${puntaFlecha.x} ${puntaFlecha.y} Z`,
+            fill: arco.color,
+            stroke: arco.color
+          }))
+        }
+        if (arco.mostrarValorTramo) {
+          let diferencia = Number(Number(arco.fin - arco.inicio).toFixed(10))
+          container.appendChild(crearElementoDeTexto({
+            x: mitad,
+            y: centroMiniEscala - _anchoTramoMiniEscala * 0.7,
+            fontSize: fontSize,
+            textAnchor: 'middle',
+            fill: colorFuente,
+            style: 'font-family:Open-Sans-Reg;'
+          }, diferencia.toString().replace('.', ',')))
+        }
+      }
+    })
+
+    segmetosSubescala && segmetosSubescala.map(x => ({
+      tipo: x.tipo,
+      inicio: Number(Number(regexFunctions(regex(x.inicio, vars, vt))).toFixed(10)),
+      final: Number(Number(regexFunctions(regex(x.final, vars, vt))).toFixed(10)),
+      alto: x.alto ? Number(x.alto) : 0,
+      color: x.color
+    })).forEach(tramo => {
+      let inicioX = valorSubescalaACoordenadaX(tramo.inicio, datosMiniEscala)
+      let finX = valorSubescalaACoordenadaX(tramo.final, datosMiniEscala)
+
+      switch (tramo.tipo) {
+        case 'punto-punto':
+          container.appendChild(crearElemento('circle', {
+            cx: inicioX,
+            cy: centroMiniEscala + grosorRecta / 2,
+            r: grosorRecta + 2,
+            fill: tramo.color,
+            stroke: colorRecta,
+            strokeWidth: grosorRecta / 2
+          }))
+          container.appendChild(crearElemento('circle', {
+            cx: finX,
+            cy: centroMiniEscala + grosorRecta / 2,
+            r: grosorRecta + 2,
+            fill: tramo.color,
+            stroke: colorRecta,
+            strokeWidth: grosorRecta / 2
+          }))
+          container.appendChild(crearElemento('rect', {
+            x: inicioX,
+            y: centroMiniEscala,
+            width: finX - inicioX,
+            height: grosorRecta,
+            fill: tramo.color
+          }))
+          break
+        case 'tramo':
+          let inicioLineaExtremoY = tramo.alto + largoMarcas / 4
+          let finLineaExtremoY = tramo.alto - largoMarcas / 4
+          container.appendChild(crearElemento('line', {
+            x1: inicioX,
+            y1: inicioLineaExtremoY,
+            x2: inicioX,
+            y2: finLineaExtremoY,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          container.appendChild(crearElemento('line', {
+            x1: finX,
+            y1: inicioLineaExtremoY,
+            x2: finX,
+            y2: finLineaExtremoY,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          container.appendChild(crearElemento('line', {
+            x1: inicioX,
+            y1: tramo.alto,
+            x2: finX,
+            y2: tramo.alto,
+            stroke: tramo.color,
+            strokeWidth: grosorMarcas
+          }))
+          break
+        default:
+          //console.log('no se puede agregar este tipo de tramo :c')
+          break
+      }
+    })
+
+    imagenesSubescala.map(img => {
+      let widthImg = img.height * img.imagen.width / img.imagen.height
+      img.posiciones.forEach(posicionEnRecta => {
+        let posicionX = valorSubescalaACoordenadaX(posicionEnRecta, datosMiniEscala)
+        if (img.marcar) {
+          container.appendChild(crearElemento('rect', { //dibuja marca
+            x: posicionX,
+            y: centroMiniEscala - largoMarcas / 2 + grosorRecta / 2,
+            width: grosorMarcas,
+            height: largoMarcas,
+            fill: colorRecta,
+            rx: 2,
+            ry: 2
+          }))
+        }
+        container.appendChild(crearElementoDeImagen(img.srcImg, {
+          x: posicionX - widthImg / 2,
+          y: img.posicion == 'arriba' ? centroMiniEscala - largoMarcas / 2 - img.separacion - img.height : centroMiniEscala + largoMarcas / 2 + img.separacion,
+          height: img.height
+        }))
+      })
+    })
+
+    //puntos subescala
+    puntosSubescala = puntosSubescala.length > 0 ? regexFunctions(regex(puntosSubescala, vars, vt)).split(';').map(x => x.split(',')).map(x => ({
+      posicion: valorSubescalaACoordenadaX(Number(x[0]), datosMiniEscala),
+      color: x[1]
+    })) : []
+    puntosSubescala.forEach(punto => {
+      container.appendChild(crearElemento('circle', {
+        cx: punto.posicion,
+        cy: centroMiniEscala + grosorRecta / 2,
+        r: grosorRecta + grosorRecta / 2,
+        fill: punto.color,
+        stroke: colorRecta,
+        strokeWidth: grosorRecta / 2
       }))
     })
   }
@@ -3208,12 +3718,27 @@ async function recta(config, tipo) {
     return anchoRecta * valorReal / largoRecta
   }
 
+	/*datos = {
+		anchoSubescala: Number,
+		valorInicioSubescala: Number,
+		valorFinalSubescala: Number,
+		valorEscalaSubescala: Number
+	}*/
+  function valorSubescalaACoordenadaX(valorSubescala, datos) {
+    let valorReal = valorSubescala + datos.valorEscalaSubescala - datos.valorInicioSubescala
+    let valorInicioMenosEscala = datos.valorInicioSubescala - datos.valorEscalaSubescala
+    let valorFinalMasEscala = datos.valorFinalSubescala + datos.valorEscalaSubescala
+    let largoRecta = valorFinalMasEscala - valorInicioMenosEscala
+    let puntoInicio = anchoRecta / 2 - datos.anchoSubescala / 2
+    return puntoInicio + Number(grosorMarcas) / 2 + datos.anchoSubescala * valorReal / largoRecta
+  }
+
   async function getImagenObj(img) {
     let src = regexFunctions(regex(img.srcImg, vars, vt))
     src = src.replace('https://desarrolloadaptatin.blob.core.windows.net/sistemaejercicios/ejercicios/Nivel-4/', '../../../../')
     return {
-      srcImg: regexFunctions(regex(img.srcImg, vars, vt)),
-      imagen: await cargaImagen(regexFunctions(regex(img.srcImg, vars, vt))),
+      srcImg: src,
+      imagen: await cargaImagen(src),
       height: Number(img.height),
       posicion: img.posicion,
       separacion: Number(img.separacion),
@@ -3244,14 +3769,14 @@ async function recta(config, tipo) {
   }
 
   function getTramoObj(tramo) {
-		return {
-			tipo: tramo.tipo,
-			inicio: Number(Number(regexFunctions(regex(tramo.inicio, vars, vt))).toFixed(10)),
-			final: Number(Number(regexFunctions(regex(tramo.final, vars, vt))).toFixed(10)),
-			alto: tramo.alto ? Number(tramo.alto) : 0,
-			color: tramo.color
-		}
-	}
+    return {
+      tipo: tramo.tipo,
+      inicio: Number(Number(regexFunctions(regex(tramo.inicio, vars, vt))).toFixed(10)),
+      final: Number(Number(regexFunctions(regex(tramo.final, vars, vt))).toFixed(10)),
+      alto: tramo.alto ? Number(tramo.alto) : 0,
+      color: tramo.color
+    }
+  }
 
   function dibujarMarca(posicion) {
     container.appendChild(crearElemento('rect', { //dibuja marca
@@ -3308,7 +3833,6 @@ async function recta(config, tipo) {
   }
 
   function dibujaFraccionEnPosicion(entero, numerador, denominador, posicion, ubicacion) {
-    //console.log(ubicacion)
     if (entero > 0) {
       container.appendChild(crearElementoDeTexto({
         x: posicion + grosorMarcas / 2 - 10,
@@ -3402,6 +3926,27 @@ async function recta(config, tipo) {
     element.appendChild(textNode)
     return element
   }
+
+  function crearElementoSymbol(id, width, height) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'symbol')
+    element.setAttributeNS(null, 'id', id)
+    element.setAttributeNS(null, 'width', width)
+    element.setAttributeNS(null, 'height', height)
+    element.setAttributeNS(null, 'viewBox', `0 0 ${width} ${height}`)
+    return element
+  }
+
+  function crearReferenciaAElemento(id, atributos) {
+    let element = document.createElementNS('http://www.w3.org/2000/svg', 'use')
+    element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${id}`)
+    for (let p in atributos) {
+      element.setAttributeNS(null, p.replace(/[A-Z]/g, function (m, p, o, s) {
+        return '-' + m.toLowerCase()
+      }), atributos[p])
+    }
+    return element
+  }
+
   if (window.innerWidth <= 576) {
     container.setAttributeNS(null, 'height', Number(altoRecta) + 50)
     container.style.borderRadius = '5px'
